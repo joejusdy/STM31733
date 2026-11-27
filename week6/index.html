@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 6 — VLAN Configuration &amp; Trunking | STM31733</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../week-shared.css">
+</head>
+<body>
+
+<!-- ── Topbar ── -->
+<nav class="week-topbar">
+  <div class="week-topbar-left">
+    <div class="week-topbar-logo">🌐</div>
+    <div>
+      <div class="week-topbar-title">STM31733 Network Administration</div>
+      <div class="week-topbar-sub">Kolej Komuniti Papar · Jusdy bin Juwait</div>
+    </div>
+  </div>
+  <div class="week-topbar-nav">
+    <a href="../index.html" class="topbar-link">← Course Home</a>
+    <a href="../na360/index.html" class="topbar-link">NetAdmin 360</a>
+    <a href="../week5/index.html" class="topbar-link">← Week 5</a>
+    <a href="../week7/index.html" class="topbar-link active">Week 7 →</a>
+  </div>
+</nav>
+
+<div class="week-container">
+
+  <!-- ── Hero ── -->
+  <div class="week-hero">
+    <div>
+      <div class="hero-week-num">Week 6 · Unit 3.0 · Subtopic 3.2 (Part 1)</div>
+      <h1 class="hero-title">VLAN Configuration &amp; Trunking</h1>
+      <div class="hero-unit">STM31733 — Network Administration | Kolej Komuniti Papar</div>
+      <div class="hero-clo-tags">
+        <span class="clo-tag">CLO2</span>
+        <span class="clo-tag">P3 — Precision</span>
+        <span class="clo-tag">PLO3</span>
+        <span class="clo-tag">Practical 2</span>
+      </div>
+    </div>
+    <div class="hero-meta">
+      <div class="hero-week-badge">6</div>
+    </div>
+  </div>
+
+  <!-- ── Topics Covered ── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#E8F0FE;">📋</div>
+      <div>
+        <div class="card-header-title">Topics Covered This Week</div>
+        <div class="card-header-sub">Unit 3.0 — VLAN Creation, Port Assignment, and Trunk Configuration</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <ul class="topic-list">
+        <li><span class="topic-dot" style="background:var(--purple);"></span>Creating VLANs on a Cisco switch using the <code>vlan</code> command</li>
+        <li><span class="topic-dot" style="background:var(--purple);"></span>Naming VLANs with the <code>name</code> command</li>
+        <li><span class="topic-dot" style="background:var(--purple);"></span>Assigning switch ports to VLANs (access mode)</li>
+        <li><span class="topic-dot" style="background:var(--purple);"></span>Adding port descriptions for documentation</li>
+        <li><span class="topic-dot" style="background:var(--purple);"></span>Configuring the Management VLAN SVI (Switched Virtual Interface)</li>
+        <li><span class="topic-dot" style="background:var(--purple);"></span>Setting the default gateway on a switch</li>
+        <li><span class="topic-dot" style="background:var(--purple);"></span>Configuring trunk ports between switches</li>
+        <li><span class="topic-dot" style="background:var(--purple);"></span>Verifying VLAN configuration: <code>show vlan brief</code>, <code>show interfaces trunk</code></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ── Sub-topics ── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#E6F4EA;">📖</div>
+      <div>
+        <div class="card-header-title">Sub-topic Details</div>
+        <div class="card-header-sub">Expand each section for detailed notes</div>
+      </div>
+    </div>
+    <div class="card-body">
+
+      <div class="subtopic">
+        <details>
+          <summary class="subtopic-header">
+            <span class="subtopic-code">3.2</span> Creating VLANs and Naming Them
+          </summary>
+          <div class="subtopic-body">
+            <ul>
+              <li>VLANs are created from Global Config mode using <code>vlan &lt;id&gt;</code>. This puts you into VLAN config mode where you can assign a name.</li>
+              <li>VLAN information is stored in the <code>vlan.dat</code> file on flash memory — it persists separately from the running-config.</li>
+              <li>To delete a VLAN: <code>no vlan &lt;id&gt;</code>. Warning: ports assigned to a deleted VLAN become inactive until reassigned.</li>
+              <li>Recommended VLAN naming convention: use descriptive names like <code>SALES</code>, <code>MGMT</code>, <code>IT</code>, <code>VOICE</code> in uppercase.</li>
+              <li>Verify created VLANs with <code>show vlan brief</code>.</li>
+            </ul>
+          </div>
+        </details>
+      </div>
+
+      <div class="subtopic">
+        <details>
+          <summary class="subtopic-header">
+            <span class="subtopic-code">3.2</span> Assigning Ports to VLANs (Access Mode)
+          </summary>
+          <div class="subtopic-body">
+            <ul>
+              <li>Access ports carry traffic for a single VLAN and connect to end devices (PCs, printers, IP phones).</li>
+              <li>Configure: enter interface config → <code>switchport mode access</code> → <code>switchport access vlan &lt;id&gt;</code>.</li>
+              <li>Use <code>interface range</code> to configure multiple ports simultaneously (e.g., <code>interface range fa0/1 - 10</code>).</li>
+              <li>Always add a description to document what is connected: <code>description PC-SALES-01</code>.</li>
+              <li>Verify port VLAN assignment with <code>show vlan brief</code> or <code>show interfaces fa0/1 switchport</code>.</li>
+            </ul>
+          </div>
+        </details>
+      </div>
+
+      <div class="subtopic">
+        <details>
+          <summary class="subtopic-header">
+            <span class="subtopic-code">3.2</span> Management VLAN SVI Configuration
+          </summary>
+          <div class="subtopic-body">
+            <ul>
+              <li>An SVI (Switched Virtual Interface) is a logical Layer 3 interface on a switch. It allows the switch to be managed via IP (SSH, Telnet, SNMP).</li>
+              <li>The Management VLAN SVI is created with <code>interface vlan &lt;id&gt;</code> and assigned an IP address.</li>
+              <li>The switch also needs a default gateway configured for management traffic to reach other networks: <code>ip default-gateway &lt;ip&gt;</code>.</li>
+              <li>Best practice: Use a dedicated VLAN for management (not VLAN 1). Common choices: VLAN 99, VLAN 100.</li>
+              <li>Ensure at least one port is in the management VLAN, or the switch will be inaccessible remotely.</li>
+            </ul>
+          </div>
+        </details>
+      </div>
+
+      <div class="subtopic">
+        <details>
+          <summary class="subtopic-header">
+            <span class="subtopic-code">3.2</span> Trunk Port Configuration
+          </summary>
+          <div class="subtopic-body">
+            <ul>
+              <li>Trunk ports carry tagged VLAN traffic between switches (or switch to router). They allow all VLANs by default unless restricted.</li>
+              <li>Configure: <code>switchport mode trunk</code> on both ends of the inter-switch link.</li>
+              <li>Optionally restrict which VLANs are allowed: <code>switchport trunk allowed vlan &lt;list&gt;</code>.</li>
+              <li>Change the native VLAN (security best practice): <code>switchport trunk native vlan &lt;id&gt;</code>. Must match on both ends.</li>
+              <li>Verify: <code>show interfaces trunk</code> shows mode, encapsulation, native VLAN, and allowed VLANs.</li>
+              <li>DTP (Dynamic Trunking Protocol) can auto-negotiate trunk links — disable it in production with <code>switchport nonegotiate</code>.</li>
+            </ul>
+          </div>
+        </details>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Cisco Config Block ── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#EDE7FF;">⌨️</div>
+      <div>
+        <div class="card-header-title">Cisco IOS — VLAN &amp; Trunk Configuration Examples</div>
+        <div class="card-header-sub">Complete VLAN setup on a Cisco 2960 switch (Subtopic 3.2)</div>
+      </div>
+    </div>
+    <div class="card-body">
+
+<pre class="config-block"><span class="config-comment">! ══════════════════════════════════════════
+! PART 1: Create VLANs
+! ══════════════════════════════════════════</span>
+Switch(config)# <span class="config-cmd">vlan</span> <span class="config-value">10</span>
+Switch(config-vlan)# <span class="config-cmd">name</span> <span class="config-value">SALES</span>
+Switch(config-vlan)# <span class="config-cmd">exit</span>
+
+Switch(config)# <span class="config-cmd">vlan</span> <span class="config-value">20</span>
+Switch(config-vlan)# <span class="config-cmd">name</span> <span class="config-value">IT</span>
+Switch(config-vlan)# <span class="config-cmd">exit</span>
+
+Switch(config)# <span class="config-cmd">vlan</span> <span class="config-value">30</span>
+Switch(config-vlan)# <span class="config-cmd">name</span> <span class="config-value">FINANCE</span>
+Switch(config-vlan)# <span class="config-cmd">exit</span>
+
+Switch(config)# <span class="config-cmd">vlan</span> <span class="config-value">99</span>
+Switch(config-vlan)# <span class="config-cmd">name</span> <span class="config-value">MGMT</span>
+Switch(config-vlan)# <span class="config-cmd">exit</span>
+
+<span class="config-comment">! ══════════════════════════════════════════
+! PART 2: Assign access ports to VLANs
+! ══════════════════════════════════════════</span>
+Switch(config)# <span class="config-cmd">interface range</span> <span class="config-param">FastEthernet0/1 - 8</span>
+Switch(config-if-range)# <span class="config-cmd">description</span> <span class="config-value">SALES-PCs</span>
+Switch(config-if-range)# <span class="config-cmd">switchport mode access</span>
+Switch(config-if-range)# <span class="config-cmd">switchport access vlan</span> <span class="config-value">10</span>
+Switch(config-if-range)# <span class="config-cmd">exit</span>
+
+Switch(config)# <span class="config-cmd">interface range</span> <span class="config-param">FastEthernet0/9 - 16</span>
+Switch(config-if-range)# <span class="config-cmd">description</span> <span class="config-value">IT-PCs</span>
+Switch(config-if-range)# <span class="config-cmd">switchport mode access</span>
+Switch(config-if-range)# <span class="config-cmd">switchport access vlan</span> <span class="config-value">20</span>
+Switch(config-if-range)# <span class="config-cmd">exit</span>
+
+Switch(config)# <span class="config-cmd">interface range</span> <span class="config-param">FastEthernet0/17 - 22</span>
+Switch(config-if-range)# <span class="config-cmd">description</span> <span class="config-value">FINANCE-PCs</span>
+Switch(config-if-range)# <span class="config-cmd">switchport mode access</span>
+Switch(config-if-range)# <span class="config-cmd">switchport access vlan</span> <span class="config-value">30</span>
+Switch(config-if-range)# <span class="config-cmd">exit</span>
+
+<span class="config-comment">! ══════════════════════════════════════════
+! PART 3: Management VLAN SVI configuration
+! ══════════════════════════════════════════</span>
+Switch(config)# <span class="config-cmd">interface vlan</span> <span class="config-value">99</span>
+Switch(config-if)# <span class="config-cmd">description</span> <span class="config-value">Management Interface</span>
+Switch(config-if)# <span class="config-cmd">ip address</span> <span class="config-value">192.168.99.2 255.255.255.0</span>
+Switch(config-if)# <span class="config-cmd">no shutdown</span>
+Switch(config-if)# <span class="config-cmd">exit</span>
+
+Switch(config)# <span class="config-cmd">ip default-gateway</span> <span class="config-value">192.168.99.1</span>
+
+<span class="config-comment">! ══════════════════════════════════════════
+! PART 4: Configure trunk port (uplink to router or another switch)
+! ══════════════════════════════════════════</span>
+Switch(config)# <span class="config-cmd">interface</span> <span class="config-param">GigabitEthernet0/1</span>
+Switch(config-if)# <span class="config-cmd">description</span> <span class="config-value">Uplink to Core Router</span>
+Switch(config-if)# <span class="config-cmd">switchport mode trunk</span>
+Switch(config-if)# <span class="config-cmd">switchport trunk native vlan</span> <span class="config-value">999</span>
+Switch(config-if)# <span class="config-cmd">switchport trunk allowed vlan</span> <span class="config-value">10,20,30,99</span>
+Switch(config-if)# <span class="config-cmd">switchport nonegotiate</span>
+Switch(config-if)# <span class="config-cmd">end</span>
+
+<span class="config-comment">! ══════════════════════════════════════════
+! PART 5: Verify configuration
+! ══════════════════════════════════════════</span>
+Switch# <span class="config-cmd">show vlan brief</span>
+Switch# <span class="config-cmd">show interfaces trunk</span>
+Switch# <span class="config-cmd">show interfaces GigabitEthernet0/1 switchport</span>
+Switch# <span class="config-cmd">show running-config</span>
+Switch# <span class="config-cmd">wr</span></pre>
+
+    </div>
+  </div>
+
+  <!-- ── Packet Tracer Activity ── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#EDE7FF;">🧪</div>
+      <div>
+        <div class="card-header-title">Packet Tracer Lab Activity</div>
+        <div class="card-header-sub">Hands-on practice — Practical 2 component</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="pt-activity">
+        <div class="pt-activity-title">🖥️ Lab 2 — VLAN Configuration and Trunking</div>
+        <p style="font-size:.875rem;color:var(--muted);margin-bottom:.75rem;">Topology: 2 Cisco 2960 switches (SW1 and SW2) connected via a trunk link (G0/1 on each). Attach 2 PCs per VLAN per switch (VLANs 10, 20, 30). One PC in VLAN 99 for management testing.</p>
+        <ol class="pt-steps">
+          <li>Build topology: SW1 ↔ SW2 trunk on G0/1. Connect 6 PCs to SW1 (2 per VLAN: Fa0/1-2 → VLAN 10, Fa0/3-4 → VLAN 20, Fa0/5-6 → VLAN 30). Mirror configuration on SW2.</li>
+          <li>On SW1: create VLANs 10 (SALES), 20 (IT), 30 (FINANCE), 99 (MGMT). Verify with <code>show vlan brief</code> — confirm all 4 VLANs appear.</li>
+          <li>Assign access ports on SW1: Fa0/1-2 to VLAN 10, Fa0/3-4 to VLAN 20, Fa0/5-6 to VLAN 30. Add descriptive <code>description</code> to each port range.</li>
+          <li>Configure the Management VLAN 99 SVI on SW1: <code>interface vlan 99</code> → IP <code>192.168.99.2/24</code> → <code>no shutdown</code>. Set default gateway to <code>192.168.99.1</code>.</li>
+          <li>Configure the trunk port on SW1 G0/1: <code>switchport mode trunk</code>, native VLAN 999, allowed VLANs 10,20,30,99, <code>switchport nonegotiate</code>.</li>
+          <li>Repeat steps 2–5 on SW2 (use IP 192.168.99.3/24 for SW2 management SVI).</li>
+          <li>Assign IP addresses to all PCs within their respective VLAN subnets: VLAN 10 → 192.168.10.x/24, VLAN 20 → 192.168.20.x/24, VLAN 30 → 192.168.30.x/24.</li>
+          <li>Test: Ping between PCs in the same VLAN across switches (should succeed). Ping between PCs in different VLANs (should fail — no inter-VLAN routing yet). Verify trunking with <code>show interfaces trunk</code> on both switches. Save all configurations.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Key Concepts ── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#FEF8E1;">💡</div>
+      <div>
+        <div class="card-header-title">Key Concepts &amp; Study Notes</div>
+        <div class="card-header-sub">Critical points for CLO2 practical assessment</div>
+      </div>
+    </div>
+    <div class="card-body">
+
+      <div class="info-box note">
+        <span class="info-box-icon">📌</span>
+        <div><strong>vlan.dat vs running-config:</strong> VLANs are stored in <code>flash:/vlan.dat</code> — separate from running-config. This means <code>copy running-config startup-config</code> does NOT save VLANs. However, VLANs persist across reboots automatically because vlan.dat is in flash. To delete all VLANs, delete the vlan.dat file: <code>delete flash:vlan.dat</code>.</div>
+      </div>
+
+      <div class="info-box tip">
+        <span class="info-box-icon">✅</span>
+        <div><strong>show vlan brief output:</strong> Shows VLAN ID, name, status, and which ports are assigned. Ports NOT listed under a VLAN are either trunk ports or inactive. If a port appears under VLAN 1, it has not been assigned to another VLAN yet.</div>
+      </div>
+
+      <div class="info-box warning">
+        <span class="info-box-icon">⚠️</span>
+        <div><strong>Native VLAN mismatch:</strong> If the native VLAN configured on each end of a trunk does not match, Cisco switches will generate CDP and syslog warnings. Traffic may still pass but it creates a security risk (VLAN hopping). Always ensure native VLANs match on both ends and use an unused, unrouted VLAN as native.</div>
+      </div>
+
+      <div class="info-box cisco">
+        <span class="info-box-icon">🔵</span>
+        <div><strong>Next week (Week 7):</strong> PCs in different VLANs still cannot communicate — this week's lab proves that. Week 7 covers Inter-VLAN Routing using Router-on-a-Stick and Layer 3 switch methods to enable cross-VLAN communication.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Quiz ── -->
+  <div class="quiz-section">
+    <div class="quiz-title">🧠 Week 6 Knowledge Check — 5 Questions</div>
+
+    <div class="quiz-question" id="q1">
+      <div class="quiz-q-text">1. Which command creates VLAN 10 and assigns it the name "SALES" on a Cisco switch?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q1" value="a"> a) <code>switchport access vlan 10 name SALES</code></label>
+        <label class="quiz-option"><input type="radio" name="q1" value="b"> b) <code>vlan 10</code> then <code>name SALES</code> (in VLAN config mode)</label>
+        <label class="quiz-option"><input type="radio" name="q1" value="c"> c) <code>create vlan 10 SALES</code></label>
+        <label class="quiz-option"><input type="radio" name="q1" value="d"> d) <code>interface vlan 10</code> then <code>name SALES</code></label>
+      </div>
+    </div>
+
+    <div class="quiz-question" id="q2">
+      <div class="quiz-q-text">2. Which two commands are needed to assign FastEthernet0/5 as an access port in VLAN 20?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q2" value="a"> a) <code>switchport mode trunk</code> and <code>switchport trunk allowed vlan 20</code></label>
+        <label class="quiz-option"><input type="radio" name="q2" value="b"> b) <code>switchport mode access</code> and <code>switchport access vlan 20</code></label>
+        <label class="quiz-option"><input type="radio" name="q2" value="c"> c) <code>ip address</code> and <code>vlan 20</code></label>
+        <label class="quiz-option"><input type="radio" name="q2" value="d"> d) <code>switchport vlan 20</code> and <code>no shutdown</code></label>
+      </div>
+    </div>
+
+    <div class="quiz-question" id="q3">
+      <div class="quiz-q-text">3. What is the purpose of the <code>ip default-gateway</code> command on a Layer 2 switch?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q3" value="a"> a) To enable routing between VLANs on the switch</label>
+        <label class="quiz-option"><input type="radio" name="q3" value="b"> b) To allow the switch's management traffic to reach networks beyond its local subnet</label>
+        <label class="quiz-option"><input type="radio" name="q3" value="c"> c) To configure the native VLAN on a trunk port</label>
+        <label class="quiz-option"><input type="radio" name="q3" value="d"> d) To forward DHCP requests to a DHCP server</label>
+      </div>
+    </div>
+
+    <div class="quiz-question" id="q4">
+      <div class="quiz-q-text">4. Which command verifies which VLANs are allowed on a trunk port?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q4" value="a"> a) show vlan brief</label>
+        <label class="quiz-option"><input type="radio" name="q4" value="b"> b) show ip interface brief</label>
+        <label class="quiz-option"><input type="radio" name="q4" value="c"> c) show interfaces trunk</label>
+        <label class="quiz-option"><input type="radio" name="q4" value="d"> d) show running-config vlan</label>
+      </div>
+    </div>
+
+    <div class="quiz-question" id="q5">
+      <div class="quiz-q-text">5. After deleting a VLAN from a switch, what happens to ports that were assigned to that VLAN?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q5" value="a"> a) They automatically move to VLAN 1</label>
+        <label class="quiz-option"><input type="radio" name="q5" value="b"> b) They become inactive (no traffic will pass) until reassigned to an active VLAN</label>
+        <label class="quiz-option"><input type="radio" name="q5" value="c"> c) They become trunk ports automatically</label>
+        <label class="quiz-option"><input type="radio" name="q5" value="d"> d) They are shut down permanently</label>
+      </div>
+    </div>
+
+    <button class="quiz-submit" onclick="submitQuiz()">Submit Answers</button>
+    <div class="quiz-result" id="quizResult"></div>
+  </div>
+
+  <!-- ── Week Nav Footer ── -->
+  <div class="week-nav-footer">
+    <a href="../week5/index.html" class="week-nav-btn secondary">← Week 5 — Initial Device Config</a>
+    <button class="mark-done-btn" id="markDoneBtn" onclick="markDone()">✔ Mark Week 6 as Done</button>
+    <a href="../week7/index.html" class="week-nav-btn">Week 7 — Inter-VLAN Routing →</a>
+  </div>
+
+</div>
+
+<script>
+  const WEEK = 'week6';
+
+  function markDone() {
+    const data = JSON.parse(localStorage.getItem('na360_progress') || '{}');
+    data[WEEK] = { visited: true, timestamp: Date.now() };
+    localStorage.setItem('na360_progress', JSON.stringify(data));
+    const btn = document.getElementById('markDoneBtn');
+    btn.textContent = '✔ Week 6 Complete!';
+    btn.classList.add('done');
+  }
+
+  (function() {
+    const data = JSON.parse(localStorage.getItem('na360_progress') || '{}');
+    if (data[WEEK] && data[WEEK].visited) {
+      const btn = document.getElementById('markDoneBtn');
+      btn.textContent = '✔ Week 6 Complete!';
+      btn.classList.add('done');
+    }
+  })();
+
+  const answers = { q1: 'b', q2: 'b', q3: 'b', q4: 'c', q5: 'b' };
+
+  function submitQuiz() {
+    let score = 0;
+    Object.keys(answers).forEach(function(q) {
+      const selected = document.querySelector('input[name="' + q + '"]:checked');
+      const options = document.querySelectorAll('input[name="' + q + '"]');
+      options.forEach(function(opt) {
+        const label = opt.parentElement;
+        label.classList.remove('correct', 'wrong');
+        if (opt.value === answers[q]) label.classList.add('correct');
+      });
+      if (selected) {
+        if (selected.value === answers[q]) {
+          score++;
+        } else {
+          selected.parentElement.classList.add('wrong');
+        }
+      }
+    });
+    const result = document.getElementById('quizResult');
+    result.style.display = 'block';
+    if (score >= 3) {
+      result.className = 'quiz-result pass';
+      result.textContent = '✅ Score: ' + score + '/5 — Well done! You understand VLAN configuration commands.';
+    } else {
+      result.className = 'quiz-result fail';
+      result.textContent = '❌ Score: ' + score + '/5 — Review VLAN creation, port assignment, and trunk commands.';
+    }
+  }
+</script>
+
+</body>
+</html>

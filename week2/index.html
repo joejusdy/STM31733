@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 2 — NOC &amp; Best Practices | STM31733</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../week-shared.css">
+</head>
+<body>
+
+<!-- ── Topbar ── -->
+<nav class="week-topbar">
+  <div class="week-topbar-left">
+    <div class="week-topbar-logo">🌐</div>
+    <div>
+      <div class="week-topbar-title">STM31733 Network Administration</div>
+      <div class="week-topbar-sub">Kolej Komuniti Papar · Jusdy bin Juwait</div>
+    </div>
+  </div>
+  <div class="week-topbar-nav">
+    <a href="../index.html" class="topbar-link">← Course Home</a>
+    <a href="../na360/index.html" class="topbar-link">NetAdmin 360</a>
+    <a href="../week1/index.html" class="topbar-link">← Week 1</a>
+    <a href="../week3/index.html" class="topbar-link active">Week 3 →</a>
+  </div>
+</nav>
+
+<div class="week-container">
+
+  <!-- ── Hero ── -->
+  <div class="week-hero">
+    <div>
+      <div class="hero-week-num">Week 2 · Unit 1.0 · Subtopics 1.3 &amp; 1.4</div>
+      <h1 class="hero-title">Network Operating Center (NOC) &amp; Best Practices</h1>
+      <div class="hero-unit">STM31733 — Network Administration | Kolej Komuniti Papar</div>
+      <div class="hero-clo-tags">
+        <span class="clo-tag">CLO1</span>
+        <span class="clo-tag">C3 — Application</span>
+        <span class="clo-tag">PLO1</span>
+        <span class="clo-tag">Theory</span>
+      </div>
+    </div>
+    <div class="hero-meta">
+      <div class="hero-week-badge">2</div>
+    </div>
+  </div>
+
+  <!-- ── Topics Covered ── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#E8F0FE;">📋</div>
+      <div>
+        <div class="card-header-title">Topics Covered This Week</div>
+        <div class="card-header-sub">Unit 1.0 — NOC Operations and Administration Best Practices</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <ul class="topic-list">
+        <li><span class="topic-dot" style="background:var(--blue);"></span>What is a Network Operations Center (NOC) and its purpose</li>
+        <li><span class="topic-dot" style="background:var(--blue);"></span>NOC team structure — Tier 1, Tier 2, Tier 3 engineers and NOC Manager</li>
+        <li><span class="topic-dot" style="background:var(--blue);"></span>Escalation procedures in a NOC environment</li>
+        <li><span class="topic-dot" style="background:var(--blue);"></span>NOC vs SOC (Security Operations Center) comparison</li>
+        <li><span class="topic-dot" style="background:var(--blue);"></span>Best practice: Network documentation and topology diagrams</li>
+        <li><span class="topic-dot" style="background:var(--blue);"></span>Best practice: Change management and change control</li>
+        <li><span class="topic-dot" style="background:var(--blue);"></span>Best practice: Continuous monitoring and alerting</li>
+        <li><span class="topic-dot" style="background:var(--blue);"></span>Best practice: Security hardening and patch management</li>
+        <li><span class="topic-dot" style="background:var(--blue);"></span>Introduction to ITIL for network operations</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ── Sub-topics ── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#E6F4EA;">📖</div>
+      <div>
+        <div class="card-header-title">Sub-topic Details</div>
+        <div class="card-header-sub">Expand each section for detailed notes</div>
+      </div>
+    </div>
+    <div class="card-body">
+
+      <div class="subtopic">
+        <details>
+          <summary class="subtopic-header">
+            <span class="subtopic-code">1.3</span> What is a NOC and its Core Functions
+          </summary>
+          <div class="subtopic-body">
+            <ul>
+              <li>A NOC is a centralised location where IT professionals monitor, manage, and maintain network infrastructure 24/7.</li>
+              <li>Core functions: network monitoring, incident management, performance management, patch and update management, backup &amp; recovery oversight.</li>
+              <li>NOC operators use dashboards showing real-time status of all monitored devices and links.</li>
+              <li>Service Level Agreements (SLAs) define the response and resolution times that the NOC must meet.</li>
+              <li>Common NOC tools: Nagios, PRTG, SolarWinds, ServiceNow, PagerDuty, Splunk.</li>
+            </ul>
+          </div>
+        </details>
+      </div>
+
+      <div class="subtopic">
+        <details>
+          <summary class="subtopic-header">
+            <span class="subtopic-code">1.3</span> NOC Team Roles — Tier Structure
+          </summary>
+          <div class="subtopic-body">
+            <ul>
+              <li><strong>Tier 1 Engineer:</strong> First responder. Monitors dashboards, acknowledges alerts, performs basic troubleshooting (ping, port check, restart service). Escalates if unresolved in SLA timeframe.</li>
+              <li><strong>Tier 2 Engineer:</strong> Advanced troubleshooting. Has deeper network/system knowledge. Handles escalations from Tier 1. Can make config changes on devices.</li>
+              <li><strong>Tier 3 Engineer:</strong> Expert-level. Handles complex issues, works with vendors, designs solutions. May interface with engineering team for persistent problems.</li>
+              <li><strong>NOC Manager:</strong> Oversees operations, manages team schedules (shifts), reviews SLA compliance, escalates to senior management, coordinates with clients.</li>
+            </ul>
+          </div>
+        </details>
+      </div>
+
+      <div class="subtopic">
+        <details>
+          <summary class="subtopic-header">
+            <span class="subtopic-code">1.3</span> NOC vs SOC — Key Differences
+          </summary>
+          <div class="subtopic-body">
+            <ul>
+              <li><strong>NOC focus:</strong> Availability, performance, uptime. Deals with hardware failures, link outages, latency, software bugs.</li>
+              <li><strong>SOC focus:</strong> Security threats. Deals with intrusion attempts, malware, data breaches, vulnerability management.</li>
+              <li>Both operate 24/7 and use monitoring platforms, but their alert types and response playbooks are different.</li>
+              <li>In large enterprises, NOC and SOC are separate teams. In SMEs, one team often handles both.</li>
+              <li>A NOC engineer and a SOC analyst may both see a DDoS attack alert, but their response actions differ.</li>
+            </ul>
+          </div>
+        </details>
+      </div>
+
+      <div class="subtopic">
+        <details>
+          <summary class="subtopic-header">
+            <span class="subtopic-code">1.4</span> Best Practices — Documentation &amp; Change Management
+          </summary>
+          <div class="subtopic-body">
+            <ul>
+              <li><strong>Documentation:</strong> Maintain up-to-date network diagrams (physical and logical), device inventory, IP address plan (IPAM), and configuration archives.</li>
+              <li><strong>Change Management:</strong> All changes must follow a formal process — Request → Approval → Testing → Implementation → Review. Prevents unauthorised changes that could cause outages.</li>
+              <li>Use a Change Advisory Board (CAB) for high-risk changes. Emergency changes bypass CAB but must be documented post-implementation.</li>
+              <li>Tools: ServiceNow, Jira, Confluence (documentation), ManageEngine (change management).</li>
+            </ul>
+          </div>
+        </details>
+      </div>
+
+      <div class="subtopic">
+        <details>
+          <summary class="subtopic-header">
+            <span class="subtopic-code">1.4</span> Best Practices — Monitoring, Security &amp; ITIL
+          </summary>
+          <div class="subtopic-body">
+            <ul>
+              <li><strong>Monitoring:</strong> Use SNMP, syslog, and NetFlow for continuous visibility. Set thresholds for CPU, memory, bandwidth, and interface errors. Alert on anomalies immediately.</li>
+              <li><strong>Security hardening:</strong> Disable unused ports and services, use strong passwords, enable SSH over Telnet, apply ACLs, keep firmware updated.</li>
+              <li><strong>ITIL (Information Technology Infrastructure Library):</strong> A framework for IT service management. Key processes relevant to networking: Incident Management, Problem Management, Change Management, Service Level Management.</li>
+              <li>ITIL helps ensure the NOC operates consistently and that recurring issues (problems) are addressed at their root cause, not just symptom level.</li>
+            </ul>
+          </div>
+        </details>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Key Concepts ── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#FEF8E1;">💡</div>
+      <div>
+        <div class="card-header-title">Key Concepts &amp; Study Notes</div>
+        <div class="card-header-sub">Important points for CLO1 assessment</div>
+      </div>
+    </div>
+    <div class="card-body">
+
+      <div class="info-box note">
+        <span class="info-box-icon">📌</span>
+        <div><strong>Escalation Path:</strong> Tier 1 → Tier 2 → Tier 3 → Vendor/Engineering. Escalation happens when: (1) the issue is not resolved within the SLA timeframe, (2) the engineer lacks the access or knowledge to proceed, or (3) the issue requires a configuration change above the current tier's authority.</div>
+      </div>
+
+      <div class="info-box tip">
+        <span class="info-box-icon">✅</span>
+        <div><strong>ITIL Incident vs Problem:</strong> An <em>Incident</em> is a single unplanned interruption (e.g., link went down). A <em>Problem</em> is the underlying root cause of multiple incidents (e.g., faulty SFP module that keeps causing link flaps). NOC handles incidents; Problem Management looks for root causes.</div>
+      </div>
+
+      <div class="info-box warning">
+        <span class="info-box-icon">⚠️</span>
+        <div><strong>Exam tip:</strong> Know the distinction between NOC and SOC clearly. Know all 4 tier roles including the NOC Manager. Understand why documentation and change management are considered "best practices" — they prevent outages and aid in audits.</div>
+      </div>
+
+      <div class="info-box cisco">
+        <span class="info-box-icon">🔵</span>
+        <div><strong>Course Assessment:</strong> CLO1 theory test is 15% of your grade. Units 1 &amp; 2 (Weeks 1–4) are covered. Practice explaining each topic in your own words — the test uses application-level (C3) questions, not just recall.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Quiz ── -->
+  <div class="quiz-section">
+    <div class="quiz-title">🧠 Week 2 Knowledge Check — 5 Questions</div>
+
+    <div class="quiz-question" id="q1">
+      <div class="quiz-q-text">1. What is the PRIMARY purpose of a Network Operations Center (NOC)?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q1" value="a"> a) To develop new network applications</label>
+        <label class="quiz-option"><input type="radio" name="q1" value="b"> b) To monitor, manage, and maintain network infrastructure 24/7</label>
+        <label class="quiz-option"><input type="radio" name="q1" value="c"> c) To handle only security threats and cyberattacks</label>
+        <label class="quiz-option"><input type="radio" name="q1" value="d"> d) To manage employee HR records</label>
+      </div>
+    </div>
+
+    <div class="quiz-question" id="q2">
+      <div class="quiz-q-text">2. A Tier 1 NOC engineer receives a high CPU alert on a core router but cannot resolve it. What should they do?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q2" value="a"> a) Ignore the alert and wait</label>
+        <label class="quiz-option"><input type="radio" name="q2" value="b"> b) Reboot the router immediately without informing anyone</label>
+        <label class="quiz-option"><input type="radio" name="q2" value="c"> c) Escalate to a Tier 2 engineer following the escalation procedure</label>
+        <label class="quiz-option"><input type="radio" name="q2" value="d"> d) Call the hardware vendor directly</label>
+      </div>
+    </div>
+
+    <div class="quiz-question" id="q3">
+      <div class="quiz-q-text">3. Which statement correctly differentiates a NOC from a SOC?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q3" value="a"> a) NOC focuses on security threats; SOC focuses on network availability</label>
+        <label class="quiz-option"><input type="radio" name="q3" value="b"> b) NOC focuses on network availability and performance; SOC focuses on security threats</label>
+        <label class="quiz-option"><input type="radio" name="q3" value="c"> c) Both NOC and SOC perform identical functions</label>
+        <label class="quiz-option"><input type="radio" name="q3" value="d"> d) SOC stands for Software Operations Center</label>
+      </div>
+    </div>
+
+    <div class="quiz-question" id="q4">
+      <div class="quiz-q-text">4. Which ITIL concept refers to the underlying root cause of multiple network incidents?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q4" value="a"> a) Incident</label>
+        <label class="quiz-option"><input type="radio" name="q4" value="b"> b) Change</label>
+        <label class="quiz-option"><input type="radio" name="q4" value="c"> c) Problem</label>
+        <label class="quiz-option"><input type="radio" name="q4" value="d"> d) Service Request</label>
+      </div>
+    </div>
+
+    <div class="quiz-question" id="q5">
+      <div class="quiz-q-text">5. Which of the following is a network administration BEST PRACTICE when planning to change a router's configuration?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q5" value="a"> a) Make the change immediately without any documentation</label>
+        <label class="quiz-option"><input type="radio" name="q5" value="b"> b) Follow the change management process: Request → Approval → Test → Implement → Review</label>
+        <label class="quiz-option"><input type="radio" name="q5" value="c"> c) Ask a Tier 1 engineer to make all configuration changes</label>
+        <label class="quiz-option"><input type="radio" name="q5" value="d"> d) Only document changes if something goes wrong</label>
+      </div>
+    </div>
+
+    <button class="quiz-submit" onclick="submitQuiz()">Submit Answers</button>
+    <div class="quiz-result" id="quizResult"></div>
+  </div>
+
+  <!-- ── Week Nav Footer ── -->
+  <div class="week-nav-footer">
+    <a href="../week1/index.html" class="week-nav-btn secondary">← Week 1 — Intro to Network Admin</a>
+    <button class="mark-done-btn" id="markDoneBtn" onclick="markDone()">✔ Mark Week 2 as Done</button>
+    <a href="../week3/index.html" class="week-nav-btn">Week 3 — VLAN Concepts →</a>
+  </div>
+
+</div>
+
+<script>
+  const WEEK = 'week2';
+
+  function markDone() {
+    const data = JSON.parse(localStorage.getItem('na360_progress') || '{}');
+    data[WEEK] = { visited: true, timestamp: Date.now() };
+    localStorage.setItem('na360_progress', JSON.stringify(data));
+    const btn = document.getElementById('markDoneBtn');
+    btn.textContent = '✔ Week 2 Complete!';
+    btn.classList.add('done');
+  }
+
+  (function() {
+    const data = JSON.parse(localStorage.getItem('na360_progress') || '{}');
+    if (data[WEEK] && data[WEEK].visited) {
+      const btn = document.getElementById('markDoneBtn');
+      btn.textContent = '✔ Week 2 Complete!';
+      btn.classList.add('done');
+    }
+  })();
+
+  const answers = { q1: 'b', q2: 'c', q3: 'b', q4: 'c', q5: 'b' };
+
+  function submitQuiz() {
+    let score = 0;
+    Object.keys(answers).forEach(function(q) {
+      const selected = document.querySelector('input[name="' + q + '"]:checked');
+      const options = document.querySelectorAll('input[name="' + q + '"]');
+      options.forEach(function(opt) {
+        const label = opt.parentElement;
+        label.classList.remove('correct', 'wrong');
+        if (opt.value === answers[q]) label.classList.add('correct');
+      });
+      if (selected) {
+        if (selected.value === answers[q]) {
+          score++;
+        } else {
+          selected.parentElement.classList.add('wrong');
+        }
+      }
+    });
+    const result = document.getElementById('quizResult');
+    result.style.display = 'block';
+    if (score >= 3) {
+      result.className = 'quiz-result pass';
+      result.textContent = '✅ Score: ' + score + '/5 — Great work! You understand NOC operations.';
+    } else {
+      result.className = 'quiz-result fail';
+      result.textContent = '❌ Score: ' + score + '/5 — Review the NOC tier structure and best practices.';
+    }
+  }
+</script>
+
+</body>
+</html>

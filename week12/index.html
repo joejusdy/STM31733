@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 12 — Network Monitoring Concepts &amp; Protocols | STM31733</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../week-shared.css">
+</head>
+<body>
+
+<!-- Topbar -->
+<nav class="week-topbar">
+  <div class="week-topbar-left">
+    <div class="week-topbar-logo">🌐</div>
+    <div>
+      <div class="week-topbar-title">STM31733 Network Administration</div>
+      <div class="week-topbar-sub">Kolej Komuniti Papar · Jusdy bin Juwait</div>
+    </div>
+  </div>
+  <div class="week-topbar-nav">
+    <a href="../index.html" class="topbar-link">← Course Home</a>
+    <a href="../na360/index.html" class="topbar-link">NetAdmin 360</a>
+    <a href="../week11/index.html" class="topbar-link">← Week 11</a>
+    <a href="../week13/index.html" class="topbar-link">Week 13 →</a>
+  </div>
+</nav>
+
+<div class="week-container">
+
+  <!-- Hero -->
+  <div class="week-hero">
+    <div>
+      <div class="hero-week-num">Week 12 · Unit 4.0 / Subtopics 4.1 &amp; 4.2</div>
+      <h1 class="hero-title">Network Monitoring Concepts &amp; Protocols</h1>
+      <div class="hero-unit">STM31733 Network Administration</div>
+      <div class="hero-clo-tags">
+        <span class="clo-tag">CLO2</span>
+        <span class="clo-tag">P3</span>
+        <span class="clo-tag">PLO3</span>
+        <span class="clo-tag">CLO3</span>
+        <span class="clo-tag">A2</span>
+        <span class="clo-tag">PLO8</span>
+      </div>
+      <p style="color:rgba(255,255,255,.75);margin-top:.9rem;font-size:.9375rem;">
+        Understand why monitoring is critical, how SNMP works, the risks of Telnet versus SSH, and how to configure both SSH and SNMP on Cisco devices.
+      </p>
+    </div>
+    <div class="hero-meta">
+      <div class="hero-week-badge">12</div>
+    </div>
+  </div>
+
+  <!-- Topics Covered -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#E8F0FE;">📡</div>
+      <div>
+        <div class="card-header-title">Topics Covered</div>
+        <div class="card-header-sub">Unit 4.0 — Subtopics 4.1 &amp; 4.2</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <ul class="topic-list">
+        <li><span class="topic-dot" style="background:var(--blue);"></span>Why monitoring matters — SLA, baseline, proactive vs reactive management</li>
+        <li><span class="topic-dot" style="background:var(--blue);"></span>SNMP architecture — agents, managers, MIB, OIDs, community strings</li>
+        <li><span class="topic-dot" style="background:var(--blue);"></span>SNMPv1 vs SNMPv2c vs SNMPv3 — differences and security</li>
+        <li><span class="topic-dot" style="background:var(--green);"></span>Configuring SNMP on a Cisco device — <code>snmp-server community</code>, <code>location</code>, <code>contact</code></li>
+        <li><span class="topic-dot" style="background:var(--red);"></span>Telnet — how it works, plaintext security risk</li>
+        <li><span class="topic-dot" style="background:var(--green);"></span>SSH — why preferred, RSA key generation, <code>ip ssh version 2</code>, VTY transport</li>
+        <li><span class="topic-dot" style="background:var(--amber);"></span>NetFlow overview — traffic flow analysis and collection</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Sub-topics -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#E6F4EA;">📖</div>
+      <div>
+        <div class="card-header-title">Sub-topic Detail</div>
+        <div class="card-header-sub">Expand each section to study</div>
+      </div>
+    </div>
+    <div class="card-body">
+
+      <details class="subtopic">
+        <summary class="subtopic-header">
+          <span class="subtopic-code">4.1.1</span> Why Network Monitoring Matters
+        </summary>
+        <div class="subtopic-body">
+          <ul>
+            <li><strong>SLA (Service Level Agreement):</strong> Defines agreed uptime, latency, and performance guarantees between provider and customer.</li>
+            <li><strong>Baseline:</strong> A snapshot of normal network behaviour — used to detect anomalies.</li>
+            <li><strong>Proactive monitoring:</strong> Detect and fix issues before users are affected.</li>
+            <li><strong>Reactive monitoring:</strong> Responding after a user reports a problem — costly and disruptive.</li>
+            <li>Key metrics: bandwidth utilisation, packet loss, latency, interface errors, CPU/memory on devices.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="subtopic">
+        <summary class="subtopic-header">
+          <span class="subtopic-code">4.1.2</span> SNMP Architecture
+        </summary>
+        <div class="subtopic-body">
+          <ul>
+            <li><strong>Manager:</strong> The monitoring station (runs NMS software like PRTG, Zabbix).</li>
+            <li><strong>Agent:</strong> Software on each monitored device (router, switch, server) that responds to SNMP queries.</li>
+            <li><strong>MIB (Management Information Base):</strong> A hierarchical database defining all manageable objects.</li>
+            <li><strong>OID (Object Identifier):</strong> Unique dotted numeric identifier for each MIB object (e.g. <code>1.3.6.1.2.1.1.1</code> = sysDescr).</li>
+            <li><strong>Community String:</strong> Acts as a password — <code>public</code> (read-only) and <code>private</code> (read-write) are defaults.</li>
+            <li>SNMP uses UDP port 161 (agent) and 162 (trap receiver).</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="subtopic">
+        <summary class="subtopic-header">
+          <span class="subtopic-code">4.1.3</span> SNMPv1 vs v2c vs v3
+        </summary>
+        <div class="subtopic-body">
+          <ul>
+            <li><strong>SNMPv1:</strong> Original — community strings sent in plaintext, 32-bit counters only.</li>
+            <li><strong>SNMPv2c:</strong> Adds 64-bit counters (critical for Gigabit interfaces), bulk retrieval operations — still plaintext.</li>
+            <li><strong>SNMPv3:</strong> Adds authentication (MD5/SHA) and encryption (DES/AES) — <em>use in production</em>.</li>
+            <li>Exam tip: SNMPv3 uses <em>users</em> (not community strings), security levels: noAuthNoPriv, authNoPriv, authPriv.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="subtopic">
+        <summary class="subtopic-header">
+          <span class="subtopic-code">4.2.1</span> Telnet vs SSH
+        </summary>
+        <div class="subtopic-body">
+          <ul>
+            <li><strong>Telnet (TCP 23):</strong> All data including username/password sent in cleartext — vulnerable to eavesdropping.</li>
+            <li><strong>SSH (TCP 22):</strong> Encrypted session — prevents credential theft on the network.</li>
+            <li>SSH requires the router to have a hostname, domain name, and RSA key pair generated.</li>
+            <li>Always restrict VTY lines to <code>transport input ssh</code> to block Telnet access.</li>
+            <li>SSHv2 is preferred over SSHv1 (SSHv1 has known weaknesses).</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="subtopic">
+        <summary class="subtopic-header">
+          <span class="subtopic-code">4.2.2</span> NetFlow Overview
+        </summary>
+        <div class="subtopic-body">
+          <ul>
+            <li>NetFlow collects metadata about network flows (src IP, dst IP, ports, protocol, byte count).</li>
+            <li>Exported to a NetFlow collector for analysis — useful for capacity planning and security forensics.</li>
+            <li>Does NOT capture packet contents — just flow statistics.</li>
+            <li>Configured per interface on Cisco with <code>ip flow ingress</code> / <code>ip flow egress</code>.</li>
+          </ul>
+        </div>
+      </details>
+
+    </div>
+  </div>
+
+  <!-- Key Concepts -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#EDE7FF;">💡</div>
+      <div>
+        <div class="card-header-title">Key Concepts</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="info-box note">
+        <span class="info-box-icon">ℹ️</span>
+        <div><strong>SNMP Trap vs Poll:</strong> Polling = manager asks agent periodically. Trap = agent proactively alerts manager when a threshold is crossed (e.g. interface down). Traps reduce polling overhead.</div>
+      </div>
+      <div class="info-box tip">
+        <span class="info-box-icon">✅</span>
+        <div><strong>SSH Pre-Requisites:</strong> Before generating RSA keys you MUST have a hostname (<code>hostname R1</code>) and domain name (<code>ip domain-name kkpapar.my</code>) set — IOS uses these to create the key name.</div>
+      </div>
+      <div class="info-box warning">
+        <span class="info-box-icon">⚠️</span>
+        <div><strong>Default Community Strings are a Security Risk:</strong> Change <code>public</code> and <code>private</code> community strings immediately. These are well-known and can be exploited for SNMP enumeration attacks.</div>
+      </div>
+      <div class="info-box cisco">
+        <span class="info-box-icon">🔧</span>
+        <div><strong>Minimum RSA Key Size:</strong> Use at least 1024 bits for SSH compatibility — IOS SSH requires a minimum of 768 bits. Use 2048 bits in production environments.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cisco Config Examples -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#EDE7FF;">⌨️</div>
+      <div>
+        <div class="card-header-title">Cisco IOS Configuration Examples</div>
+        <div class="card-header-sub">Full SSH setup and SNMP community string config</div>
+      </div>
+    </div>
+    <div class="card-body">
+
+      <p style="font-weight:600;margin-bottom:.5rem;">Example 1 — Full SSH Configuration on a Router</p>
+      <pre class="config-block"><span class="config-comment">! ── Step 1: Set hostname and domain name (required for RSA key)</span>
+<span class="config-cmd">Router(config)#</span> <span class="config-param">hostname</span> <span class="config-value">R1</span>
+<span class="config-cmd">R1(config)#</span> <span class="config-param">ip domain-name</span> <span class="config-value">kkpapar.my</span>
+
+<span class="config-comment">! ── Step 2: Create a local user account</span>
+<span class="config-cmd">R1(config)#</span> <span class="config-param">username</span> <span class="config-value">admin privilege 15 secret Cisco123!</span>
+
+<span class="config-comment">! ── Step 3: Generate RSA key pair (1024-bit minimum)</span>
+<span class="config-cmd">R1(config)#</span> <span class="config-param">crypto key generate rsa modulus</span> <span class="config-value">1024</span>
+
+<span class="config-comment">! ── Step 4: Enable SSH version 2</span>
+<span class="config-cmd">R1(config)#</span> <span class="config-param">ip ssh version 2</span>
+
+<span class="config-comment">! ── Step 5: Configure VTY lines to use SSH only</span>
+<span class="config-cmd">R1(config)#</span> <span class="config-param">line vty 0 4</span>
+<span class="config-cmd">R1(config-line)#</span> <span class="config-param">login local</span>
+<span class="config-cmd">R1(config-line)#</span> <span class="config-param">transport input ssh</span>
+
+<span class="config-comment">! ── Verify SSH</span>
+<span class="config-cmd">R1#</span> <span class="config-param">show ip ssh</span>
+<span class="config-cmd">R1#</span> <span class="config-param">show ssh</span></pre>
+
+      <p style="font-weight:600;margin:.75rem 0 .5rem;">Example 2 — SNMP Configuration</p>
+      <pre class="config-block"><span class="config-comment">! ── Configure SNMP community strings</span>
+<span class="config-cmd">R1(config)#</span> <span class="config-param">snmp-server community</span> <span class="config-value">KKPread RO</span>
+<span class="config-cmd">R1(config)#</span> <span class="config-param">snmp-server community</span> <span class="config-value">KKPwrite RW</span>
+
+<span class="config-comment">! ── Set device location and contact info</span>
+<span class="config-cmd">R1(config)#</span> <span class="config-param">snmp-server location</span> <span class="config-value">"Server Room, Block A, KK Papar"</span>
+<span class="config-cmd">R1(config)#</span> <span class="config-param">snmp-server contact</span> <span class="config-value">jusdy@kkpapar.edu.my</span>
+
+<span class="config-comment">! ── Enable SNMP traps to NMS station</span>
+<span class="config-cmd">R1(config)#</span> <span class="config-param">snmp-server host</span> <span class="config-value">192.168.100.5 version 2c KKPread</span>
+<span class="config-cmd">R1(config)#</span> <span class="config-param">snmp-server enable traps</span>
+
+<span class="config-comment">! ── Verify</span>
+<span class="config-cmd">R1#</span> <span class="config-param">show snmp</span></pre>
+
+    </div>
+  </div>
+
+  <!-- Packet Tracer Activity -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#E8F0FE;">📦</div>
+      <div>
+        <div class="card-header-title">Packet Tracer Activity</div>
+        <div class="card-header-sub">Hands-on lab</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="pt-activity">
+        <div class="pt-activity-title">🖥️ Lab 8 — Configuring SSH and SNMP on Cisco Devices</div>
+        <p style="font-size:.875rem;color:var(--muted);margin-bottom:.75rem;">Open the Lab 8 Packet Tracer file. Complete the following steps:</p>
+        <ol class="pt-steps">
+          <li>Open topology with Router1, Switch1, Admin PC, and two end PCs.</li>
+          <li>On Router1, configure hostname (<code>R1</code>), domain name (<code>kkpapar.my</code>), and a local admin account.</li>
+          <li>Generate a 1024-bit RSA key pair and enable SSH version 2.</li>
+          <li>Configure VTY lines 0–4: <code>login local</code> and <code>transport input ssh</code>.</li>
+          <li>From the Admin PC terminal, SSH into Router1 using <code>ssh -l admin 192.168.1.1</code> and confirm access.</li>
+          <li>Try connecting with Telnet from the Admin PC — confirm it is rejected.</li>
+          <li>On Router1, configure SNMP community string <code>KKPread</code> (read-only) and set location/contact.</li>
+          <li>Use <code>show snmp</code> and <code>show ip ssh</code> to verify both configurations are active.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quiz -->
+  <div class="quiz-section" id="quizSection12">
+    <div class="quiz-title">📝 Week 12 Quiz — SNMP, SSH &amp; Monitoring Protocols (5 Questions)</div>
+
+    <div class="quiz-question">
+      <div class="quiz-q-text">1. Which SNMP version adds authentication and encryption for secure monitoring?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q1" value="a"> a) SNMPv1</label>
+        <label class="quiz-option"><input type="radio" name="q1" value="b"> b) SNMPv2c</label>
+        <label class="quiz-option"><input type="radio" name="q1" value="c"> c) SNMPv3</label>
+        <label class="quiz-option"><input type="radio" name="q1" value="d"> d) SNMPv4</label>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <div class="quiz-q-text">2. What TWO things must be configured before you can generate RSA keys for SSH on a Cisco router?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q2" value="a"> a) Username and enable password</label>
+        <label class="quiz-option"><input type="radio" name="q2" value="b"> b) Hostname and domain name</label>
+        <label class="quiz-option"><input type="radio" name="q2" value="c"> c) IP address and default route</label>
+        <label class="quiz-option"><input type="radio" name="q2" value="d"> d) SNMP community string and VTY password</label>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <div class="quiz-q-text">3. Which command restricts VTY lines to SSH access only?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q3" value="a"> a) <code>transport output ssh</code></label>
+        <label class="quiz-option"><input type="radio" name="q3" value="b"> b) <code>no telnet</code></label>
+        <label class="quiz-option"><input type="radio" name="q3" value="c"> c) <code>transport input ssh</code></label>
+        <label class="quiz-option"><input type="radio" name="q3" value="d"> d) <code>ip ssh only</code></label>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <div class="quiz-q-text">4. What is an SNMP Trap?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q4" value="a"> a) A community string used for write access</label>
+        <label class="quiz-option"><input type="radio" name="q4" value="b"> b) A query sent by the manager to the agent</label>
+        <label class="quiz-option"><input type="radio" name="q4" value="c"> c) An unsolicited alert sent by the agent to the manager when an event occurs</label>
+        <label class="quiz-option"><input type="radio" name="q4" value="d"> d) A firewall rule blocking SNMP traffic</label>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <div class="quiz-q-text">5. What is the main security weakness of Telnet compared to SSH?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q5" value="a"> a) Telnet is slower than SSH</label>
+        <label class="quiz-option"><input type="radio" name="q5" value="b"> b) Telnet transmits all data including passwords in plaintext</label>
+        <label class="quiz-option"><input type="radio" name="q5" value="c"> c) Telnet uses more bandwidth than SSH</label>
+        <label class="quiz-option"><input type="radio" name="q5" value="d"> d) Telnet is not supported on modern Cisco IOS</label>
+      </div>
+    </div>
+
+    <button class="quiz-submit" onclick="submitQuiz12()">Submit Quiz</button>
+    <div class="quiz-result" id="quizResult12"></div>
+  </div>
+
+  <!-- Week nav footer -->
+  <div class="week-nav-footer">
+    <a href="../week11/index.html" class="week-nav-btn secondary">← Week 11: Network Troubleshooting</a>
+    <button class="mark-done-btn" id="markDoneBtn12" onclick="markDone12()">✔ Mark Week 12 as Done</button>
+    <a href="../week13/index.html" class="week-nav-btn">Week 13: Monitoring Tools →</a>
+  </div>
+
+</div><!-- /week-container -->
+
+<script>
+  const ANSWERS12 = { q1:'c', q2:'b', q3:'c', q4:'c', q5:'b' };
+
+  function submitQuiz12() {
+    let score = 0;
+    Object.keys(ANSWERS12).forEach(q => {
+      const sel = document.querySelector(`input[name="${q}"]:checked`);
+      document.querySelectorAll(`input[name="${q}"]`).forEach(inp => {
+        const lbl = inp.closest('.quiz-option');
+        if (inp.value === ANSWERS12[q]) lbl.classList.add('correct');
+        else if (sel && inp.value === sel.value) lbl.classList.add('wrong');
+        inp.disabled = true;
+      });
+      if (sel && sel.value === ANSWERS12[q]) score++;
+    });
+    const res = document.getElementById('quizResult12');
+    res.style.display = 'block';
+    res.textContent = `You scored ${score}/5. ${score >= 4 ? '🎉 Excellent!' : score >= 3 ? '👍 Good effort!' : '📚 Review the material and try again.'}`;
+    res.className = 'quiz-result ' + (score >= 3 ? 'pass' : 'fail');
+    document.querySelector('.quiz-submit').disabled = true;
+  }
+
+  function markDone12() {
+    const prog = JSON.parse(localStorage.getItem('na360_progress') || '{}');
+    prog.week12 = { visited: true, completed: true };
+    localStorage.setItem('na360_progress', JSON.stringify(prog));
+    const btn = document.getElementById('markDoneBtn12');
+    btn.textContent = '✔ Week 12 Completed';
+    btn.classList.add('done');
+  }
+
+  (function() {
+    const prog = JSON.parse(localStorage.getItem('na360_progress') || '{}');
+    if (prog.week12 && prog.week12.completed) {
+      const btn = document.getElementById('markDoneBtn12');
+      btn.textContent = '✔ Week 12 Completed';
+      btn.classList.add('done');
+    }
+    const p2 = JSON.parse(localStorage.getItem('na360_progress') || '{}');
+    if (!p2.week12) p2.week12 = {};
+    p2.week12.visited = true;
+    localStorage.setItem('na360_progress', JSON.stringify(p2));
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 11 — Network Troubleshooting | STM31733</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../week-shared.css">
+</head>
+<body>
+
+<!-- Topbar -->
+<nav class="week-topbar">
+  <div class="week-topbar-left">
+    <div class="week-topbar-logo">🌐</div>
+    <div>
+      <div class="week-topbar-title">STM31733 Network Administration</div>
+      <div class="week-topbar-sub">Kolej Komuniti Papar · Jusdy bin Juwait</div>
+    </div>
+  </div>
+  <div class="week-topbar-nav">
+    <a href="../index.html" class="topbar-link">← Course Home</a>
+    <a href="../na360/index.html" class="topbar-link">NetAdmin 360</a>
+    <a href="../week10/index.html" class="topbar-link">← Week 10</a>
+    <a href="../week12/index.html" class="topbar-link">Week 12 →</a>
+  </div>
+</nav>
+
+<div class="week-container">
+
+  <!-- Hero -->
+  <div class="week-hero">
+    <div>
+      <div class="hero-week-num">Week 11 · Unit 3.0 / Subtopic 3.6</div>
+      <h1 class="hero-title">Network Troubleshooting</h1>
+      <div class="hero-unit">STM31733 Network Administration</div>
+      <div class="hero-clo-tags">
+        <span class="clo-tag">CLO2</span>
+        <span class="clo-tag">P3</span>
+        <span class="clo-tag">PLO3</span>
+      </div>
+      <p style="color:rgba(255,255,255,.75);margin-top:.9rem;font-size:.9375rem;">
+        Apply a systematic, OSI-model-based approach to diagnose and resolve network connectivity issues using industry-standard tools: ping, traceroute, ipconfig, netstat, and nslookup.
+      </p>
+    </div>
+    <div class="hero-meta">
+      <div class="hero-week-badge">11</div>
+    </div>
+  </div>
+
+  <!-- Topics Covered -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#FDECEA;">🔧</div>
+      <div>
+        <div class="card-header-title">Topics Covered</div>
+        <div class="card-header-sub">Unit 3.0 — Subtopic 3.6</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <ul class="topic-list">
+        <li><span class="topic-dot" style="background:var(--red);"></span>Systematic troubleshooting methodology (OSI bottom-up approach)</li>
+        <li><span class="topic-dot" style="background:var(--blue);"></span><code>ping</code> — testing Layer 3 connectivity, interpreting output symbols</li>
+        <li><span class="topic-dot" style="background:var(--blue);"></span><code>traceroute</code> / <code>tracert</code> — tracing path, interpreting <code>*</code> and <code>!</code></li>
+        <li><span class="topic-dot" style="background:var(--green);"></span><code>ipconfig</code> / <code>ip address</code> — verifying IP settings</li>
+        <li><span class="topic-dot" style="background:var(--green);"></span><code>netstat</code> — viewing active connections and routing table (<code>-r</code>)</li>
+        <li><span class="topic-dot" style="background:var(--amber);"></span><code>nslookup</code> — testing DNS resolution</li>
+        <li><span class="topic-dot" style="background:var(--purple);"></span>Common issues and solutions reference table</li>
+        <li><span class="topic-dot" style="background:var(--purple);"></span>Cisco show commands for troubleshooting</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Sub-topics -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#E6F4EA;">📖</div>
+      <div>
+        <div class="card-header-title">Sub-topic Detail</div>
+        <div class="card-header-sub">Expand each section to study</div>
+      </div>
+    </div>
+    <div class="card-body">
+
+      <details class="subtopic">
+        <summary class="subtopic-header">
+          <span class="subtopic-code">3.6.1</span> Troubleshooting Methodology (OSI Bottom-Up)
+        </summary>
+        <div class="subtopic-body">
+          <ul>
+            <li><strong>Layer 1 (Physical):</strong> Check cables, LEDs, and interface status.</li>
+            <li><strong>Layer 2 (Data Link):</strong> Check VLAN membership, MAC table, duplex/speed mismatch.</li>
+            <li><strong>Layer 3 (Network):</strong> Verify IP addressing, subnet mask, default gateway, and routing table.</li>
+            <li><strong>Layer 4–7:</strong> Check firewall rules, application ports, service availability.</li>
+            <li>Always gather symptoms first, isolate the layer, test fixes, and document.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="subtopic">
+        <summary class="subtopic-header">
+          <span class="subtopic-code">3.6.2</span> ping &amp; traceroute
+        </summary>
+        <div class="subtopic-body">
+          <ul>
+            <li><code>ping &lt;ip&gt;</code> — sends ICMP Echo Requests; <strong>!</strong> = success, <strong>.</strong> = timeout, <strong>U</strong> = unreachable.</li>
+            <li>Start with <code>ping 127.0.0.1</code> (loopback) → default gateway → remote host.</li>
+            <li><code>traceroute &lt;ip&gt;</code> (IOS) / <code>tracert &lt;ip&gt;</code> (Windows) — shows each hop with RTT.</li>
+            <li><strong>*</strong> in traceroute = no ICMP reply within timeout (may be filtered, not necessarily down).</li>
+            <li><strong>!</strong> in IOS traceroute = success response from that hop.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="subtopic">
+        <summary class="subtopic-header">
+          <span class="subtopic-code">3.6.3</span> ipconfig, netstat &amp; nslookup
+        </summary>
+        <div class="subtopic-body">
+          <ul>
+            <li><code>ipconfig /all</code> (Windows) — shows IP, mask, gateway, DNS, MAC, and DHCP status.</li>
+            <li><code>ip address show</code> (Linux) or <code>ifconfig</code> — equivalent on Linux/Unix.</li>
+            <li><code>netstat -an</code> — all active TCP/UDP connections with ports.</li>
+            <li><code>netstat -r</code> — routing table on the host (equivalent to <code>route print</code>).</li>
+            <li><code>nslookup &lt;hostname&gt;</code> — queries DNS; reveals which server is answering and the resolved IP.</li>
+            <li><code>ipconfig /flushdns</code> — clears local DNS cache (Windows).</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="subtopic">
+        <summary class="subtopic-header">
+          <span class="subtopic-code">3.6.4</span> Common Issues &amp; Solutions
+        </summary>
+        <div class="subtopic-body">
+          <ul>
+            <li><strong>Wrong subnet mask</strong> — hosts can't reach each other even on same switch → fix mask.</li>
+            <li><strong>Missing default gateway</strong> — host can ping local subnet but not remote → add gateway.</li>
+            <li><strong>Duplex mismatch</strong> — slow speeds, high errors → set both ends to auto or same speed/duplex.</li>
+            <li><strong>Missing static/dynamic route</strong> — router drops packets → add route or verify protocol config.</li>
+            <li><strong>DNS failure</strong> — can ping IP but not hostname → check name-server config and connectivity.</li>
+          </ul>
+        </div>
+      </details>
+
+    </div>
+  </div>
+
+  <!-- Key Concepts -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#EDE7FF;">💡</div>
+      <div>
+        <div class="card-header-title">Key Concepts</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="info-box note">
+        <span class="info-box-icon">ℹ️</span>
+        <div><strong>Bottom-Up Approach:</strong> Always start at Physical (Layer 1). It's pointless to check IP settings if the cable is unplugged or an interface is shut down.</div>
+      </div>
+      <div class="info-box tip">
+        <span class="info-box-icon">✅</span>
+        <div><strong>Extended Ping on IOS:</strong> Type <code>ping</code> and press Enter (without an IP) to enter extended ping mode — set source interface, repeat count, and packet size for more precise testing.</div>
+      </div>
+      <div class="info-box warning">
+        <span class="info-box-icon">⚠️</span>
+        <div><strong>Firewall blocks ICMP:</strong> A ping failure does NOT always mean the host is down. Firewalls often block ICMP. Use <code>telnet &lt;ip&gt; &lt;port&gt;</code> or application tests to verify further.</div>
+      </div>
+      <div class="info-box cisco">
+        <span class="info-box-icon">🔧</span>
+        <div><strong>Cisco Show Commands Priority:</strong> Start with <code>show ip interface brief</code> (all interfaces at a glance), then <code>show ip route</code> (routing table), then <code>show running-config</code> (full config review).</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cisco Config Examples -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#EDE7FF;">⌨️</div>
+      <div>
+        <div class="card-header-title">Cisco IOS Show Commands for Troubleshooting</div>
+        <div class="card-header-sub">Essential verification commands</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <pre class="config-block"><span class="config-comment">! ── Check all interface statuses in one shot</span>
+<span class="config-cmd">Router#</span> <span class="config-param">show ip interface brief</span>
+<span class="config-comment">! Interface   IP-Address    OK? Method Status                Protocol</span>
+<span class="config-comment">! Gi0/0       192.168.1.1   YES NVRAM  up                    up</span>
+<span class="config-comment">! Se0/0/0     10.0.0.1      YES NVRAM  up                    up</span>
+
+<span class="config-comment">! ── Inspect the routing table</span>
+<span class="config-cmd">Router#</span> <span class="config-param">show ip route</span>
+<span class="config-comment">! C = Connected, S = Static, R = RIP, O = OSPF</span>
+
+<span class="config-comment">! ── View full running configuration</span>
+<span class="config-cmd">Router#</span> <span class="config-param">show running-config</span>
+
+<span class="config-comment">! ── Inspect a specific interface in detail</span>
+<span class="config-cmd">Router#</span> <span class="config-param">show interface</span> <span class="config-value">GigabitEthernet0/0</span>
+<span class="config-comment">! Check for input/output errors, duplex, speed</span>
+
+<span class="config-comment">! ── Ping and traceroute from router</span>
+<span class="config-cmd">Router#</span> <span class="config-param">ping</span> <span class="config-value">192.168.2.1</span>
+<span class="config-cmd">Router#</span> <span class="config-param">traceroute</span> <span class="config-value">192.168.2.1</span>
+
+<span class="config-comment">! ── Extended ping (source address control)</span>
+<span class="config-cmd">Router#</span> <span class="config-param">ping</span>
+<span class="config-comment">! Target IP address: 192.168.2.100</span>
+<span class="config-comment">! Repeat count [5]: 10</span>
+<span class="config-comment">! Source address or interface: 192.168.1.1</span></pre>
+    </div>
+  </div>
+
+  <!-- Packet Tracer Activity -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#E8F0FE;">📦</div>
+      <div>
+        <div class="card-header-title">Packet Tracer Activity</div>
+        <div class="card-header-sub">Hands-on lab</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="pt-activity">
+        <div class="pt-activity-title">🖥️ Lab 7 — Systematic Network Troubleshooting</div>
+        <p style="font-size:.875rem;color:var(--muted);margin-bottom:.75rem;">Open the Lab 7 Packet Tracer file (pre-broken topology). Complete the following steps:</p>
+        <ol class="pt-steps">
+          <li>Examine the topology: 2 routers, 2 switches, 4 PCs — several deliberate misconfigurations present.</li>
+          <li>From PC1, run <code>ipconfig</code> in the command prompt and document the IP, mask, and gateway.</li>
+          <li>Ping the default gateway — if it fails, check the IP settings and correct any addressing errors.</li>
+          <li>On Router1, run <code>show ip interface brief</code> — identify any interfaces that are administratively down and bring them up.</li>
+          <li>Run <code>show ip route</code> on Router1 — check that routes to both LANs exist; add missing static routes if needed.</li>
+          <li>From PC1, ping PC3 (across routers) — if it fails, run <code>tracert</code> to identify where the path breaks.</li>
+          <li>Use <code>nslookup</code> from PC1 to test DNS resolution (server provided in topology).</li>
+          <li>Document each fault found, the evidence (tool/command used), and the fix applied.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quiz -->
+  <div class="quiz-section" id="quizSection11">
+    <div class="quiz-title">📝 Week 11 Quiz — Network Troubleshooting (5 Questions)</div>
+
+    <div class="quiz-question">
+      <div class="quiz-q-text">1. When following the OSI bottom-up troubleshooting approach, which layer should you check FIRST?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q1" value="a"> a) Layer 3 (Network)</label>
+        <label class="quiz-option"><input type="radio" name="q1" value="b"> b) Layer 7 (Application)</label>
+        <label class="quiz-option"><input type="radio" name="q1" value="c"> c) Layer 1 (Physical)</label>
+        <label class="quiz-option"><input type="radio" name="q1" value="d"> d) Layer 4 (Transport)</label>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <div class="quiz-q-text">2. In a Cisco IOS ping output, what does a "." (dot) symbol indicate?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q2" value="a"> a) Successful ICMP reply</label>
+        <label class="quiz-option"><input type="radio" name="q2" value="b"> b) Destination unreachable received</label>
+        <label class="quiz-option"><input type="radio" name="q2" value="c"> c) Timeout — no reply within wait time</label>
+        <label class="quiz-option"><input type="radio" name="q2" value="d"> d) Packet fragmented</label>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <div class="quiz-q-text">3. Which command on a Windows PC shows the IP address, subnet mask, default gateway, and DNS server?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q3" value="a"> a) <code>netstat -r</code></label>
+        <label class="quiz-option"><input type="radio" name="q3" value="b"> b) <code>nslookup</code></label>
+        <label class="quiz-option"><input type="radio" name="q3" value="c"> c) <code>ipconfig /all</code></label>
+        <label class="quiz-option"><input type="radio" name="q3" value="d"> d) <code>route print /all</code></label>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <div class="quiz-q-text">4. What does a row of <code>* * *</code> in a traceroute output most likely mean?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q4" value="a"> a) The destination is definitely unreachable</label>
+        <label class="quiz-option"><input type="radio" name="q4" value="b"> b) The router at that hop is not responding to ICMP (possibly filtered)</label>
+        <label class="quiz-option"><input type="radio" name="q4" value="c"> c) The destination was reached successfully</label>
+        <label class="quiz-option"><input type="radio" name="q4" value="d"> d) The route is a default route</label>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <div class="quiz-q-text">5. Which Cisco show command provides the quickest overview of all interface statuses and IP addresses?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q5" value="a"> a) <code>show running-config</code></label>
+        <label class="quiz-option"><input type="radio" name="q5" value="b"> b) <code>show ip route</code></label>
+        <label class="quiz-option"><input type="radio" name="q5" value="c"> c) <code>show interfaces</code></label>
+        <label class="quiz-option"><input type="radio" name="q5" value="d"> d) <code>show ip interface brief</code></label>
+      </div>
+    </div>
+
+    <button class="quiz-submit" onclick="submitQuiz11()">Submit Quiz</button>
+    <div class="quiz-result" id="quizResult11"></div>
+  </div>
+
+  <!-- Week nav footer -->
+  <div class="week-nav-footer">
+    <a href="../week10/index.html" class="week-nav-btn secondary">← Week 10: DNS Configuration</a>
+    <button class="mark-done-btn" id="markDoneBtn11" onclick="markDone11()">✔ Mark Week 11 as Done</button>
+    <a href="../week12/index.html" class="week-nav-btn">Week 12: Network Monitoring →</a>
+  </div>
+
+</div><!-- /week-container -->
+
+<script>
+  const ANSWERS11 = { q1:'c', q2:'c', q3:'c', q4:'b', q5:'d' };
+
+  function submitQuiz11() {
+    let score = 0;
+    Object.keys(ANSWERS11).forEach(q => {
+      const sel = document.querySelector(`input[name="${q}"]:checked`);
+      document.querySelectorAll(`input[name="${q}"]`).forEach(inp => {
+        const lbl = inp.closest('.quiz-option');
+        if (inp.value === ANSWERS11[q]) lbl.classList.add('correct');
+        else if (sel && inp.value === sel.value) lbl.classList.add('wrong');
+        inp.disabled = true;
+      });
+      if (sel && sel.value === ANSWERS11[q]) score++;
+    });
+    const res = document.getElementById('quizResult11');
+    res.style.display = 'block';
+    res.textContent = `You scored ${score}/5. ${score >= 4 ? '🎉 Excellent!' : score >= 3 ? '👍 Good effort!' : '📚 Review the material and try again.'}`;
+    res.className = 'quiz-result ' + (score >= 3 ? 'pass' : 'fail');
+    document.querySelector('.quiz-submit').disabled = true;
+  }
+
+  function markDone11() {
+    const prog = JSON.parse(localStorage.getItem('na360_progress') || '{}');
+    prog.week11 = { visited: true, completed: true };
+    localStorage.setItem('na360_progress', JSON.stringify(prog));
+    const btn = document.getElementById('markDoneBtn11');
+    btn.textContent = '✔ Week 11 Completed';
+    btn.classList.add('done');
+  }
+
+  (function() {
+    const prog = JSON.parse(localStorage.getItem('na360_progress') || '{}');
+    if (prog.week11 && prog.week11.completed) {
+      const btn = document.getElementById('markDoneBtn11');
+      btn.textContent = '✔ Week 11 Completed';
+      btn.classList.add('done');
+    }
+    const p2 = JSON.parse(localStorage.getItem('na360_progress') || '{}');
+    if (!p2.week11) p2.week11 = {};
+    p2.week11.visited = true;
+    localStorage.setItem('na360_progress', JSON.stringify(p2));
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 13 — Network Monitoring Tools | STM31733</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../week-shared.css">
+</head>
+<body>
+
+<!-- Topbar -->
+<nav class="week-topbar">
+  <div class="week-topbar-left">
+    <div class="week-topbar-logo">🌐</div>
+    <div>
+      <div class="week-topbar-title">STM31733 Network Administration</div>
+      <div class="week-topbar-sub">Kolej Komuniti Papar · Jusdy bin Juwait</div>
+    </div>
+  </div>
+  <div class="week-topbar-nav">
+    <a href="../index.html" class="topbar-link">← Course Home</a>
+    <a href="../na360/index.html" class="topbar-link">NetAdmin 360</a>
+    <a href="../week12/index.html" class="topbar-link">← Week 12</a>
+    <a href="../week14/index.html" class="topbar-link">Week 14 →</a>
+  </div>
+</nav>
+
+<div class="week-container">
+
+  <!-- Hero -->
+  <div class="week-hero">
+    <div>
+      <div class="hero-week-num">Week 13 · Unit 4.0 / Subtopic 4.3</div>
+      <h1 class="hero-title">Network Monitoring Tools — Installation &amp; Configuration</h1>
+      <div class="hero-unit">STM31733 Network Administration</div>
+      <div class="hero-clo-tags">
+        <span class="clo-tag">CLO2</span>
+        <span class="clo-tag">P3</span>
+        <span class="clo-tag">PLO3</span>
+        <span class="clo-tag">CLO3</span>
+        <span class="clo-tag">A2</span>
+        <span class="clo-tag">PLO8</span>
+      </div>
+      <p style="color:rgba(255,255,255,.75);margin-top:.9rem;font-size:.9375rem;">
+        Survey professional monitoring tools, perform packet captures with Wireshark, configure SNMP polling, and generate a structured network monitoring report.
+      </p>
+    </div>
+    <div class="hero-meta">
+      <div class="hero-week-badge">13</div>
+    </div>
+  </div>
+
+  <!-- Topics Covered -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#E8F0FE;">🛠️</div>
+      <div>
+        <div class="card-header-title">Topics Covered</div>
+        <div class="card-header-sub">Unit 4.0 — Subtopic 4.3</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <ul class="topic-list">
+        <li><span class="topic-dot" style="background:var(--blue);"></span>Types of monitoring tools — Wireshark, PRTG, Nagios, Zabbix, SolarWinds</li>
+        <li><span class="topic-dot" style="background:var(--blue);"></span>Installing a monitoring tool on a management station</li>
+        <li><span class="topic-dot" style="background:var(--blue);"></span>Configuring the tool to poll SNMP devices</li>
+        <li><span class="topic-dot" style="background:var(--green);"></span>Using Wireshark — capture filters, display filters, reading packet details</li>
+        <li><span class="topic-dot" style="background:var(--green);"></span>Generating a network monitoring report</li>
+        <li><span class="topic-dot" style="background:var(--amber);"></span>Interpreting monitoring data — thresholds, alerts, trends</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Sub-topics -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#E6F4EA;">📖</div>
+      <div>
+        <div class="card-header-title">Sub-topic Detail</div>
+        <div class="card-header-sub">Expand each section to study</div>
+      </div>
+    </div>
+    <div class="card-body">
+
+      <details class="subtopic">
+        <summary class="subtopic-header">
+          <span class="subtopic-code">4.3.1</span> Overview of Monitoring Tools
+        </summary>
+        <div class="subtopic-body">
+          <ul>
+            <li><strong>Wireshark:</strong> Free, open-source packet analyser — captures and dissects network traffic in real time.</li>
+            <li><strong>PRTG Network Monitor:</strong> Commercial (free for ≤100 sensors) — GUI-based, SNMP polling, bandwidth graphs, alerts.</li>
+            <li><strong>Nagios:</strong> Open-source — host and service monitoring with plugin-based architecture, alert emails.</li>
+            <li><strong>Zabbix:</strong> Open-source — agent-based and agentless monitoring, auto-discovery, templates, dashboards.</li>
+            <li><strong>SolarWinds NPM:</strong> Enterprise-grade — advanced topology maps, deep SNMP, NCM for config management.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="subtopic">
+        <summary class="subtopic-header">
+          <span class="subtopic-code">4.3.2</span> Installing &amp; Configuring a Monitoring Tool
+        </summary>
+        <div class="subtopic-body">
+          <ul>
+            <li>Install PRTG or Zabbix on a dedicated management station (Windows Server or Linux).</li>
+            <li>Add network device: enter IP address, select SNMP version, enter community string.</li>
+            <li>Tool auto-discovers interfaces and creates sensors for bandwidth, CPU, memory.</li>
+            <li>Set alert thresholds — e.g. alert when interface bandwidth &gt; 80%.</li>
+            <li>Configure notification channels: email, SMS, or webhook.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="subtopic">
+        <summary class="subtopic-header">
+          <span class="subtopic-code">4.3.3</span> Using Wireshark
+        </summary>
+        <div class="subtopic-body">
+          <ul>
+            <li>Select the capture interface (e.g. Ethernet, Wi-Fi) and click the shark-fin icon to start.</li>
+            <li><strong>Capture filter</strong> (applied before capture): e.g. <code>host 192.168.1.1</code>, <code>port 80</code> — reduces volume.</li>
+            <li><strong>Display filter</strong> (applied after capture): e.g. <code>http</code>, <code>dns</code>, <code>tcp.port == 443</code> — filters view.</li>
+            <li>Packet pane: Frame details, Ethernet, IP, TCP/UDP, and application layer decoded.</li>
+            <li>Follow Stream: right-click → Follow → TCP Stream — reassembles conversation.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="subtopic">
+        <summary class="subtopic-header">
+          <span class="subtopic-code">4.3.4</span> Generating a Network Monitoring Report
+        </summary>
+        <div class="subtopic-body">
+          <ul>
+            <li><strong>Device List:</strong> All monitored devices with IP, role, and status.</li>
+            <li><strong>Interface Statistics:</strong> Bandwidth utilisation graphs per interface over reporting period.</li>
+            <li><strong>Alert Log:</strong> All triggered alerts — timestamp, device, severity, duration.</li>
+            <li><strong>Findings:</strong> Analysis of observed anomalies or performance degradation.</li>
+            <li><strong>Recommendations:</strong> Actions to resolve or prevent recurrence.</li>
+          </ul>
+        </div>
+      </details>
+
+    </div>
+  </div>
+
+  <!-- Key Concepts -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#EDE7FF;">💡</div>
+      <div>
+        <div class="card-header-title">Key Concepts</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="info-box note">
+        <span class="info-box-icon">ℹ️</span>
+        <div><strong>Packet Capture Ethics:</strong> Only capture traffic on networks you own or have explicit written permission to monitor. Capturing traffic without authorisation is illegal under Malaysia's Computer Crimes Act 1997.</div>
+      </div>
+      <div class="info-box tip">
+        <span class="info-box-icon">✅</span>
+        <div><strong>Establish a Baseline First:</strong> Before setting alert thresholds, capture 1–2 weeks of normal traffic to understand typical bandwidth, CPU, and error rates. Thresholds based on baselines are far more accurate.</div>
+      </div>
+      <div class="info-box warning">
+        <span class="info-box-icon">⚠️</span>
+        <div><strong>Threshold Setting:</strong> Setting thresholds too low causes alert fatigue — staff begin ignoring alerts. Too high means real problems go undetected. Use % of capacity (e.g. 80% utilisation) rather than absolute values.</div>
+      </div>
+      <div class="info-box cisco">
+        <span class="info-box-icon">🔧</span>
+        <div><strong>Wireshark Capture Filter Syntax:</strong> Uses BPF (Berkeley Packet Filter) syntax — different from display filters. Example: <code>tcp port 80 and host 192.168.1.5</code> captures only HTTP from/to that host.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wireshark Capture Exercise -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#E6F4EA;">🔬</div>
+      <div>
+        <div class="card-header-title">Wireshark Capture Exercise</div>
+        <div class="card-header-sub">Capturing and filtering HTTP traffic — step-by-step</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="info-box note">
+        <span class="info-box-icon">ℹ️</span>
+        <div>This exercise uses Wireshark on a Windows/Linux management station connected to the lab network.</div>
+      </div>
+      <pre class="config-block"><span class="config-comment">Step 1: Open Wireshark and select the active network interface</span>
+
+<span class="config-comment">Step 2: Set a capture filter BEFORE starting capture</span>
+<span class="config-banner">  Capture Filter: tcp port 80</span>
+
+<span class="config-comment">Step 3: Click the blue shark-fin button (Start Capture)</span>
+
+<span class="config-comment">Step 4: Open a web browser and visit http://www.kkpapar.edu.my</span>
+
+<span class="config-comment">Step 5: Stop capture after page loads (red square button)</span>
+
+<span class="config-comment">Step 6: Apply a display filter to show only HTTP GET requests</span>
+<span class="config-banner">  Display Filter: http.request.method == "GET"</span>
+
+<span class="config-comment">Step 7: Click on a packet — expand layers in the detail pane</span>
+<span class="config-comment">  - Frame → Ethernet II → Internet Protocol → TCP → HTTP</span>
+<span class="config-comment">  - Note the Host header in the HTTP layer</span>
+
+<span class="config-comment">Step 8: Right-click any TCP packet → Follow → TCP Stream</span>
+<span class="config-comment">  - Observe the full HTTP request/response conversation</span></pre>
+    </div>
+  </div>
+
+  <!-- Packet Tracer Activity -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#E8F0FE;">📦</div>
+      <div>
+        <div class="card-header-title">Packet Tracer Activity</div>
+        <div class="card-header-sub">Hands-on lab</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="pt-activity">
+        <div class="pt-activity-title">🖥️ Lab 9 — Using Packet Tracer Simulation Mode for Network Monitoring</div>
+        <p style="font-size:.875rem;color:var(--muted);margin-bottom:.75rem;">Open the Lab 9 Packet Tracer file. Complete the following steps:</p>
+        <ol class="pt-steps">
+          <li>Open topology: Router0, Switch1, DNS Server, Web Server, 2 PCs — all configured from previous labs.</li>
+          <li>Switch Packet Tracer to <strong>Simulation Mode</strong> (bottom right, clock icon).</li>
+          <li>Set event filter to show only <strong>HTTP</strong> and <strong>DNS</strong> packets.</li>
+          <li>From PC0, open Web Browser and navigate to <code>http://www.lab.local</code>.</li>
+          <li>Click "Capture/Forward" step-by-step — observe DNS query leaving PC, DNS reply, then HTTP GET/response.</li>
+          <li>Click on each PDU envelope to inspect Inbound/Outbound PDU details at each layer.</li>
+          <li>Add an ICMP filter and repeat a ping — observe ARP + ICMP Echo/Reply packets traversing the topology.</li>
+          <li>Write a brief lab report: list the protocol sequence observed, the source/destination at each hop, and the purpose of each packet type.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quiz -->
+  <div class="quiz-section" id="quizSection13">
+    <div class="quiz-title">📝 Week 13 Quiz — Monitoring Tools &amp; Report Generation (5 Questions)</div>
+
+    <div class="quiz-question">
+      <div class="quiz-q-text">1. Which tool is a free, open-source packet analyser used to capture and inspect network traffic?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q1" value="a"> a) PRTG</label>
+        <label class="quiz-option"><input type="radio" name="q1" value="b"> b) SolarWinds</label>
+        <label class="quiz-option"><input type="radio" name="q1" value="c"> c) Zabbix</label>
+        <label class="quiz-option"><input type="radio" name="q1" value="d"> d) Wireshark</label>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <div class="quiz-q-text">2. In Wireshark, what is the difference between a capture filter and a display filter?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q2" value="a"> a) Capture filters are set after capture; display filters are set before</label>
+        <label class="quiz-option"><input type="radio" name="q2" value="b"> b) Capture filters reduce what is recorded; display filters filter the already-captured packets shown on screen</label>
+        <label class="quiz-option"><input type="radio" name="q2" value="c"> c) They are the same — just different names</label>
+        <label class="quiz-option"><input type="radio" name="q2" value="d"> d) Display filters delete packets from the capture file</label>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <div class="quiz-q-text">3. What should a network monitoring report always include?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q3" value="a"> a) Router passwords and SSH keys</label>
+        <label class="quiz-option"><input type="radio" name="q3" value="b"> b) Device list, interface statistics, alert log, findings, and recommendations</label>
+        <label class="quiz-option"><input type="radio" name="q3" value="c"> c) Only the number of packets captured</label>
+        <label class="quiz-option"><input type="radio" name="q3" value="d"> d) Raw packet hex dumps of all captured traffic</label>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <div class="quiz-q-text">4. What is the purpose of establishing a network baseline before setting alert thresholds?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q4" value="a"> a) It allows the monitoring tool to run without any configuration</label>
+        <label class="quiz-option"><input type="radio" name="q4" value="b"> b) It ensures the SNMP community string is correct</label>
+        <label class="quiz-option"><input type="radio" name="q4" value="c"> c) It provides a reference for normal behaviour so that abnormal conditions trigger accurate alerts</label>
+        <label class="quiz-option"><input type="radio" name="q4" value="d"> d) It automatically configures all thresholds without manual input</label>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <div class="quiz-q-text">5. Which Wireshark display filter shows only DNS traffic?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q5" value="a"> a) <code>port 53</code></label>
+        <label class="quiz-option"><input type="radio" name="q5" value="b"> b) <code>udp.dns</code></label>
+        <label class="quiz-option"><input type="radio" name="q5" value="c"> c) <code>dns</code></label>
+        <label class="quiz-option"><input type="radio" name="q5" value="d"> d) <code>filter.dns == true</code></label>
+      </div>
+    </div>
+
+    <button class="quiz-submit" onclick="submitQuiz13()">Submit Quiz</button>
+    <div class="quiz-result" id="quizResult13"></div>
+  </div>
+
+  <!-- Week nav footer -->
+  <div class="week-nav-footer">
+    <a href="../week12/index.html" class="week-nav-btn secondary">← Week 12: Monitoring Protocols</a>
+    <button class="mark-done-btn" id="markDoneBtn13" onclick="markDone13()">✔ Mark Week 13 as Done</button>
+    <a href="../week14/index.html" class="week-nav-btn">Week 14: Group Discussion &amp; FA →</a>
+  </div>
+
+</div><!-- /week-container -->
+
+<script>
+  const ANSWERS13 = { q1:'d', q2:'b', q3:'b', q4:'c', q5:'c' };
+
+  function submitQuiz13() {
+    let score = 0;
+    Object.keys(ANSWERS13).forEach(q => {
+      const sel = document.querySelector(`input[name="${q}"]:checked`);
+      document.querySelectorAll(`input[name="${q}"]`).forEach(inp => {
+        const lbl = inp.closest('.quiz-option');
+        if (inp.value === ANSWERS13[q]) lbl.classList.add('correct');
+        else if (sel && inp.value === sel.value) lbl.classList.add('wrong');
+        inp.disabled = true;
+      });
+      if (sel && sel.value === ANSWERS13[q]) score++;
+    });
+    const res = document.getElementById('quizResult13');
+    res.style.display = 'block';
+    res.textContent = `You scored ${score}/5. ${score >= 4 ? '🎉 Excellent!' : score >= 3 ? '👍 Good effort!' : '📚 Review the material and try again.'}`;
+    res.className = 'quiz-result ' + (score >= 3 ? 'pass' : 'fail');
+    document.querySelector('.quiz-submit').disabled = true;
+  }
+
+  function markDone13() {
+    const prog = JSON.parse(localStorage.getItem('na360_progress') || '{}');
+    prog.week13 = { visited: true, completed: true };
+    localStorage.setItem('na360_progress', JSON.stringify(prog));
+    const btn = document.getElementById('markDoneBtn13');
+    btn.textContent = '✔ Week 13 Completed';
+    btn.classList.add('done');
+  }
+
+  (function() {
+    const prog = JSON.parse(localStorage.getItem('na360_progress') || '{}');
+    if (prog.week13 && prog.week13.completed) {
+      const btn = document.getElementById('markDoneBtn13');
+      btn.textContent = '✔ Week 13 Completed';
+      btn.classList.add('done');
+    }
+    const p2 = JSON.parse(localStorage.getItem('na360_progress') || '{}');
+    if (!p2.week13) p2.week13 = {};
+    p2.week13.visited = true;
+    localStorage.setItem('na360_progress', JSON.stringify(p2));
+  })();
+</script>
+</body>
+</html>

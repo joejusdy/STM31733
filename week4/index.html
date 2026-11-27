@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 4 — Routing Protocols &amp; Server Concepts | STM31733</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../week-shared.css">
+</head>
+<body>
+
+<!-- ── Topbar ── -->
+<nav class="week-topbar">
+  <div class="week-topbar-left">
+    <div class="week-topbar-logo">🌐</div>
+    <div>
+      <div class="week-topbar-title">STM31733 Network Administration</div>
+      <div class="week-topbar-sub">Kolej Komuniti Papar · Jusdy bin Juwait</div>
+    </div>
+  </div>
+  <div class="week-topbar-nav">
+    <a href="../index.html" class="topbar-link">← Course Home</a>
+    <a href="../na360/index.html" class="topbar-link">NetAdmin 360</a>
+    <a href="../week3/index.html" class="topbar-link">← Week 3</a>
+    <a href="../week5/index.html" class="topbar-link active">Week 5 →</a>
+  </div>
+</nav>
+
+<div class="week-container">
+
+  <!-- ── Hero ── -->
+  <div class="week-hero">
+    <div>
+      <div class="hero-week-num">Week 4 · Unit 2.0 · Subtopics 2.2 &amp; 2.3</div>
+      <h1 class="hero-title">Routing Protocols &amp; Server Concepts</h1>
+      <div class="hero-unit">STM31733 — Network Administration | Kolej Komuniti Papar</div>
+      <div class="hero-clo-tags">
+        <span class="clo-tag">CLO1</span>
+        <span class="clo-tag">C3 — Application</span>
+        <span class="clo-tag">PLO1</span>
+        <span class="clo-tag">Theory · CLO1 Test Week</span>
+      </div>
+    </div>
+    <div class="hero-meta">
+      <div class="hero-week-badge">4</div>
+    </div>
+  </div>
+
+  <!-- ── Assessment Alert ── -->
+  <div class="info-box warning" style="margin-bottom:1.5rem;">
+    <span class="info-box-icon">⚠️</span>
+    <div><strong>CLO1 Test — 15%:</strong> The theory test covering Units 1 &amp; 2 (Weeks 1–4) is scheduled this week. Review all FCAPS, NOC, VLAN, routing protocol, and server concept topics before the test.</div>
+  </div>
+
+  <!-- ── Topics Covered ── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#E8F0FE;">📋</div>
+      <div>
+        <div class="card-header-title">Topics Covered This Week</div>
+        <div class="card-header-sub">Unit 2.0 — Routing Protocols and Server Infrastructure</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <ul class="topic-list">
+        <li><span class="topic-dot" style="background:var(--blue);"></span>Static routing vs dynamic routing — when to use each</li>
+        <li><span class="topic-dot" style="background:var(--blue);"></span>IGP vs EGP classification</li>
+        <li><span class="topic-dot" style="background:var(--blue);"></span>RIP — Routing Information Protocol (distance vector)</li>
+        <li><span class="topic-dot" style="background:var(--blue);"></span>OSPF — Open Shortest Path First (link-state)</li>
+        <li><span class="topic-dot" style="background:var(--blue);"></span>EIGRP — Enhanced Interior Gateway Routing Protocol (hybrid)</li>
+        <li><span class="topic-dot" style="background:var(--blue);"></span>BGP — Border Gateway Protocol (path vector, EGP)</li>
+        <li><span class="topic-dot" style="background:var(--blue);"></span>Administrative Distance (AD) values</li>
+        <li><span class="topic-dot" style="background:var(--blue);"></span>Client-server model overview</li>
+        <li><span class="topic-dot" style="background:var(--blue);"></span>Types of servers: File, Print, DNS, DHCP, Web, Application</li>
+        <li><span class="topic-dot" style="background:var(--blue);"></span>Network Operating System (NOS) vs general-purpose OS</li>
+        <li><span class="topic-dot" style="background:var(--blue);"></span>Open-source NOS options (Linux-based)</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ── Sub-topics ── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#E6F4EA;">📖</div>
+      <div>
+        <div class="card-header-title">Sub-topic Details</div>
+        <div class="card-header-sub">Expand each section for detailed notes</div>
+      </div>
+    </div>
+    <div class="card-body">
+
+      <div class="subtopic">
+        <details>
+          <summary class="subtopic-header">
+            <span class="subtopic-code">2.2</span> Static vs Dynamic Routing
+          </summary>
+          <div class="subtopic-body">
+            <ul>
+              <li><strong>Static routing:</strong> Routes are manually configured by an administrator. No routing protocol overhead. Best for small, simple networks or specific paths (default routes, stub networks). Does not adapt automatically to topology changes.</li>
+              <li><strong>Dynamic routing:</strong> Routers automatically learn and update routes by exchanging routing information with neighbours using a routing protocol. Best for large, complex, or changing networks. Adds protocol overhead but provides automatic failover.</li>
+              <li>A <strong>default route</strong> (0.0.0.0/0) is a static route used to forward packets to an upstream router when no more specific route exists — commonly used for internet access.</li>
+            </ul>
+          </div>
+        </details>
+      </div>
+
+      <div class="subtopic">
+        <details>
+          <summary class="subtopic-header">
+            <span class="subtopic-code">2.2</span> IGP vs EGP and Protocol Overview
+          </summary>
+          <div class="subtopic-body">
+            <ul>
+              <li><strong>IGP (Interior Gateway Protocol):</strong> Used within a single Autonomous System (AS). Examples: RIP, OSPF, EIGRP.</li>
+              <li><strong>EGP (Exterior Gateway Protocol):</strong> Used between Autonomous Systems (the internet). The only EGP in widespread use today is BGP.</li>
+              <li><strong>RIP (v1/v2):</strong> Distance vector. Uses hop count as metric (max 15 hops). Simple but slow convergence. Sends full routing table every 30 seconds. Suitable only for very small networks.</li>
+              <li><strong>OSPF:</strong> Link-state. Uses Dijkstra's SPF algorithm. Metric is cost (based on bandwidth). Fast convergence. Scales well. Industry-standard IGP for enterprise networks. Cisco uses OSPF heavily.</li>
+              <li><strong>EIGRP:</strong> Cisco proprietary hybrid (combines distance vector and link-state). Uses DUAL algorithm. Very fast convergence. Metric considers bandwidth, delay, load, reliability.</li>
+              <li><strong>BGP:</strong> Path vector protocol. The routing protocol of the internet. Used by ISPs to route between ASes. Highly scalable, policy-based routing. Complex to configure.</li>
+            </ul>
+          </div>
+        </details>
+      </div>
+
+      <div class="subtopic">
+        <details>
+          <summary class="subtopic-header">
+            <span class="subtopic-code">2.2</span> Administrative Distance (AD) Values
+          </summary>
+          <div class="subtopic-body">
+            <ul>
+              <li>AD is a value (0–255) that the router uses to select the best route when multiple routing sources provide a route to the same destination. <strong>Lower AD = more trusted.</strong></li>
+              <li>Connected interface: AD = 0</li>
+              <li>Static route: AD = 1</li>
+              <li>EIGRP Summary: AD = 5</li>
+              <li>External BGP (eBGP): AD = 20</li>
+              <li>EIGRP Internal: AD = 90</li>
+              <li>OSPF: AD = 110</li>
+              <li>RIP: AD = 120</li>
+              <li>External EIGRP: AD = 170</li>
+              <li>Internal BGP (iBGP): AD = 200</li>
+              <li>Unknown/Unreachable: AD = 255 (never used to forward traffic)</li>
+            </ul>
+          </div>
+        </details>
+      </div>
+
+      <div class="subtopic">
+        <details>
+          <summary class="subtopic-header">
+            <span class="subtopic-code">2.3</span> Client-Server Model and Server Types
+          </summary>
+          <div class="subtopic-body">
+            <ul>
+              <li>The <strong>client-server model</strong> is the dominant network application architecture. Clients request services; servers provide them. The server runs continuously, waiting for requests.</li>
+              <li><strong>File Server:</strong> Stores and manages files shared across the network (e.g., Windows Server with NTFS shares, Samba on Linux).</li>
+              <li><strong>Print Server:</strong> Manages print queues and provides shared printer access to network users.</li>
+              <li><strong>DNS Server:</strong> Resolves hostnames to IP addresses. Without DNS, users must use IP addresses directly.</li>
+              <li><strong>DHCP Server:</strong> Automatically assigns IP addresses, subnet masks, default gateways, and DNS server addresses to client devices.</li>
+              <li><strong>Web Server:</strong> Hosts websites and web applications, responds to HTTP/HTTPS requests (e.g., Apache, Nginx, IIS).</li>
+              <li><strong>Application Server:</strong> Hosts business applications (e.g., ERP, CRM systems). Provides middleware between clients and databases.</li>
+            </ul>
+          </div>
+        </details>
+      </div>
+
+      <div class="subtopic">
+        <details>
+          <summary class="subtopic-header">
+            <span class="subtopic-code">2.3</span> Network Operating Systems (NOS)
+          </summary>
+          <div class="subtopic-body">
+            <ul>
+              <li>A <strong>NOS</strong> is an OS specifically designed to support networking services, multi-user environments, centralised management, and resource sharing.</li>
+              <li>Examples: Windows Server, Linux (Ubuntu Server, CentOS, Debian), Novell NetWare (legacy).</li>
+              <li>Compared to general-purpose OS (Windows 10/11, macOS), a NOS is optimised for high availability, remote management, directory services (Active Directory), and network services.</li>
+              <li><strong>Open-source NOS options:</strong> Ubuntu Server (LTS), CentOS/Rocky Linux (enterprise-grade, RHEL-compatible), Debian Server. Benefits: free, stable, large community, runs on commodity hardware, scriptable with bash/Python.</li>
+              <li>Hardware requirements for a server: multi-core CPU, ECC RAM, RAID storage, redundant power supplies, remote management (iDRAC, iLO, IPMI).</li>
+            </ul>
+          </div>
+        </details>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Key Concepts ── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#FEF8E1;">💡</div>
+      <div>
+        <div class="card-header-title">Key Concepts — AD Values Table &amp; Protocol Comparison</div>
+        <div class="card-header-sub">Quick reference for exam preparation</div>
+      </div>
+    </div>
+    <div class="card-body">
+
+      <div class="info-box note">
+        <span class="info-box-icon">📌</span>
+        <div><strong>AD Memory Trick:</strong> "Silly Elephants Eat Oat Raisin Cookies" → Static(1), EIGRP-int(90), EIGRP-ext(170), OSPF(110), RIP(120), Connected(0). Lower AD wins when two protocols both have a route to the same destination.</div>
+      </div>
+
+      <div class="info-box tip">
+        <span class="info-box-icon">✅</span>
+        <div><strong>Convergence Comparison:</strong> EIGRP and OSPF converge much faster than RIP because they react to topology changes immediately (triggered updates) rather than waiting for a periodic 30-second update. RIP is considered "slow to converge" and unsuitable for large networks.</div>
+      </div>
+
+      <div class="info-box warning">
+        <span class="info-box-icon">⚠️</span>
+        <div><strong>Exam tip:</strong> Know which protocol is IGP vs EGP, which is distance-vector vs link-state, and memorise at least OSPF (110) and RIP (120) AD values. For server types, be ready to match a scenario to the correct server type.</div>
+      </div>
+
+      <div class="info-box cisco">
+        <span class="info-box-icon">🔵</span>
+        <div><strong>Next week (Week 5):</strong> Unit 3 begins — practical Cisco IOS configuration. This is the first hands-on week (CLO2). Make sure you are comfortable with router and switch modes before Week 5.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Quiz ── -->
+  <div class="quiz-section">
+    <div class="quiz-title">🧠 Week 4 Knowledge Check — 5 Questions</div>
+
+    <div class="quiz-question" id="q1">
+      <div class="quiz-q-text">1. Which routing protocol is classified as an Exterior Gateway Protocol (EGP)?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q1" value="a"> a) OSPF</label>
+        <label class="quiz-option"><input type="radio" name="q1" value="b"> b) EIGRP</label>
+        <label class="quiz-option"><input type="radio" name="q1" value="c"> c) RIP</label>
+        <label class="quiz-option"><input type="radio" name="q1" value="d"> d) BGP</label>
+      </div>
+    </div>
+
+    <div class="quiz-question" id="q2">
+      <div class="quiz-q-text">2. A router has routes to 192.168.1.0/24 from both OSPF and RIP. Which route will it install in the routing table?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q2" value="a"> a) RIP (AD = 120) because it has a lower AD</label>
+        <label class="quiz-option"><input type="radio" name="q2" value="b"> b) OSPF (AD = 110) because it has a lower AD</label>
+        <label class="quiz-option"><input type="radio" name="q2" value="c"> c) Both routes will be installed equally</label>
+        <label class="quiz-option"><input type="radio" name="q2" value="d"> d) The router will reject both and use a default route</label>
+      </div>
+    </div>
+
+    <div class="quiz-question" id="q3">
+      <div class="quiz-q-text">3. Which server automatically assigns IP addresses to client devices on a network?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q3" value="a"> a) DNS Server</label>
+        <label class="quiz-option"><input type="radio" name="q3" value="b"> b) Web Server</label>
+        <label class="quiz-option"><input type="radio" name="q3" value="c"> c) DHCP Server</label>
+        <label class="quiz-option"><input type="radio" name="q3" value="d"> d) File Server</label>
+      </div>
+    </div>
+
+    <div class="quiz-question" id="q4">
+      <div class="quiz-q-text">4. OSPF uses which algorithm to calculate the shortest path to a destination?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q4" value="a"> a) Bellman-Ford</label>
+        <label class="quiz-option"><input type="radio" name="q4" value="b"> b) DUAL</label>
+        <label class="quiz-option"><input type="radio" name="q4" value="c"> c) Dijkstra's SPF</label>
+        <label class="quiz-option"><input type="radio" name="q4" value="d"> d) Distance Vector</label>
+      </div>
+    </div>
+
+    <div class="quiz-question" id="q5">
+      <div class="quiz-q-text">5. What is the main advantage of using an open-source NOS like Ubuntu Server over a proprietary OS for a network server?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q5" value="a"> a) It is always faster than Windows Server</label>
+        <label class="quiz-option"><input type="radio" name="q5" value="b"> b) It requires no hardware at all</label>
+        <label class="quiz-option"><input type="radio" name="q5" value="c"> c) It is free, stable, scriptable, and runs on commodity hardware</label>
+        <label class="quiz-option"><input type="radio" name="q5" value="d"> d) It automatically configures all network services without any input</label>
+      </div>
+    </div>
+
+    <button class="quiz-submit" onclick="submitQuiz()">Submit Answers</button>
+    <div class="quiz-result" id="quizResult"></div>
+  </div>
+
+  <!-- ── Week Nav Footer ── -->
+  <div class="week-nav-footer">
+    <a href="../week3/index.html" class="week-nav-btn secondary">← Week 3 — VLAN Concepts</a>
+    <button class="mark-done-btn" id="markDoneBtn" onclick="markDone()">✔ Mark Week 4 as Done</button>
+    <a href="../week5/index.html" class="week-nav-btn">Week 5 — Switch &amp; Router Config →</a>
+  </div>
+
+</div>
+
+<script>
+  const WEEK = 'week4';
+
+  function markDone() {
+    const data = JSON.parse(localStorage.getItem('na360_progress') || '{}');
+    data[WEEK] = { visited: true, timestamp: Date.now() };
+    localStorage.setItem('na360_progress', JSON.stringify(data));
+    const btn = document.getElementById('markDoneBtn');
+    btn.textContent = '✔ Week 4 Complete!';
+    btn.classList.add('done');
+  }
+
+  (function() {
+    const data = JSON.parse(localStorage.getItem('na360_progress') || '{}');
+    if (data[WEEK] && data[WEEK].visited) {
+      const btn = document.getElementById('markDoneBtn');
+      btn.textContent = '✔ Week 4 Complete!';
+      btn.classList.add('done');
+    }
+  })();
+
+  const answers = { q1: 'd', q2: 'b', q3: 'c', q4: 'c', q5: 'c' };
+
+  function submitQuiz() {
+    let score = 0;
+    Object.keys(answers).forEach(function(q) {
+      const selected = document.querySelector('input[name="' + q + '"]:checked');
+      const options = document.querySelectorAll('input[name="' + q + '"]');
+      options.forEach(function(opt) {
+        const label = opt.parentElement;
+        label.classList.remove('correct', 'wrong');
+        if (opt.value === answers[q]) label.classList.add('correct');
+      });
+      if (selected) {
+        if (selected.value === answers[q]) {
+          score++;
+        } else {
+          selected.parentElement.classList.add('wrong');
+        }
+      }
+    });
+    const result = document.getElementById('quizResult');
+    result.style.display = 'block';
+    if (score >= 3) {
+      result.className = 'quiz-result pass';
+      result.textContent = '✅ Score: ' + score + '/5 — Great! You are ready for the CLO1 test.';
+    } else {
+      result.className = 'quiz-result fail';
+      result.textContent = '❌ Score: ' + score + '/5 — Review routing protocols and server types before the test.';
+    }
+  }
+</script>
+
+</body>
+</html>

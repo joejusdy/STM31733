@@ -1,0 +1,206 @@
+/* ============================================================
+   NetAdmin 360 — Dark Mode Overrides
+   Applied when [data-theme="dark"] is set on <html>
+   The majority of dark mode is handled by CSS variable overrides
+   in variables.css — this file handles structural/visual fixes
+   that cannot be achieved through variables alone.
+   ============================================================ */
+
+/* ── Prism Code Block Dark Theme Fix ────────────────────── */
+[data-theme="dark"] .token.comment,
+[data-theme="dark"] .token.prolog,
+[data-theme="dark"] .token.doctype,
+[data-theme="dark"] .token.cdata {
+  color: #8B949E;
+}
+
+[data-theme="dark"] code[class*="language-"],
+[data-theme="dark"] pre[class*="language-"] {
+  background: #0D1117;
+  color: #E6EDF3;
+}
+
+/* ── Chart.js: adjust grid line colour ──────────────────── */
+/* Handled via Chart.js defaults in JS — see theme.js */
+
+/* ── Heatmap cells: adjusted opacity ────────────────────── */
+[data-theme="dark"] .heatmap-critical {
+  background: rgba(244, 67, 54, 0.15);
+  color: #F44336;
+}
+
+[data-theme="dark"] .heatmap-warning {
+  background: rgba(255, 193, 7, 0.15);
+  color: #FFC107;
+}
+
+[data-theme="dark"] .heatmap-ready {
+  background: rgba(77, 159, 255, 0.15);
+  color: #4D9FFF;
+}
+
+[data-theme="dark"] .heatmap-good {
+  background: rgba(76, 175, 80, 0.15);
+  color: #4CAF50;
+}
+
+/* ── Topbar search input text ───────────────────────────── */
+[data-theme="dark"] .topbar-search input {
+  color: var(--text-primary);
+}
+
+/* ── Badge & Alert Light Background Fixes ───────────────── */
+[data-theme="dark"] .badge-blue   { background: rgba(77, 159, 255, 0.15); }
+[data-theme="dark"] .badge-green  { background: rgba(76, 175, 80, 0.15); }
+[data-theme="dark"] .badge-amber  { background: rgba(255, 193, 7, 0.15); color: var(--accent-amber); }
+[data-theme="dark"] .badge-red    { background: rgba(244, 67, 54, 0.15); }
+[data-theme="dark"] .badge-purple { background: rgba(155, 114, 245, 0.15); }
+[data-theme="dark"] .badge-gold   { background: rgba(255, 213, 79, 0.15); color: var(--accent-gold); }
+
+[data-theme="dark"] .mastery-2    { background: rgba(255, 193, 7, 0.15); color: var(--accent-amber); }
+[data-theme="dark"] .mastery-5    { background: rgba(255, 213, 79, 0.15); color: var(--accent-gold); }
+
+[data-theme="dark"] .priority-medium { background: rgba(255, 193, 7, 0.15); color: var(--accent-amber); }
+[data-theme="dark"] .priority-high   { background: rgba(244, 67, 54, 0.15); }
+
+[data-theme="dark"] .severity-warning  { background: rgba(255, 193, 7, 0.15); color: var(--accent-amber); }
+
+[data-theme="dark"] .alert-info    { background: rgba(77, 159, 255, 0.12); }
+[data-theme="dark"] .alert-success { background: rgba(76, 175, 80, 0.12); }
+[data-theme="dark"] .alert-warning { background: rgba(255, 193, 7, 0.12); color: var(--accent-amber); }
+[data-theme="dark"] .alert-danger  { background: rgba(244, 67, 54, 0.12); }
+
+/* ── Form inputs dark background ───────────────────────── */
+[data-theme="dark"] .form-input,
+[data-theme="dark"] .form-select,
+[data-theme="dark"] .form-textarea {
+  background: var(--bg-surface);
+  border-color: var(--border);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .form-input::placeholder,
+[data-theme="dark"] .form-textarea::placeholder {
+  color: var(--text-muted);
+}
+
+/* ── Progress bar track ─────────────────────────────────── */
+[data-theme="dark"] .progress-bar-wrapper {
+  background: var(--bg-surface-alt);
+}
+
+[data-theme="dark"] .week-tile-dot.not-started {
+  background: var(--bg-surface-alt);
+  border-color: var(--border);
+}
+
+/* ── Skill tree SVG background ──────────────────────────── */
+[data-theme="dark"] .skill-tree-svg {
+  background: var(--bg-surface);
+}
+
+[data-theme="dark"] .skill-edge {
+  stroke: var(--border);
+}
+
+[data-theme="dark"] .skill-node text {
+  fill: var(--text-secondary);
+}
+
+/* ── D3 tooltip ─────────────────────────────────────────── */
+.d3-tooltip {
+  position: absolute;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--font-size-xs);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-md);
+  pointer-events: none;
+  z-index: 1000;
+  max-width: 200px;
+  line-height: 1.5;
+}
+
+/* ── Mission step states ───────────────────────────────── */
+.mission-step {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  margin-bottom: var(--space-2);
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.mission-step.pending  { background: var(--bg-surface); }
+.mission-step.active   { background: var(--accent-blue-light); border-color: var(--accent-blue); }
+.mission-step.complete { background: var(--accent-green-light); border-color: var(--accent-green); }
+.mission-step.failed   { background: var(--accent-red-light); border-color: var(--accent-red); }
+
+[data-theme="dark"] .mission-step.active   { background: rgba(77, 159, 255, 0.12); }
+[data-theme="dark"] .mission-step.complete { background: rgba(76, 175, 80, 0.12); }
+[data-theme="dark"] .mission-step.failed   { background: rgba(244, 67, 54, 0.12); }
+
+/* ── Readiness Index gauge dark mode ───────────────────── */
+[data-theme="dark"] .ring-track { stroke: var(--bg-surface-alt); }
+
+/* ── Passport card stays dark always ──────────────────── */
+.passport-card {
+  /* Always dark regardless of theme */
+  background: linear-gradient(135deg, #0A1628 0%, #1A3A5C 100%) !important;
+}
+
+/* ── Level-up animation ────────────────────────────────── */
+@keyframes levelup-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(249, 171, 0, 0.6); }
+  50%  { box-shadow: 0 0 0 12px rgba(249, 171, 0, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(249, 171, 0, 0); }
+}
+
+.levelup-animate {
+  animation: levelup-pulse 0.8s ease-out 3;
+}
+
+/* ── Mobile bottom nav ─────────────────────────────────── */
+.bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: var(--bg-sidebar);
+  border-top: 1px solid var(--border-sidebar);
+  z-index: var(--z-sidebar);
+  flex-direction: row;
+  align-items: stretch;
+}
+
+@media (max-width: 767px) {
+  .bottom-nav { display: flex; }
+}
+
+.bottom-nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  cursor: pointer;
+  color: var(--text-sidebar-muted);
+  font-size: 10px;
+  transition: color var(--transition-fast), background var(--transition-fast);
+  border: none;
+  background: none;
+  text-decoration: none;
+}
+
+.bottom-nav-item:hover, .bottom-nav-item.active {
+  color: var(--accent-blue);
+  text-decoration: none;
+}
+
+.bottom-nav-icon { font-size: 20px; }

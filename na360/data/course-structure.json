@@ -1,0 +1,399 @@
+{
+  "course": {
+    "code": "STM31733",
+    "title": "Network Administration",
+    "credit": 3,
+    "semester": 3,
+    "year": 2,
+    "lecturer": "Jusdy bin Juwait",
+    "institution": "Kolej Komuniti Papar",
+    "department": "Department of Polytechnic and Community College Education, Ministry of Higher Education",
+    "version": "04102023_3",
+    "effective": "Session I 2025/2026",
+    "synopsis": "The Network Administration course is designed and structured to align the curriculum with student's needs and interests, aiming to equip them with the essential skills required to become competent network technicians. This course introduces students to the fundamental aspects of network administration, including the configuration of routers and network switches. It also covers key topics such as VLANs, RIPv2, DNS, and DHCP configuration, as well as monitoring network devices using appropriate tools and resources.",
+    "total_weeks": 14,
+    "contact_hours": 120
+  },
+  "clos": [
+    {
+      "id": "CLO1",
+      "code": "CLO1",
+      "description": "Identify the concepts of network administration in managing network environment",
+      "bloom_level": "C3",
+      "bloom_label": "Apply",
+      "domain": "Cognitive",
+      "plo": "PLO1",
+      "assessment_method": "test",
+      "teaching_method": "Cooperative Learning",
+      "weight": 0.15,
+      "slt": 11,
+      "cluster": "1"
+    },
+    {
+      "id": "CLO2",
+      "code": "CLO2",
+      "description": "Implement basic configuration for network devices in network environment",
+      "bloom_level": "P3",
+      "bloom_label": "Precision",
+      "domain": "Psychomotor",
+      "plo": "PLO3",
+      "assessment_method": ["practical1", "practical2"],
+      "teaching_method": "Practical",
+      "weight": 0.75,
+      "slt": 33,
+      "cluster": "AP"
+    },
+    {
+      "id": "CLO3",
+      "code": "CLO3",
+      "description": "Perform group discussion in network monitoring traffic by using related software",
+      "bloom_level": "A2",
+      "bloom_label": "Responding",
+      "domain": "Affective",
+      "plo": "PLO8",
+      "assessment_method": "presentation",
+      "teaching_method": "Discussion/Presentation",
+      "weight": 0.10,
+      "slt": 8,
+      "cluster": "F"
+    }
+  ],
+  "plos": [
+    { "id": "PLO1",  "description": "Knowledge",                           "mapped_clos": ["CLO1"] },
+    { "id": "PLO2",  "description": "Practical Skills (supporting)",        "mapped_clos": [] },
+    { "id": "PLO3",  "description": "Practical Skills",                     "mapped_clos": ["CLO2"] },
+    { "id": "PLO4",  "description": "Critical Thinking",                    "mapped_clos": [] },
+    { "id": "PLO5",  "description": "Communication (supporting)",           "mapped_clos": [] },
+    { "id": "PLO6",  "description": "Teamwork",                             "mapped_clos": [] },
+    { "id": "PLO7",  "description": "Information Management",               "mapped_clos": [] },
+    { "id": "PLO8",  "description": "Communication Skills",                 "mapped_clos": ["CLO3"] },
+    { "id": "PLO9",  "description": "Entrepreneurship",                     "mapped_clos": [] },
+    { "id": "PLO10", "description": "Ethics and Professionalism",           "mapped_clos": [] },
+    { "id": "PLO11", "description": "Lifelong Learning",                    "mapped_clos": [] }
+  ],
+  "assessments": {
+    "continuous": [
+      {
+        "id": "test",
+        "label": "Test",
+        "type": "Test",
+        "weight_ca": 0.15,
+        "weight_overall": 0.105,
+        "clo": "CLO1",
+        "count": 1,
+        "weeks": [8, 9]
+      },
+      {
+        "id": "practical1",
+        "label": "Practical 1",
+        "type": "Practical",
+        "weight_ca": 0.45,
+        "weight_overall": 0.315,
+        "clo": "CLO2",
+        "count": 1,
+        "weeks": [5, 6, 7, 8, 9, 10]
+      },
+      {
+        "id": "presentation",
+        "label": "Presentation / Discussion",
+        "type": "Presentation",
+        "weight_ca": 0.10,
+        "weight_overall": 0.07,
+        "clo": "CLO3",
+        "count": 1,
+        "weeks": [12, 13, 14]
+      }
+    ],
+    "final": [
+      {
+        "id": "practical2",
+        "label": "Practical 2 (Final Assessment)",
+        "type": "Practical",
+        "weight_fa": 1.0,
+        "weight_overall": 0.30,
+        "clo": "CLO2",
+        "count": 1,
+        "weeks": [14]
+      }
+    ],
+    "ca_total_weight": 0.70,
+    "fa_total_weight": 0.30
+  },
+  "units": [
+    {
+      "id": "U1",
+      "code": "1.0",
+      "title": "Introduction to Network Administration",
+      "clos": ["CLO1"],
+      "domains": ["Network Administration Fundamentals"],
+      "subtopics": [
+        { "code": "1.1", "title": "Apply basic knowledge of network administration" },
+        { "code": "1.2", "title": "Apply understanding of tasks in network administration",
+          "detail": ["Roles and responsibilities of Network Administrator", "Fault management", "Configuration management", "Accounting management", "Performance management", "Security management"] },
+        { "code": "1.3", "title": "Apply knowledge to describe functions of a Network Operating Center (NOC)",
+          "detail": ["Function of NOC", "NOC Team roles and responsibilities"] },
+        { "code": "1.4", "title": "Apply best practices to improve network administration" }
+      ]
+    },
+    {
+      "id": "U2",
+      "code": "2.0",
+      "title": "Fundamentals of Network Devices",
+      "clos": ["CLO1", "CLO2"],
+      "domains": ["Network Administration Fundamentals", "Network Device Infrastructure"],
+      "subtopics": [
+        { "code": "2.1", "title": "Apply Virtual LAN concept by identifying VLAN usage on network switches",
+          "detail": ["Default VLAN", "Data VLAN", "Voice VLAN", "Native VLAN", "Management VLAN", "Reserved VLAN", "VLAN trunking and its purpose"] },
+        { "code": "2.2", "title": "Apply basic routing protocols in small network environment",
+          "detail": ["Static Routing Protocol", "Dynamic Routing Protocol — Interior Gateway Protocols (RIP, OSPF, EIGRP)", "Exterior Gateway Protocols (BGP)"] },
+        { "code": "2.3", "title": "Apply server concepts by identifying server types and usage in small network environment",
+          "detail": ["Roles of client and server", "Client and server functions", "Types of server", "Network Operating System architecture", "NOS vs general-purpose OS", "Types of NOS including open-source", "Hardware requirements for NOS"] }
+      ]
+    },
+    {
+      "id": "U3",
+      "code": "3.0",
+      "title": "Network Configuration",
+      "clos": ["CLO2"],
+      "domains": ["Network Configuration", "Network Troubleshooting"],
+      "subtopics": [
+        { "code": "3.1", "title": "Construct initial network device configuration in Switch and Router",
+          "detail": ["Changing device hostname", "Enable password", "Local authentication", "Line Console access authentication", "Virtual terminal (VTY) access authentication", "Password encryption", "Login Banner", "Save device configuration"] },
+        { "code": "3.2", "title": "Construct VLAN and Trunking in Network",
+          "detail": ["Creating VLAN", "Assigning Switch Ports to VLAN", "Assigning description to Switch Ports", "Configure the Management Interface on VLAN", "Trunk Ports configuration", "Inter-VLAN routing configuration on a router"] },
+        { "code": "3.3", "title": "Implement network routing in small network environment",
+          "detail": ["Static Routing Protocol", "RIPv2 configuration"] },
+        { "code": "3.4", "title": "Construct DHCP configuration",
+          "detail": ["Create DHCP address pool", "Specify network address and subnet", "Specify excluded IP addresses", "Set the Default Gateway"] },
+        { "code": "3.5", "title": "Configure DNS configuration",
+          "detail": ["DNS configuration on router — ip name-server", "DNS configuration on server — IP address, Subnet Mask, Default Gateway, DNS server address, DNS service"] },
+        { "code": "3.6", "title": "Perform basic network troubleshooting",
+          "detail": ["Ping", "Traceroute", "Netstat", "Nslookup", "Ipconfig"] }
+      ]
+    },
+    {
+      "id": "U4",
+      "code": "4.0",
+      "title": "Network Monitor",
+      "clos": ["CLO2", "CLO3"],
+      "domains": ["Network Monitoring & Security", "Professional Practice & Communication"],
+      "subtopics": [
+        { "code": "4.1", "title": "Apply the concept of network monitoring" },
+        { "code": "4.2", "title": "Use network monitoring protocols to analyze network performance",
+          "detail": ["SNMP (Simple Network Management Protocol)", "Telnet", "Secure Shell (SSH)"] },
+        { "code": "4.3", "title": "Perform configuration and management using network monitoring tools",
+          "detail": ["Install a network monitoring tool on a management station", "Configure the network monitoring tool", "Generate a network monitoring report"] }
+      ]
+    }
+  ],
+  "weeks": [
+    {
+      "week": 1,
+      "title": "Introduction to Network Administration",
+      "unit": "1.0",
+      "subtopic_codes": ["1.1", "1.2"],
+      "topics": ["Basic knowledge of network administration", "Roles and responsibilities of Network Administrator", "FCAPS model (Fault, Configuration, Accounting, Performance, Security management)"],
+      "clos": ["CLO1"],
+      "domains": ["Network Administration Fundamentals"],
+      "has_quiz": true,
+      "has_lab": false,
+      "quiz_id": "Q01",
+      "lab_id": null
+    },
+    {
+      "week": 2,
+      "title": "Network Operating Center (NOC) & Best Practices",
+      "unit": "1.0",
+      "subtopic_codes": ["1.3", "1.4"],
+      "topics": ["Functions of a Network Operating Center (NOC)", "NOC Team roles and responsibilities", "Best practices in network administration"],
+      "clos": ["CLO1"],
+      "domains": ["Network Administration Fundamentals"],
+      "has_quiz": true,
+      "has_lab": false,
+      "quiz_id": "Q02",
+      "lab_id": null
+    },
+    {
+      "week": 3,
+      "title": "VLAN Concepts and Types",
+      "unit": "2.0",
+      "subtopic_codes": ["2.1"],
+      "topics": ["Types of VLAN (Default, Data, Voice, Native, Management, Reserved)", "VLAN trunking and its purpose"],
+      "clos": ["CLO1", "CLO2"],
+      "domains": ["Network Administration Fundamentals", "Network Device Infrastructure"],
+      "has_quiz": true,
+      "has_lab": false,
+      "quiz_id": "Q03",
+      "lab_id": null
+    },
+    {
+      "week": 4,
+      "title": "Routing Protocols & Server Concepts",
+      "unit": "2.0",
+      "subtopic_codes": ["2.2", "2.3"],
+      "topics": ["Static and Dynamic Routing Protocols (RIP, OSPF, EIGRP, BGP)", "Client-server model", "Types of server", "Network Operating System (NOS)"],
+      "clos": ["CLO1", "CLO2"],
+      "domains": ["Network Device Infrastructure"],
+      "has_quiz": true,
+      "has_lab": false,
+      "quiz_id": "Q04",
+      "lab_id": null
+    },
+    {
+      "week": 5,
+      "title": "Initial Device Configuration — Switch & Router",
+      "unit": "3.0",
+      "subtopic_codes": ["3.1"],
+      "topics": ["Hostname, enable secret, local authentication", "Console and VTY line authentication", "Password encryption", "Login banner", "Save configuration"],
+      "clos": ["CLO2"],
+      "domains": ["Network Configuration"],
+      "has_quiz": true,
+      "has_lab": true,
+      "quiz_id": "Q05",
+      "lab_id": "L01"
+    },
+    {
+      "week": 6,
+      "title": "VLAN Configuration & Trunking",
+      "unit": "3.0",
+      "subtopic_codes": ["3.2"],
+      "topics": ["Creating VLANs", "Assigning switch ports to VLANs", "Trunk port configuration", "Management interface on VLAN"],
+      "clos": ["CLO2"],
+      "domains": ["Network Configuration", "Network Device Infrastructure"],
+      "has_quiz": true,
+      "has_lab": true,
+      "quiz_id": "Q06",
+      "lab_id": "L02"
+    },
+    {
+      "week": 7,
+      "title": "Inter-VLAN Routing",
+      "unit": "3.0",
+      "subtopic_codes": ["3.2"],
+      "topics": ["Inter-VLAN routing configuration on a router", "Router-on-a-stick (subinterfaces)", "Layer 3 switch inter-VLAN routing"],
+      "clos": ["CLO2"],
+      "domains": ["Network Configuration", "Network Device Infrastructure"],
+      "has_quiz": true,
+      "has_lab": true,
+      "quiz_id": "Q07",
+      "lab_id": "L03"
+    },
+    {
+      "week": 8,
+      "title": "Static Routing & RIPv2",
+      "unit": "3.0",
+      "subtopic_codes": ["3.3"],
+      "topics": ["Static routing configuration", "Default routes", "RIPv2 configuration and verification"],
+      "clos": ["CLO2"],
+      "domains": ["Network Configuration", "Network Device Infrastructure"],
+      "has_quiz": true,
+      "has_lab": true,
+      "quiz_id": "Q08",
+      "lab_id": "L04"
+    },
+    {
+      "week": 9,
+      "title": "DHCP Configuration",
+      "unit": "3.0",
+      "subtopic_codes": ["3.4"],
+      "topics": ["DHCP address pool creation", "Network address and subnet specification", "Excluded IP addresses", "Default gateway assignment"],
+      "clos": ["CLO2"],
+      "domains": ["Network Configuration"],
+      "has_quiz": true,
+      "has_lab": true,
+      "quiz_id": "Q09",
+      "lab_id": "L05"
+    },
+    {
+      "week": 10,
+      "title": "DNS Configuration",
+      "unit": "3.0",
+      "subtopic_codes": ["3.5"],
+      "topics": ["DNS configuration on router (ip name-server)", "DNS configuration on server", "DNS service setup and verification"],
+      "clos": ["CLO2"],
+      "domains": ["Network Configuration"],
+      "has_quiz": true,
+      "has_lab": true,
+      "quiz_id": "Q10",
+      "lab_id": "L06"
+    },
+    {
+      "week": 11,
+      "title": "Network Troubleshooting",
+      "unit": "3.0",
+      "subtopic_codes": ["3.6"],
+      "topics": ["Ping", "Traceroute", "Netstat", "Nslookup", "Ipconfig", "Systematic troubleshooting methodology"],
+      "clos": ["CLO2"],
+      "domains": ["Network Troubleshooting", "Network Configuration"],
+      "has_quiz": true,
+      "has_lab": true,
+      "quiz_id": "Q11",
+      "lab_id": "L07"
+    },
+    {
+      "week": 12,
+      "title": "Network Monitoring Concepts & Protocols",
+      "unit": "4.0",
+      "subtopic_codes": ["4.1", "4.2"],
+      "topics": ["Network monitoring concepts and importance", "SNMP (Simple Network Management Protocol)", "Telnet vs SSH", "SSH configuration for secure management"],
+      "clos": ["CLO2", "CLO3"],
+      "domains": ["Network Monitoring & Security", "Professional Practice & Communication"],
+      "has_quiz": true,
+      "has_lab": true,
+      "quiz_id": "Q12",
+      "lab_id": "L08"
+    },
+    {
+      "week": 13,
+      "title": "Network Monitoring Tools — Installation & Configuration",
+      "unit": "4.0",
+      "subtopic_codes": ["4.3"],
+      "topics": ["Install network monitoring tools", "Configure monitoring tools", "Generate network monitoring reports"],
+      "clos": ["CLO2", "CLO3"],
+      "domains": ["Network Monitoring & Security", "Professional Practice & Communication"],
+      "has_quiz": false,
+      "has_lab": true,
+      "quiz_id": null,
+      "lab_id": "L09"
+    },
+    {
+      "week": 14,
+      "title": "Group Discussion — Network Monitoring & Practical Assessment",
+      "unit": "4.0",
+      "subtopic_codes": ["4.3"],
+      "topics": ["Group discussion on network monitoring traffic using related software", "Network monitoring report presentation", "Practical Final Assessment"],
+      "clos": ["CLO2", "CLO3"],
+      "domains": ["Network Monitoring & Security", "Professional Practice & Communication"],
+      "has_quiz": false,
+      "has_lab": true,
+      "quiz_id": null,
+      "lab_id": "L10"
+    }
+  ],
+  "quizzes": [
+    { "id": "Q01", "week": 1, "title": "Network Administration Concepts Quiz", "questions": 10, "clo": "CLO1", "domain": "Network Administration Fundamentals" },
+    { "id": "Q02", "week": 2, "title": "NOC Functions and Best Practices Quiz", "questions": 10, "clo": "CLO1", "domain": "Network Administration Fundamentals" },
+    { "id": "Q03", "week": 3, "title": "VLAN Concepts Quiz", "questions": 10, "clo": "CLO1", "domain": "Network Device Infrastructure" },
+    { "id": "Q04", "week": 4, "title": "Routing Protocols and Server Concepts Quiz", "questions": 10, "clo": "CLO1", "domain": "Network Device Infrastructure" },
+    { "id": "Q05", "week": 5, "title": "Initial Device Configuration Quiz", "questions": 10, "clo": "CLO2", "domain": "Network Configuration" },
+    { "id": "Q06", "week": 6, "title": "VLAN Configuration Quiz", "questions": 10, "clo": "CLO2", "domain": "Network Configuration" },
+    { "id": "Q07", "week": 7, "title": "Inter-VLAN Routing Quiz", "questions": 10, "clo": "CLO2", "domain": "Network Configuration" },
+    { "id": "Q08", "week": 8, "title": "Static Routing and RIPv2 Quiz", "questions": 10, "clo": "CLO2", "domain": "Network Configuration" },
+    { "id": "Q09", "week": 9, "title": "DHCP Configuration Quiz", "questions": 10, "clo": "CLO2", "domain": "Network Configuration" },
+    { "id": "Q10", "week": 10, "title": "DNS Configuration Quiz", "questions": 10, "clo": "CLO2", "domain": "Network Configuration" },
+    { "id": "Q11", "week": 11, "title": "Network Troubleshooting Quiz", "questions": 10, "clo": "CLO2", "domain": "Network Troubleshooting" },
+    { "id": "Q12", "week": 12, "title": "Network Monitoring Quiz", "questions": 10, "clo": "CLO2", "domain": "Network Monitoring & Security" }
+  ],
+  "labs": [
+    { "id": "L01", "week": 5,  "title": "Lab 1: Initial Switch and Router Configuration", "clo": "CLO2", "tools": ["Packet Tracer"], "domain": "Network Configuration" },
+    { "id": "L02", "week": 6,  "title": "Lab 2: VLAN Configuration and Trunking", "clo": "CLO2", "tools": ["Packet Tracer"], "domain": "Network Configuration" },
+    { "id": "L03", "week": 7,  "title": "Lab 3: Inter-VLAN Routing", "clo": "CLO2", "tools": ["Packet Tracer"], "domain": "Network Configuration" },
+    { "id": "L04", "week": 8,  "title": "Lab 4: Static Routing and RIPv2", "clo": "CLO2", "tools": ["Packet Tracer"], "domain": "Network Configuration" },
+    { "id": "L05", "week": 9,  "title": "Lab 5: DHCP Configuration", "clo": "CLO2", "tools": ["Packet Tracer"], "domain": "Network Configuration" },
+    { "id": "L06", "week": 10, "title": "Lab 6: DNS Configuration", "clo": "CLO2", "tools": ["Packet Tracer"], "domain": "Network Configuration" },
+    { "id": "L07", "week": 11, "title": "Lab 7: Basic Network Troubleshooting", "clo": "CLO2", "tools": ["Packet Tracer"], "domain": "Network Troubleshooting" },
+    { "id": "L08", "week": 12, "title": "Lab 8: SSH and SNMP Configuration", "clo": "CLO2", "tools": ["Packet Tracer"], "domain": "Network Monitoring & Security" },
+    { "id": "L09", "week": 13, "title": "Lab 9: Network Monitoring Tool Setup", "clo": "CLO2", "tools": ["Packet Tracer", "Wireshark"], "domain": "Network Monitoring & Security" },
+    { "id": "L10", "week": 14, "title": "Practical Final Assessment", "clo": "CLO2", "tools": ["Packet Tracer"], "domain": "Network Configuration" }
+  ]
+}

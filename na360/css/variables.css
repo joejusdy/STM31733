@@ -1,0 +1,208 @@
+/* ============================================================
+   NetAdmin 360 — Design Tokens (CSS Custom Properties)
+   STM31733 Network Administration | Kolej Komuniti Papar
+   ============================================================ */
+
+:root {
+  /* ── Backgrounds ─────────────────────────────────── */
+  --bg-primary:       #FFFFFF;
+  --bg-surface:       #F8F9FA;
+  --bg-surface-alt:   #EEF0F2;
+  --bg-sidebar:       #0A1628;
+  --bg-sidebar-hover: #132240;
+  --bg-sidebar-active:#1A73E8;
+  --bg-card:          #FFFFFF;
+  --bg-modal:         rgba(0, 0, 0, 0.5);
+
+  /* ── Text ─────────────────────────────────────────── */
+  --text-primary:     #202124;
+  --text-secondary:   #5F6368;
+  --text-muted:       #9AA0A6;
+  --text-on-dark:     #FFFFFF;
+  --text-sidebar:     #C9D1D9;
+  --text-sidebar-muted:#8B949E;
+  --text-link:        #1A73E8;
+
+  /* ── Borders ──────────────────────────────────────── */
+  --border:           #E0E0E0;
+  --border-strong:    #BDBDBD;
+  --border-sidebar:   #1E3A5F;
+
+  /* ── Accent Colours (Google-inspired) ────────────── */
+  --accent-blue:      #1A73E8;
+  --accent-blue-light:#E8F0FE;
+  --accent-green:     #34A853;
+  --accent-green-light:#E6F4EA;
+  --accent-amber:     #FBBC04;
+  --accent-amber-light:#FEF8E1;
+  --accent-red:       #EA4335;
+  --accent-red-light: #FDECEA;
+  --accent-purple:    #7C5CD8;
+  --accent-purple-light:#EDE7FF;
+  --accent-gold:      #F9AB00;
+  --accent-gold-light:#FEF7E0;
+
+  /* ── Mastery Level Colours ───────────────────────── */
+  --mastery-0-color:  #9E9E9E;
+  --mastery-0-bg:     #F5F5F5;
+  --mastery-1-color:  #EA4335;
+  --mastery-1-bg:     #FDECEA;
+  --mastery-2-color:  #FBBC04;
+  --mastery-2-bg:     #FEF8E1;
+  --mastery-3-color:  #1A73E8;
+  --mastery-3-bg:     #E8F0FE;
+  --mastery-4-color:  #34A853;
+  --mastery-4-bg:     #E6F4EA;
+  --mastery-5-color:  #F9AB00;
+  --mastery-5-bg:     #FEF7E0;
+
+  /* ── Shadows ──────────────────────────────────────── */
+  --shadow-sm:        0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md:        0 4px 12px rgba(0,0,0,0.10);
+  --shadow-lg:        0 8px 24px rgba(0,0,0,0.12);
+  --shadow-card:      0 2px 8px rgba(0,0,0,0.08);
+
+  /* ── Radius ───────────────────────────────────────── */
+  --radius-sm:        4px;
+  --radius-md:        8px;
+  --radius-lg:        12px;
+  --radius-xl:        16px;
+  --radius-pill:      999px;
+
+  /* ── Typography ───────────────────────────────────── */
+  --font-family:      'Inter', -apple-system, 'Segoe UI', system-ui, sans-serif;
+  --font-mono:        'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+  --font-size-xs:     0.75rem;
+  --font-size-sm:     0.875rem;
+  --font-size-base:   1rem;
+  --font-size-md:     1.0625rem;
+  --font-size-lg:     1.125rem;
+  --font-size-xl:     1.25rem;
+  --font-size-2xl:    1.5rem;
+  --font-size-3xl:    1.875rem;
+  --font-weight-normal:  400;
+  --font-weight-medium:  500;
+  --font-weight-semibold:600;
+  --font-weight-bold:    700;
+  --line-height:      1.6;
+  --line-height-tight:1.3;
+
+  /* ── Spacing ──────────────────────────────────────── */
+  --space-1:  0.25rem;
+  --space-2:  0.5rem;
+  --space-3:  0.75rem;
+  --space-4:  1rem;
+  --space-5:  1.25rem;
+  --space-6:  1.5rem;
+  --space-8:  2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  /* ── Sidebar ──────────────────────────────────────── */
+  --sidebar-width:        240px;
+  --sidebar-collapsed:    64px;
+  --topbar-height:        60px;
+
+  /* ── Transitions ──────────────────────────────────── */
+  --transition-fast:  0.15s ease;
+  --transition-base:  0.25s ease;
+  --transition-slow:  0.4s ease;
+
+  /* ── Z-index ──────────────────────────────────────── */
+  --z-sidebar:   100;
+  --z-topbar:    90;
+  --z-modal:     200;
+  --z-toast:     300;
+}
+
+/* ── Dark Mode Overrides ──────────────────────────────── */
+[data-theme="dark"] {
+  --bg-primary:       #0D1117;
+  --bg-surface:       #161B22;
+  --bg-surface-alt:   #21262D;
+  --bg-card:          #161B22;
+
+  --text-primary:     #E6EDF3;
+  --text-secondary:   #8B949E;
+  --text-muted:       #6E7681;
+  --text-link:        #4D9FFF;
+
+  --border:           #30363D;
+  --border-strong:    #484F58;
+
+  --accent-blue:      #4D9FFF;
+  --accent-blue-light:#0D2347;
+  --accent-green:     #4CAF50;
+  --accent-green-light:#0D2D18;
+  --accent-amber:     #FFC107;
+  --accent-amber-light:#2D2200;
+  --accent-red:       #F44336;
+  --accent-red-light: #2D0F0D;
+  --accent-purple:    #9B72F5;
+  --accent-purple-light:#1E1240;
+  --accent-gold:      #FFD54F;
+  --accent-gold-light:#2D2000;
+
+  --shadow-sm:        0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md:        0 4px 12px rgba(0,0,0,0.4);
+  --shadow-lg:        0 8px 24px rgba(0,0,0,0.5);
+  --shadow-card:      0 2px 8px rgba(0,0,0,0.4);
+}
+
+/* ── Base Reset & Typography ──────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height);
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  transition: background var(--transition-base), color var(--transition-base);
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--text-link); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  color: var(--text-primary);
+}
+
+h1 { font-size: var(--font-size-3xl); }
+h2 { font-size: var(--font-size-2xl); }
+h3 { font-size: var(--font-size-xl); }
+h4 { font-size: var(--font-size-lg); }
+h5 { font-size: var(--font-size-md); }
+h6 { font-size: var(--font-size-base); }
+
+p { color: var(--text-secondary); }
+code, pre { font-family: var(--font-mono); }
+
+button, input, select, textarea {
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+}
+
+img, svg { display: block; max-width: 100%; }
+
+ul, ol { list-style: none; }
+
+/* ── Focus Styles (Accessibility) ────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}

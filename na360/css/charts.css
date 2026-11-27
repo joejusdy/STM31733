@@ -1,0 +1,181 @@
+/* ============================================================
+   NetAdmin 360 — Chart Container Styles
+   ============================================================ */
+
+.chart-container {
+  position: relative;
+  width: 100%;
+}
+
+.chart-container canvas {
+  display: block;
+  max-width: 100%;
+}
+
+/* Chart wrappers by size */
+.chart-sm  { height: 160px; }
+.chart-md  { height: 240px; }
+.chart-lg  { height: 320px; }
+.chart-xl  { height: 420px; }
+.chart-square { aspect-ratio: 1 / 1; height: auto; }
+
+/* Radar Chart Specific */
+.radar-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.radar-wrapper canvas {
+  max-height: 360px;
+}
+
+.radar-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-5);
+  justify-content: center;
+}
+
+.radar-legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
+.radar-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Sparkline */
+.sparkline-wrapper {
+  display: inline-block;
+  width: 80px;
+  height: 32px;
+  vertical-align: middle;
+}
+
+/* NOC Gauges */
+.gauge-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4);
+}
+
+.gauge-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.gauge-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.gauge-value {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-primary);
+}
+
+.gauge-bar {
+  width: 100%;
+  height: 6px;
+  background: var(--bg-surface-alt);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.gauge-bar-fill {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  transition: width 1s ease;
+}
+
+/* Chart empty state */
+.chart-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-10);
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+  text-align: center;
+}
+
+.chart-empty-icon {
+  font-size: 36px;
+  opacity: 0.4;
+}
+
+/* D3 Skill Tree Styles */
+.skill-tree-svg {
+  width: 100%;
+  min-height: 500px;
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+}
+
+.skill-node circle {
+  stroke-width: 2;
+  cursor: pointer;
+  transition: r 0.2s ease, stroke-width 0.2s ease;
+}
+
+.skill-node circle:hover {
+  stroke-width: 3;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));
+}
+
+.skill-node text {
+  font-family: var(--font-family);
+  font-size: 11px;
+  fill: var(--text-secondary);
+  pointer-events: none;
+  user-select: none;
+}
+
+.skill-edge {
+  fill: none;
+  stroke: var(--border);
+  stroke-width: 1.5;
+  opacity: 0.6;
+}
+
+.skill-node.selected circle {
+  stroke-width: 4;
+  stroke: var(--accent-blue) !important;
+}
+
+/* NOC-specific overrides (always dark) */
+.noc-view {
+  background: #0A0E1A !important;
+  color: #E6EDF3;
+  min-height: 100%;
+}
+
+.noc-view .card {
+  background: #0F1729 !important;
+  border-color: #1E3A5F !important;
+}
+
+.noc-view .card-title { color: #C9D1D9; }
+.noc-view .gauge-label { color: #8B949E; }
+
+@media (max-width: 767px) {
+  .gauge-grid { grid-template-columns: repeat(3, 1fr); gap: var(--space-2); }
+  .radar-wrapper canvas { max-height: 260px; }
+}

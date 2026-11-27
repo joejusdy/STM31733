@@ -1,0 +1,280 @@
+<div id="view-content">
+
+<div class="page-header">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="page-title">Skill Mastery</h1>
+      <p class="page-subtitle">Track your progress across all 35 skills — Bloom's Taxonomy aligned</p>
+    </div>
+  </div>
+</div>
+
+<!-- Summary Stat Cards -->
+<div class="grid grid-cols-4 gap-4 mb-6" id="mastery-stats">
+  <div class="stat-card">
+    <div class="stat-card-icon" style="background:var(--mastery-5-bg);color:var(--mastery-5-color);">⭐</div>
+    <div class="stat-card-label">Competent+</div>
+    <div class="stat-card-value" id="stat-competent" style="color:var(--mastery-5-color);">0</div>
+    <div class="stat-card-delta" style="color:var(--text-muted);">Level 3–5</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card-icon" style="background:var(--mastery-2-bg);color:var(--mastery-2-color);">📈</div>
+    <div class="stat-card-label">Developing</div>
+    <div class="stat-card-value" id="stat-developing" style="color:var(--mastery-2-color);">0</div>
+    <div class="stat-card-delta" style="color:var(--text-muted);">Level 2</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card-icon" style="background:var(--mastery-1-bg);color:var(--mastery-1-color);">🌱</div>
+    <div class="stat-card-label">Novice</div>
+    <div class="stat-card-value" id="stat-novice" style="color:var(--mastery-1-color);">0</div>
+    <div class="stat-card-delta" style="color:var(--text-muted);">Level 1</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card-icon" style="background:var(--mastery-0-bg);color:var(--mastery-0-color);">⬜</div>
+    <div class="stat-card-label">Not Started</div>
+    <div class="stat-card-value" id="stat-notstarted" style="color:var(--mastery-0-color);">0</div>
+    <div class="stat-card-delta" style="color:var(--text-muted);">Level 0</div>
+  </div>
+</div>
+
+<!-- Chart + Filter Row -->
+<div class="grid grid-cols-12 gap-4 mb-6">
+  <!-- Doughnut Chart -->
+  <div class="card col-span-4">
+    <div class="card-header">
+      <div class="card-title">Mastery Distribution</div>
+    </div>
+    <div class="card-body" style="display:flex;flex-direction:column;align-items:center;gap:1rem;">
+      <canvas id="mastery-doughnut" width="260" height="260"></canvas>
+      <div id="doughnut-legend" style="display:flex;flex-wrap:wrap;gap:.4rem .75rem;justify-content:center;font-size:var(--font-size-xs);"></div>
+    </div>
+  </div>
+
+  <!-- Skill Table -->
+  <div class="card col-span-8">
+    <div class="card-header">
+      <div class="card-title">Skill Table</div>
+      <div style="display:flex;gap:.5rem;">
+        <select id="filter-domain" class="btn btn-ghost btn-sm" style="cursor:pointer;">
+          <option value="">All Domains</option>
+          <option value="domain1">D1 — Admin Fundamentals</option>
+          <option value="domain2">D2 — Device Infrastructure</option>
+          <option value="domain3">D3 — Configuration</option>
+          <option value="domain4">D4 — Troubleshooting</option>
+          <option value="domain5">D5 — Monitoring & Security</option>
+          <option value="domain6">D6 — Professional Practice</option>
+        </select>
+        <select id="filter-level" class="btn btn-ghost btn-sm" style="cursor:pointer;">
+          <option value="">All Levels</option>
+          <option value="0">Not Started</option>
+          <option value="1">Novice</option>
+          <option value="2">Developing</option>
+          <option value="3">Competent</option>
+          <option value="4">Proficient</option>
+          <option value="5">Expert</option>
+        </select>
+      </div>
+    </div>
+    <div class="card-body" style="padding:0;overflow:hidden;">
+      <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:var(--font-size-xs);">
+          <thead>
+            <tr style="background:var(--bg-surface);border-bottom:1px solid var(--border);">
+              <th style="text-align:left;padding:.6rem 1rem;font-weight:600;color:var(--text-secondary);">Skill</th>
+              <th style="text-align:left;padding:.6rem .5rem;font-weight:600;color:var(--text-secondary);">Domain</th>
+              <th style="text-align:left;padding:.6rem .5rem;font-weight:600;color:var(--text-secondary);">Unit</th>
+              <th style="text-align:left;padding:.6rem .5rem;font-weight:600;color:var(--text-secondary);">CLO</th>
+              <th style="text-align:right;padding:.6rem .5rem;font-weight:600;color:var(--text-secondary);">Score</th>
+              <th style="text-align:left;padding:.6rem .5rem;font-weight:600;color:var(--text-secondary);">Level</th>
+              <th style="text-align:left;padding:.6rem 1rem;font-weight:600;color:var(--text-secondary);">Progress</th>
+            </tr>
+          </thead>
+          <tbody id="skill-tbody"></tbody>
+        </table>
+        <div id="skill-empty" style="display:none;padding:2rem;text-align:center;color:var(--text-muted);">
+          No skills match the current filters.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+@keyframes levelup-pulse {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.08); background: var(--accent-gold-light); }
+  100% { transform: scale(1); }
+}
+.levelup-animate { animation: levelup-pulse .6s ease; }
+</style>
+
+<script type="module">
+import DataModel        from '../core/data-model.js';
+import CompetencyEngine from '../core/competency-engine.js';
+import EventBus         from '../core/event-bus.js';
+
+const DOMAIN_ABBR = {
+  domain1: 'D1', domain2: 'D2', domain3: 'D3',
+  domain4: 'D4', domain5: 'D5', domain6: 'D6',
+};
+const MASTERY = [
+  { label: 'Not Started', bg: '#F5F5F5',   color: '#9E9E9E' },
+  { label: 'Novice',      bg: '#FDECEA',   color: '#EA4335' },
+  { label: 'Developing',  bg: '#FEF8E1',   color: '#FBBC04' },
+  { label: 'Competent',   bg: '#E8F0FE',   color: '#1A73E8' },
+  { label: 'Proficient',  bg: '#E6F4EA',   color: '#34A853' },
+  { label: 'Expert',      bg: '#FEF7E0',   color: '#F9AB00' },
+];
+
+let allSkills = [];
+let skillScores = {};
+let previousLevels = {};
+let doughnutChart = null;
+
+async function init() {
+  const competency = DataModel.Competency.get();
+  const missionCount = DataModel.Missions.getCompletedCount();
+
+  // Map domain scores to skills
+  skillScores = {};
+  Object.keys(competency).forEach(dk => {
+    skillScores[dk] = competency[dk] ? competency[dk].score : 0;
+  });
+
+  // Fetch skill tree
+  if (allSkills.length === 0) {
+    try {
+      const res = await fetch('../data/skill-tree.json');
+      const data = await res.json();
+      allSkills = data.nodes || [];
+    } catch (e) {
+      console.warn('[Mastery] Could not load skill-tree.json', e);
+      allSkills = [];
+    }
+  }
+
+  // Compute mastery levels for each skill
+  const skillsWithLevel = allSkills.map(skill => {
+    const score = skillScores[skill.domain] || 0;
+    const ml = CompetencyEngine.getMasteryLevel(score, missionCount > 0);
+    return { ...skill, score, masteryLevel: ml.level };
+  });
+
+  // Detect level-ups
+  skillsWithLevel.forEach(s => {
+    if (previousLevels[s.id] !== undefined && s.masteryLevel > previousLevels[s.id]) {
+      s._levelup = true;
+    }
+    previousLevels[s.id] = s.masteryLevel;
+  });
+
+  // Stat cards
+  const counts = [0, 0, 0, 0, 0, 0];
+  skillsWithLevel.forEach(s => counts[s.masteryLevel]++);
+  const competentPlus = counts[3] + counts[4] + counts[5];
+  document.getElementById('stat-competent').textContent   = competentPlus;
+  document.getElementById('stat-developing').textContent  = counts[2];
+  document.getElementById('stat-novice').textContent      = counts[1];
+  document.getElementById('stat-notstarted').textContent  = counts[0];
+
+  // Doughnut
+  renderDoughnut(counts);
+
+  // Table
+  renderTable(skillsWithLevel);
+
+  // Filters
+  document.getElementById('filter-domain').onchange = () => renderTable(skillsWithLevel);
+  document.getElementById('filter-level').onchange  = () => renderTable(skillsWithLevel);
+}
+
+function renderDoughnut(counts) {
+  const labels = MASTERY.map(m => m.label);
+  const colours = MASTERY.map(m => m.color);
+  const bgColours = MASTERY.map(m => m.bg);
+
+  if (doughnutChart) doughnutChart.destroy();
+  const ctx = document.getElementById('mastery-doughnut').getContext('2d');
+  doughnutChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels,
+      datasets: [{
+        data: counts,
+        backgroundColor: bgColours,
+        borderColor: colours,
+        borderWidth: 2,
+      }],
+    },
+    options: {
+      responsive: false,
+      cutout: '62%',
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed} skills` },
+        },
+      },
+    },
+  });
+
+  // Legend
+  const legend = document.getElementById('doughnut-legend');
+  legend.innerHTML = MASTERY.map((m, i) => `
+    <span style="display:inline-flex;align-items:center;gap:4px;">
+      <span style="width:10px;height:10px;border-radius:50%;background:${m.color};display:inline-block;"></span>
+      ${m.label} (${counts[i]})
+    </span>`).join('');
+}
+
+function renderTable(skills) {
+  const domainFilter = document.getElementById('filter-domain').value;
+  const levelFilter  = document.getElementById('filter-level').value;
+
+  const filtered = skills.filter(s => {
+    if (domainFilter && s.domain !== domainFilter) return false;
+    if (levelFilter !== '' && String(s.masteryLevel) !== levelFilter) return false;
+    return true;
+  });
+
+  const tbody = document.getElementById('skill-tbody');
+  const empty = document.getElementById('skill-empty');
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  tbody.innerHTML = filtered.map(s => {
+    const ml = MASTERY[s.masteryLevel] || MASTERY[0];
+    return `
+    <tr id="row-${s.id}" style="border-bottom:1px solid var(--border);${s._levelup ? 'animation:levelup-pulse .6s ease;' : ''}">
+      <td style="padding:.55rem 1rem;font-weight:500;color:var(--text-primary);">${s.label}</td>
+      <td style="padding:.55rem .5rem;color:var(--text-secondary);">${DOMAIN_ABBR[s.domain] || s.domain}</td>
+      <td style="padding:.55rem .5rem;color:var(--text-muted);">${s.unit}</td>
+      <td style="padding:.55rem .5rem;">
+        <span style="font-size:var(--font-size-xs);padding:1px 6px;border-radius:var(--radius-pill);background:var(--accent-blue-light);color:var(--accent-blue);font-weight:600;">${s.clo}</span>
+      </td>
+      <td style="padding:.55rem .5rem;text-align:right;font-weight:700;color:${ml.color};">${s.score}%</td>
+      <td style="padding:.55rem .5rem;">
+        <span style="font-size:var(--font-size-xs);padding:2px 8px;border-radius:var(--radius-pill);background:${ml.bg};color:${ml.color};font-weight:600;white-space:nowrap;">
+          ${ml.label}
+        </span>
+      </td>
+      <td style="padding:.55rem 1rem;min-width:100px;">
+        <div style="background:var(--bg-surface-alt);border-radius:var(--radius-pill);height:5px;overflow:hidden;">
+          <div style="width:${s.score}%;height:100%;background:${ml.color};border-radius:var(--radius-pill);transition:width .4s;"></div>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+EventBus.on('engine:recalculated', init);
+EventBus.on('competency:updated', init);
+
+init();
+</script>
+</div>

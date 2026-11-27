@@ -1,0 +1,294 @@
+{
+  "_meta": {
+    "description": "Troubleshooting missions for STM31733 Network Administration — 6 categories, 12 missions",
+    "version": "1.0"
+  },
+  "categories": [
+    { "id": "CAT1", "label": "Basic Connectivity",            "unit": "3.6", "domain": "domain4", "clo": "CLO2", "color": "#EA4335" },
+    { "id": "CAT2", "label": "VLAN and Trunking Faults",      "unit": "3.2", "domain": "domain3", "clo": "CLO2", "color": "#7C5CD8" },
+    { "id": "CAT3", "label": "Routing Misconfiguration",      "unit": "3.3", "domain": "domain3", "clo": "CLO2", "color": "#1A73E8" },
+    { "id": "CAT4", "label": "DHCP and DNS Failures",         "unit": "3.4", "domain": "domain3", "clo": "CLO2", "color": "#34A853" },
+    { "id": "CAT5", "label": "Security and Access Issues",    "unit": "3.1", "domain": "domain5", "clo": "CLO2", "color": "#FBBC04" },
+    { "id": "CAT6", "label": "Network Monitoring Faults",     "unit": "4.2", "domain": "domain5", "clo": "CLO2", "color": "#F9AB00" }
+  ],
+  "missions": [
+    {
+      "id": "M001",
+      "category": "CAT1",
+      "title": "PC Cannot Ping the Default Gateway",
+      "difficulty": 1,
+      "points": 100,
+      "clo": "CLO2",
+      "unit": "3.6",
+      "domain": "domain4",
+      "skills": ["ping-troubleshoot", "ipconfig-troubleshoot"],
+      "brief": "A PC in the network is reporting no connectivity. The user cannot access any shared resources or the internet. Investigate and resolve the issue.",
+      "topology": "pc-switch-router",
+      "fault": "PC has incorrect default gateway configured (192.168.1.254 instead of 192.168.1.1)",
+      "steps": [
+        { "id": "S1", "instruction": "Run ipconfig on the PC and check the default gateway address", "validation_key": "check_gateway", "hint": "Open Command Prompt and type: ipconfig /all", "hint_penalty": 5 },
+        { "id": "S2", "instruction": "Ping the default gateway from the PC", "validation_key": "ping_gateway", "hint": "Use: ping 192.168.1.1", "hint_penalty": 5 },
+        { "id": "S3", "instruction": "Identify the incorrect gateway value and correct it", "validation_key": "fix_gateway", "hint": "Change the PC gateway to match the router interface IP", "hint_penalty": 5 }
+      ],
+      "debrief": "The PC was configured with the wrong default gateway (192.168.1.254 instead of 192.168.1.1). Always verify IP, mask and gateway with ipconfig /all as the first troubleshooting step.",
+      "commands_used": ["ipconfig /all", "ping"]
+    },
+    {
+      "id": "M002",
+      "category": "CAT1",
+      "title": "Layer 1 Connectivity Failure",
+      "difficulty": 1,
+      "points": 100,
+      "clo": "CLO2",
+      "unit": "3.6",
+      "domain": "domain4",
+      "skills": ["ping-troubleshoot", "traceroute-troubleshoot"],
+      "brief": "Two routers that should be directly connected are unable to communicate. No routing protocols are converging.",
+      "topology": "two-routers",
+      "fault": "Router interface is administratively shut down (no shutdown not applied)",
+      "steps": [
+        { "id": "S1", "instruction": "Check interface status on Router 1 using show ip interface brief", "validation_key": "check_int_status", "hint": "Command: show ip interface brief", "hint_penalty": 5 },
+        { "id": "S2", "instruction": "Identify the interface showing 'administratively down'", "validation_key": "identify_int", "hint": "Look for 'administratively down' in the Status column", "hint_penalty": 5 },
+        { "id": "S3", "instruction": "Enter interface configuration mode and apply no shutdown", "validation_key": "no_shutdown", "hint": "interface GigabitEthernet0/0 → no shutdown", "hint_penalty": 5 },
+        { "id": "S4", "instruction": "Verify connectivity with ping to the other router", "validation_key": "verify_ping", "hint": "ping [other router IP]", "hint_penalty": 5 }
+      ],
+      "debrief": "Cisco router interfaces are administratively down by default. Always verify interface status with 'show ip interface brief' before assuming a physical fault.",
+      "commands_used": ["show ip interface brief", "no shutdown", "ping"]
+    },
+    {
+      "id": "M003",
+      "category": "CAT2",
+      "title": "VLAN Trunk Not Forming",
+      "difficulty": 2,
+      "points": 150,
+      "clo": "CLO2",
+      "unit": "3.2",
+      "domain": "domain3",
+      "skills": ["vlan-config", "trunk-config"],
+      "brief": "Two switches are connected but VLANs are not propagating across the link. Devices on VLAN 10 on Switch 1 cannot communicate with devices on VLAN 10 on Switch 2.",
+      "topology": "two-switches",
+      "fault": "Trunk port on SW1 is set to access mode, not trunk mode",
+      "steps": [
+        { "id": "S1", "instruction": "Check trunk status on SW1 using show interfaces trunk", "validation_key": "check_trunk", "hint": "Command: show interfaces trunk", "hint_penalty": 5 },
+        { "id": "S2", "instruction": "Check the switchport mode on the connected port using show running-config", "validation_key": "check_mode", "hint": "Look for 'switchport mode access' on the interswitch port", "hint_penalty": 5 },
+        { "id": "S3", "instruction": "Change the port mode to trunk with switchport mode trunk", "validation_key": "set_trunk", "hint": "interface Fa0/1 → switchport mode trunk", "hint_penalty": 5 },
+        { "id": "S4", "instruction": "Verify the trunk is now active with show interfaces trunk", "validation_key": "verify_trunk", "hint": "The port should now appear in the trunk output", "hint_penalty": 5 }
+      ],
+      "debrief": "Trunk ports must be explicitly configured on both sides. 'show interfaces trunk' quickly shows which ports are trunking and which VLANs are allowed.",
+      "commands_used": ["show interfaces trunk", "show running-config", "switchport mode trunk"]
+    },
+    {
+      "id": "M004",
+      "category": "CAT2",
+      "title": "VLAN Missing from Database",
+      "difficulty": 2,
+      "points": 150,
+      "clo": "CLO2",
+      "unit": "3.2",
+      "domain": "domain3",
+      "skills": ["vlan-config", "trunk-config"],
+      "brief": "Devices assigned to VLAN 20 cannot communicate with each other even though the port is correctly assigned. Verify the VLAN exists in the switch database.",
+      "topology": "single-switch",
+      "fault": "VLAN 20 has not been created in the VLAN database (vlan.dat)",
+      "steps": [
+        { "id": "S1", "instruction": "List all VLANs with show vlan brief", "validation_key": "show_vlan", "hint": "Command: show vlan brief", "hint_penalty": 5 },
+        { "id": "S2", "instruction": "Confirm VLAN 20 is not in the database", "validation_key": "confirm_missing", "hint": "Look for VLAN 20 — it should not appear", "hint_penalty": 5 },
+        { "id": "S3", "instruction": "Create VLAN 20 and assign a name", "validation_key": "create_vlan", "hint": "vlan 20 → name DATA_VLAN", "hint_penalty": 5 },
+        { "id": "S4", "instruction": "Verify the VLAN appears and ports are assigned", "validation_key": "verify_vlan", "hint": "show vlan brief — VLAN 20 should now show assigned ports", "hint_penalty": 5 }
+      ],
+      "debrief": "A port assigned to a non-existent VLAN will not carry traffic. Always create the VLAN first, then assign ports.",
+      "commands_used": ["show vlan brief", "vlan 20", "name"]
+    },
+    {
+      "id": "M005",
+      "category": "CAT3",
+      "title": "Static Route Pointing to Wrong Next-Hop",
+      "difficulty": 2,
+      "points": 150,
+      "clo": "CLO2",
+      "unit": "3.3",
+      "domain": "domain3",
+      "skills": ["static-route-config", "traceroute-troubleshoot"],
+      "brief": "Users on the 192.168.10.0/24 network cannot reach the 192.168.30.0/24 network. A static route is configured but packets are being dropped.",
+      "topology": "three-routers",
+      "fault": "Static route next-hop IP is incorrect — points to 192.168.20.3 instead of 192.168.20.2",
+      "steps": [
+        { "id": "S1", "instruction": "Run traceroute to 192.168.30.1 from the source router to see where packets drop", "validation_key": "traceroute", "hint": "traceroute 192.168.30.1", "hint_penalty": 5 },
+        { "id": "S2", "instruction": "Check the routing table with show ip route on Router 1", "validation_key": "show_route", "hint": "show ip route — look for the 192.168.30.0 entry", "hint_penalty": 5 },
+        { "id": "S3", "instruction": "Identify the wrong next-hop in the static route", "validation_key": "find_wrong_hop", "hint": "Compare the next-hop IP to the actual neighbour router interface IP", "hint_penalty": 5 },
+        { "id": "S4", "instruction": "Remove the incorrect route and add the correct static route", "validation_key": "fix_route", "hint": "no ip route 192.168.30.0 255.255.255.0 192.168.20.3 → then correct route", "hint_penalty": 5 }
+      ],
+      "debrief": "Static routes fail silently when the next-hop IP is unreachable or wrong. Always verify next-hop reachability and check 'show ip route' carefully.",
+      "commands_used": ["traceroute", "show ip route", "ip route", "no ip route"]
+    },
+    {
+      "id": "M006",
+      "category": "CAT3",
+      "title": "RIPv2 Network Statement Missing",
+      "difficulty": 2,
+      "points": 150,
+      "clo": "CLO2",
+      "unit": "3.3",
+      "domain": "domain3",
+      "skills": ["ripv2-config", "systematic-troubleshooting"],
+      "brief": "RIPv2 is configured on three routers but routes for the 192.168.40.0/24 network are not appearing in the routing table of Router 1.",
+      "topology": "three-routers",
+      "fault": "Router 3 is missing the network statement for 192.168.40.0 in its RIP configuration",
+      "steps": [
+        { "id": "S1", "instruction": "Check RIP configuration on Router 3 using show running-config | section router rip", "validation_key": "show_rip", "hint": "show running-config | section router rip", "hint_penalty": 5 },
+        { "id": "S2", "instruction": "Identify the missing network statement", "validation_key": "find_missing", "hint": "Compare network statements to Router 3's interface IPs", "hint_penalty": 5 },
+        { "id": "S3", "instruction": "Add the missing network statement under router rip", "validation_key": "add_network", "hint": "router rip → network 192.168.40.0", "hint_penalty": 5 },
+        { "id": "S4", "instruction": "Verify routes appear on Router 1 with show ip route", "validation_key": "verify_routes", "hint": "Look for R 192.168.40.0 entries on Router 1", "hint_penalty": 5 }
+      ],
+      "debrief": "RIPv2 only advertises networks explicitly listed with 'network' statements. A single missing statement can break end-to-end reachability.",
+      "commands_used": ["show running-config", "router rip", "network", "show ip route"]
+    },
+    {
+      "id": "M007",
+      "category": "CAT4",
+      "title": "DHCP Pool Exhausted / Wrong Network",
+      "difficulty": 2,
+      "points": 150,
+      "clo": "CLO2",
+      "unit": "3.4",
+      "domain": "domain3",
+      "skills": ["dhcp-config", "ping-troubleshoot"],
+      "brief": "PCs on the network are receiving 169.254.x.x APIPA addresses instead of valid DHCP addresses. No devices can communicate.",
+      "topology": "pc-router",
+      "fault": "DHCP pool is configured with wrong network address (192.168.2.0 instead of 192.168.1.0)",
+      "steps": [
+        { "id": "S1", "instruction": "Check DHCP pool configuration with show running-config | section dhcp", "validation_key": "show_dhcp", "hint": "show running-config | section dhcp", "hint_penalty": 5 },
+        { "id": "S2", "instruction": "Compare the DHCP network to the router interface IP", "validation_key": "compare_network", "hint": "DHCP network must match the connected interface subnet", "hint_penalty": 5 },
+        { "id": "S3", "instruction": "Delete the incorrect pool and recreate with the correct network", "validation_key": "fix_pool", "hint": "no ip dhcp pool POOL_NAME → recreate with correct network", "hint_penalty": 5 },
+        { "id": "S4", "instruction": "Release and renew DHCP on a PC and verify correct address assignment", "validation_key": "verify_dhcp", "hint": "ipconfig /release then ipconfig /renew", "hint_penalty": 5 }
+      ],
+      "debrief": "The DHCP network statement must exactly match the subnet of the connected interface. APIPA addresses always indicate DHCP failure.",
+      "commands_used": ["show running-config", "ip dhcp pool", "network", "ipconfig /renew"]
+    },
+    {
+      "id": "M008",
+      "category": "CAT4",
+      "title": "DNS Name Resolution Failing",
+      "difficulty": 2,
+      "points": 150,
+      "clo": "CLO2",
+      "unit": "3.5",
+      "domain": "domain3",
+      "skills": ["dns-config", "nslookup-troubleshoot"],
+      "brief": "Users can ping servers by IP address but cannot access them by hostname. Investigate the DNS configuration.",
+      "topology": "pc-router-server",
+      "fault": "Router is missing the ip name-server statement pointing to the DNS server",
+      "steps": [
+        { "id": "S1", "instruction": "Test DNS resolution with nslookup on a client PC", "validation_key": "nslookup", "hint": "nslookup server.local", "hint_penalty": 5 },
+        { "id": "S2", "instruction": "Check DNS configuration on the router with show running-config", "validation_key": "check_dns_router", "hint": "Look for ip name-server and ip domain-name in running-config", "hint_penalty": 5 },
+        { "id": "S3", "instruction": "Add the missing ip name-server statement on the router", "validation_key": "add_dns", "hint": "ip name-server 192.168.1.10", "hint_penalty": 5 },
+        { "id": "S4", "instruction": "Verify DNS resolution works from a client PC", "validation_key": "verify_dns", "hint": "nslookup server.local should now return an IP", "hint_penalty": 5 }
+      ],
+      "debrief": "DNS requires both the server to be configured correctly and clients/routers to know the DNS server IP. 'ip name-server' tells the router where to send DNS queries.",
+      "commands_used": ["nslookup", "show running-config", "ip name-server"]
+    },
+    {
+      "id": "M009",
+      "category": "CAT5",
+      "title": "Telnet Still Enabled — Enable SSH",
+      "difficulty": 2,
+      "points": 150,
+      "clo": "CLO2",
+      "unit": "3.1",
+      "domain": "domain5",
+      "skills": ["ssh-config", "telnet-awareness", "initial-config"],
+      "brief": "A security audit has flagged that VTY lines on the main router accept Telnet connections (plaintext). Configure SSH and disable Telnet access.",
+      "topology": "single-router",
+      "fault": "VTY lines configured with 'transport input all' instead of 'transport input ssh'",
+      "steps": [
+        { "id": "S1", "instruction": "Check VTY line configuration with show running-config | section line vty", "validation_key": "check_vty", "hint": "show running-config | section line vty", "hint_penalty": 5 },
+        { "id": "S2", "instruction": "Set a domain name required for RSA key generation", "validation_key": "set_domain", "hint": "ip domain-name kkpapar.edu.my", "hint_penalty": 5 },
+        { "id": "S3", "instruction": "Generate RSA keys for SSH", "validation_key": "gen_rsa", "hint": "crypto key generate rsa modulus 1024", "hint_penalty": 5 },
+        { "id": "S4", "instruction": "Change VTY transport to SSH only", "validation_key": "set_ssh", "hint": "line vty 0 4 → transport input ssh", "hint_penalty": 5 },
+        { "id": "S5", "instruction": "Verify SSH is working with show ip ssh", "validation_key": "verify_ssh", "hint": "show ip ssh should show SSH Enabled", "hint_penalty": 5 }
+      ],
+      "debrief": "Telnet transmits credentials in plaintext — always disable it and use SSH. Requires a domain name, RSA keys and 'transport input ssh' on VTY lines.",
+      "commands_used": ["ip domain-name", "crypto key generate rsa", "transport input ssh", "show ip ssh"]
+    },
+    {
+      "id": "M010",
+      "category": "CAT5",
+      "title": "Enable Password Not Encrypted",
+      "difficulty": 1,
+      "points": 100,
+      "clo": "CLO2",
+      "unit": "3.1",
+      "domain": "domain5",
+      "skills": ["initial-config", "ssh-config"],
+      "brief": "A router configuration has been reviewed and passwords are stored in plaintext in the running configuration. Secure the device passwords.",
+      "topology": "single-router",
+      "fault": "enable password used instead of enable secret; service password-encryption not applied",
+      "steps": [
+        { "id": "S1", "instruction": "View the running configuration and identify plaintext passwords", "validation_key": "view_passwords", "hint": "show running-config | include password", "hint_penalty": 5 },
+        { "id": "S2", "instruction": "Replace enable password with enable secret", "validation_key": "enable_secret", "hint": "enable secret [password]", "hint_penalty": 5 },
+        { "id": "S3", "instruction": "Apply service password-encryption globally", "validation_key": "password_encrypt", "hint": "service password-encryption", "hint_penalty": 5 },
+        { "id": "S4", "instruction": "Verify passwords are now encrypted in running-config", "validation_key": "verify_encrypted", "hint": "show running-config — passwords should show as type 7 or type 5", "hint_penalty": 5 }
+      ],
+      "debrief": "'enable secret' uses MD5 hashing and is always preferred over 'enable password'. 'service password-encryption' encrypts other passwords (type 7) but is not highly secure — it prevents casual viewing.",
+      "commands_used": ["enable secret", "service password-encryption", "show running-config"]
+    },
+    {
+      "id": "M011",
+      "category": "CAT6",
+      "title": "SNMP Community String Misconfigured",
+      "difficulty": 3,
+      "points": 200,
+      "clo": "CLO2",
+      "unit": "4.2",
+      "domain": "domain5",
+      "skills": ["snmp-config", "monitoring-configure"],
+      "brief": "The network monitoring tool is not receiving SNMP data from the core router. Investigate and fix the SNMP configuration.",
+      "topology": "router-nms",
+      "fault": "SNMP community string on the router does not match what the NMS is configured to use",
+      "steps": [
+        { "id": "S1", "instruction": "Check SNMP configuration with show running-config | section snmp", "validation_key": "check_snmp", "hint": "show running-config | section snmp", "hint_penalty": 5 },
+        { "id": "S2", "instruction": "Identify the community string on the router", "validation_key": "find_community", "hint": "Look for snmp-server community lines", "hint_penalty": 5 },
+        { "id": "S3", "instruction": "Compare to the NMS expected community string and correct the mismatch", "validation_key": "fix_community", "hint": "NMS expects community string 'netadmin360' — update router to match", "hint_penalty": 5 },
+        { "id": "S4", "instruction": "Verify SNMP polling succeeds from the NMS", "validation_key": "verify_snmp", "hint": "SNMP walk should return device OIDs", "hint_penalty": 5 }
+      ],
+      "debrief": "SNMP community strings are case-sensitive passwords that must match exactly between the managed device and the NMS. Use SNMPv3 with authentication in production.",
+      "commands_used": ["snmp-server community", "show running-config"]
+    },
+    {
+      "id": "M012",
+      "category": "CAT6",
+      "title": "Network Monitoring Report Analysis",
+      "difficulty": 3,
+      "points": 200,
+      "clo": "CLO3",
+      "unit": "4.3",
+      "domain": "domain6",
+      "skills": ["monitoring-report", "group-discussion", "network-monitoring-report"],
+      "brief": "You have been given a network monitoring report showing interface errors, high CPU utilisation and intermittent connectivity. Analyse the data and identify the root causes.",
+      "topology": "noc-view",
+      "fault": "Multiple issues: duplex mismatch causing interface errors, high CPU due to routing loop, intermittent connectivity due to STP topology change",
+      "steps": [
+        { "id": "S1", "instruction": "Identify the interface showing the highest error count in the report", "validation_key": "find_errors", "hint": "Look for input errors and CRC errors in the interface statistics", "hint_penalty": 5 },
+        { "id": "S2", "instruction": "Determine the likely cause of CRC/input errors", "validation_key": "identify_duplex", "hint": "CRC errors with no physical damage usually indicate a duplex mismatch", "hint_penalty": 5 },
+        { "id": "S3", "instruction": "Identify the device showing abnormally high CPU (>80%) and explain why", "validation_key": "cpu_analysis", "hint": "A routing loop causes continuous packet forwarding — check for route with incrementing hop count", "hint_penalty": 5 },
+        { "id": "S4", "instruction": "Prepare a brief incident summary with root causes and recommended actions", "validation_key": "incident_summary", "hint": "Include: Issue, Root Cause, Impact, Recommendation for each finding", "hint_penalty": 5 }
+      ],
+      "debrief": "Network monitoring reports provide early warning of issues before they become outages. Regular analysis and documentation is a key NOC skill.",
+      "commands_used": ["show interfaces", "show processes cpu", "show spanning-tree"]
+    }
+  ],
+  "vnoc_alerts": [
+    { "id": "A001", "severity": "critical", "device": "Core-Router-01", "message": "Interface GigabitEthernet0/0 down — link failure detected", "category": "CAT1" },
+    { "id": "A002", "severity": "warning",  "device": "SW-Access-02",   "message": "Port Fa0/5 transitioning — STP topology change", "category": "CAT2" },
+    { "id": "A003", "severity": "info",     "device": "DHCP-Server-01", "message": "DHCP pool VLAN10 utilisation at 85% — 12 addresses remaining", "category": "CAT4" },
+    { "id": "A004", "severity": "critical", "device": "Core-Router-01", "message": "CPU utilisation at 94% — possible routing loop detected", "category": "CAT3" },
+    { "id": "A005", "severity": "warning",  "device": "SW-Core-01",     "message": "SNMP community string authentication failure from 192.168.100.5", "category": "CAT6" },
+    { "id": "A006", "severity": "info",     "device": "DNS-Server-01",  "message": "DNS query failure rate increased by 15% in last 5 minutes", "category": "CAT4" },
+    { "id": "A007", "severity": "warning",  "device": "Edge-Router-01", "message": "Telnet connection attempt from 10.0.0.45 — SSH-only policy violation", "category": "CAT5" },
+    { "id": "A008", "severity": "critical", "device": "SW-Access-01",   "message": "VLAN 20 not propagating across uplink trunk — traffic isolated", "category": "CAT2" },
+    { "id": "A009", "severity": "info",     "device": "NMS-Server-01",  "message": "Scheduled monitoring report generated — 3 anomalies detected", "category": "CAT6" },
+    { "id": "A010", "severity": "warning",  "device": "Core-Router-01", "message": "RIPv2 route to 192.168.40.0/24 not received — neighbour silent", "category": "CAT3" },
+    { "id": "A011", "severity": "critical", "device": "PC-Lab-07",      "message": "APIPA address 169.254.x.x detected — DHCP unreachable", "category": "CAT4" },
+    { "id": "A012", "severity": "info",     "device": "SW-Core-01",     "message": "Trunk port Gi1/1 allowed VLAN list updated by administrator", "category": "CAT2" }
+  ]
+}

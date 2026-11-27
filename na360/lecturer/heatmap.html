@@ -1,0 +1,173 @@
+<div id="view-content">
+
+<!-- Synthetic Data Banner -->
+<div class="synthetic-banner">⚠ SYNTHETIC DATA — DEMONSTRATION MODE ONLY — This data does not represent any real student</div>
+
+<!-- Page Header -->
+<div class="page-header">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="page-title">Class Competency Heatmap</h1>
+      <p class="page-subtitle">STM31733 — 25 students — Session I 2025/2026</p>
+    </div>
+    <div class="flex gap-2">
+      <select id="sort-select" class="form-select" style="width:auto;padding:6px 10px;">
+        <option value="name">Sort: By Name</option>
+        <option value="overall">Sort: By Overall RI</option>
+        <option value="d1">Sort: By D1</option>
+        <option value="d2">Sort: By D2</option>
+        <option value="d3">Sort: By D3</option>
+        <option value="d4">Sort: By D4</option>
+        <option value="d5">Sort: By D5</option>
+        <option value="d6">Sort: By D6</option>
+      </select>
+      <select id="filter-select" class="form-select" style="width:auto;padding:6px 10px;">
+        <option value="all">Filter: All Students</option>
+        <option value="atrisk">At-Risk Only</option>
+        <option value="above">Above Average Only</option>
+      </select>
+      <button class="btn btn-secondary btn-sm" id="btn-export">📥 Export CSV</button>
+    </div>
+  </div>
+</div>
+
+<!-- Heatmap Table -->
+<div class="card mb-4">
+  <div class="card-body" style="padding:0;">
+    <div class="table-wrapper" style="border:none;border-radius:0;">
+      <table class="na360-table" id="heatmap-table">
+        <thead>
+          <tr>
+            <th>Student Name</th>
+            <th>D1: NA Fund.</th>
+            <th>D2: Infrastructure</th>
+            <th>D3: Configuration</th>
+            <th>D4: Troubleshoot.</th>
+            <th>D5: Monitoring</th>
+            <th>D6: Professional</th>
+            <th>Overall RI</th>
+          </tr>
+        </thead>
+        <tbody id="heatmap-body">
+          <tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text-muted);">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Heatmap Legend -->
+<div class="flex gap-3 items-center" style="flex-wrap:wrap;margin-bottom:1rem;">
+  <span style="font-size:var(--font-size-xs);color:var(--text-muted);font-weight:600;">Legend:</span>
+  <span class="heatmap-cell heatmap-critical" style="cursor:default;">Critical &lt;40</span>
+  <span class="heatmap-cell heatmap-warning" style="cursor:default;">Warning 40–59</span>
+  <span class="heatmap-cell heatmap-ready" style="cursor:default;">Ready 60–79</span>
+  <span class="heatmap-cell heatmap-good" style="cursor:default;">Good 80+</span>
+</div>
+
+<!-- Tooltip element -->
+<div id="heatmap-tooltip" style="position:fixed;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:var(--font-size-xs);box-shadow:var(--shadow-md);pointer-events:none;display:none;z-index:999;">
+</div>
+
+<script type="module">
+let allStudents = [];
+
+const domainKeys   = ['domain1','domain2','domain3','domain4','domain5','domain6'];
+const domainLabels = ['D1: NA Fundamentals','D2: Infrastructure','D3: Configuration','D4: Troubleshooting','D5: Monitoring','D6: Professional'];
+
+function computeRI(s) {
+  return Math.round(s.scores.test * 0.15 + s.scores.practical1 * 0.45 + s.scores.practical2 * 0.30 + s.scores.presentation * 0.10);
+}
+
+function heatClass(score) {
+  if (score >= 80) return 'heatmap-good';
+  if (score >= 60) return 'heatmap-ready';
+  if (score >= 40) return 'heatmap-warning';
+  return 'heatmap-critical';
+}
+
+function avg(arr) {
+  return arr.length ? Math.round(arr.reduce((a,b) => a+b, 0) / arr.length) : 0;
+}
+
+function render(students) {
+  const sort   = document.getElementById('sort-select').value;
+  const filter = document.getElementById('filter-select').value;
+
+  const classAvgRI = avg(allStudents.map(s => computeRI(s)));
+
+  let list = [...students];
+  if (filter === 'atrisk')  list = list.filter(s => s.at_risk);
+  if (filter === 'above')   list = list.filter(s => computeRI(s) >= classAvgRI);
+
+  if (sort === 'name')    list.sort((a, b) => a.name.localeCompare(b.name));
+  if (sort === 'overall') list.sort((a, b) => computeRI(b) - computeRI(a));
+  domainKeys.forEach((d, i) => {
+    if (sort === `d${i+1}`) list.sort((a, b) => b.competency[d] - a.competency[d]);
+  });
+
+  const tooltip = document.getElementById('heatmap-tooltip');
+  const tbody   = document.getElementById('heatmap-body');
+  if (list.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text-muted);">No students match the current filter.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = list.map(s => {
+    const ri = computeRI(s);
+    const domainCells = domainKeys.map((d, i) => {
+      const score = s.competency[d] || 0;
+      const cls   = heatClass(score);
+      return `<td><div class="heatmap-cell ${cls}"
+        data-student="${s.name.replace(/"/g,'&quot;')}"
+        data-domain="${domainLabels[i]}"
+        data-score="${score}"
+        onmouseenter="showTooltip(event,this)"
+        onmouseleave="hideTooltip()">${score}</div></td>`;
+    }).join('');
+    const riCls = heatClass(ri);
+    return `<tr>
+      <td style="font-weight:500;white-space:nowrap;">${s.name}${s.at_risk ? ' <span class="badge badge-red" style="font-size:9px;">at-risk</span>' : ''}</td>
+      ${domainCells}
+      <td><div class="heatmap-cell ${riCls}">${ri}</div></td>
+    </tr>`;
+  }).join('');
+}
+
+window.showTooltip = function(event, el) {
+  const tooltip = document.getElementById('heatmap-tooltip');
+  tooltip.innerHTML = `<strong>${el.dataset.student}</strong><br>${el.dataset.domain}: <strong>${el.dataset.score}%</strong>`;
+  tooltip.style.display = 'block';
+  tooltip.style.left = (event.clientX + 12) + 'px';
+  tooltip.style.top  = (event.clientY - 32) + 'px';
+};
+
+window.hideTooltip = function() {
+  document.getElementById('heatmap-tooltip').style.display = 'none';
+};
+
+document.getElementById('sort-select').addEventListener('change', () => render(allStudents));
+document.getElementById('filter-select').addEventListener('change', () => render(allStudents));
+
+document.getElementById('btn-export').addEventListener('click', () => {
+  const headers = ['ID','Name','D1','D2','D3','D4','D5','D6','Overall RI','At Risk'];
+  const rows = allStudents.map(s => [
+    s.id, `"${s.name}"`,
+    ...domainKeys.map(d => s.competency[d] || 0),
+    computeRI(s),
+    s.at_risk ? 'Yes' : 'No'
+  ]);
+  const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = 'na360-heatmap.csv'; a.click();
+  URL.revokeObjectURL(url);
+});
+
+fetch('../data/synthetic-class.json')
+  .then(r => r.json())
+  .then(d => { allStudents = d.students; render(allStudents); })
+  .catch(e => console.error('[Heatmap] Failed to load data:', e));
+</script>
+</div>

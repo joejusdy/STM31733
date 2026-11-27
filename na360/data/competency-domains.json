@@ -1,0 +1,119 @@
+{
+  "_meta": {
+    "description": "Six competency domains for STM31733 Network Administration mapped from official course syllabus",
+    "version": "1.0"
+  },
+  "domains": [
+    {
+      "id": "domain1",
+      "code": "D1",
+      "label": "Network Administration Fundamentals",
+      "short": "NA Fundamentals",
+      "color": "#1A73E8",
+      "icon": "network",
+      "description": "Understanding of network administration concepts, roles, responsibilities, NOC functions and best practices",
+      "units": ["1.0"],
+      "clos": ["CLO1"],
+      "weight": 0.18,
+      "quiz_ids": ["Q01", "Q02"],
+      "lab_ids": [],
+      "mission_categories": ["Basic Connectivity"],
+      "skills": ["net-admin-concepts", "fcaps-model", "noc-functions", "noc-roles", "best-practices"]
+    },
+    {
+      "id": "domain2",
+      "code": "D2",
+      "label": "Network Device Infrastructure",
+      "short": "Infrastructure",
+      "color": "#7C5CD8",
+      "icon": "cpu",
+      "description": "Knowledge of VLAN types, routing protocols (Static, RIPv2, OSPF, EIGRP), server concepts and NOS",
+      "units": ["2.0"],
+      "clos": ["CLO1", "CLO2"],
+      "weight": 0.18,
+      "quiz_ids": ["Q03", "Q04"],
+      "lab_ids": [],
+      "mission_categories": ["VLAN and Trunking Faults", "Routing Misconfiguration"],
+      "skills": ["vlan-types", "vlan-trunking", "static-routing", "dynamic-routing", "ripv2", "ospf-eigrp", "server-types", "nos-concepts"]
+    },
+    {
+      "id": "domain3",
+      "code": "D3",
+      "label": "Network Configuration",
+      "short": "Configuration",
+      "color": "#34A853",
+      "icon": "terminal",
+      "description": "Practical ability to configure switches, routers, VLANs, trunks, inter-VLAN routing, DHCP and DNS",
+      "units": ["3.0"],
+      "clos": ["CLO2"],
+      "weight": 0.18,
+      "quiz_ids": ["Q05", "Q06", "Q07", "Q08", "Q09", "Q10"],
+      "lab_ids": ["L01", "L02", "L03", "L04", "L05", "L06"],
+      "mission_categories": ["VLAN and Trunking Faults", "Routing Misconfiguration", "DHCP and DNS Failures", "Security and Access Issues"],
+      "skills": ["initial-config", "vlan-config", "trunk-config", "intervlan-routing", "static-route-config", "ripv2-config", "dhcp-config", "dns-config"]
+    },
+    {
+      "id": "domain4",
+      "code": "D4",
+      "label": "Network Troubleshooting",
+      "short": "Troubleshooting",
+      "color": "#EA4335",
+      "icon": "bug",
+      "description": "Ability to systematically diagnose and resolve network issues using Ping, Traceroute, Netstat, Nslookup and Ipconfig",
+      "units": ["3.0"],
+      "clos": ["CLO2"],
+      "weight": 0.18,
+      "quiz_ids": ["Q11"],
+      "lab_ids": ["L07"],
+      "mission_categories": ["Basic Connectivity", "VLAN and Trunking Faults", "Routing Misconfiguration", "DHCP and DNS Failures"],
+      "skills": ["ping-troubleshoot", "traceroute-troubleshoot", "netstat-troubleshoot", "nslookup-troubleshoot", "ipconfig-troubleshoot", "systematic-troubleshooting"]
+    },
+    {
+      "id": "domain5",
+      "code": "D5",
+      "label": "Network Monitoring & Security",
+      "short": "Monitoring & Security",
+      "color": "#FBBC04",
+      "icon": "shield-check",
+      "description": "Understanding and configuration of network monitoring protocols (SNMP, SSH, Telnet) and monitoring tools",
+      "units": ["4.0"],
+      "clos": ["CLO2", "CLO3"],
+      "weight": 0.18,
+      "quiz_ids": ["Q12"],
+      "lab_ids": ["L08", "L09"],
+      "mission_categories": ["Security and Access Issues", "Network Monitoring Faults"],
+      "skills": ["snmp-config", "ssh-config", "telnet-awareness", "monitoring-install", "monitoring-configure", "monitoring-report"]
+    },
+    {
+      "id": "domain6",
+      "code": "D6",
+      "label": "Professional Practice & Communication",
+      "short": "Professional Practice",
+      "color": "#F9AB00",
+      "icon": "users",
+      "description": "Ability to collaborate, present, document and discuss network monitoring findings professionally",
+      "units": ["4.0"],
+      "clos": ["CLO3"],
+      "weight": 0.10,
+      "quiz_ids": [],
+      "lab_ids": ["L10"],
+      "mission_categories": ["Network Monitoring Faults"],
+      "skills": ["group-discussion", "network-monitoring-report", "presentation-skills", "professional-documentation"]
+    }
+  ],
+  "mastery_levels": [
+    { "level": 0, "label": "Not Started", "color": "#9E9E9E", "bg": "#F5F5F5", "min_score": null,  "max_score": null,  "description": "No activity recorded for this skill" },
+    { "level": 1, "label": "Novice",      "color": "#EA4335", "bg": "#FDECEA", "min_score": 0,     "max_score": 39,    "description": "Basic awareness but unable to apply independently" },
+    { "level": 2, "label": "Developing",  "color": "#FBBC04", "bg": "#FEF8E1", "min_score": 40,    "max_score": 59,    "description": "Beginning to apply skills with significant guidance" },
+    { "level": 3, "label": "Competent",   "color": "#1A73E8", "bg": "#E8F0FE", "min_score": 60,    "max_score": 79,    "description": "Can apply skills independently in familiar situations" },
+    { "level": 4, "label": "Proficient",  "color": "#34A853", "bg": "#E6F4EA", "min_score": 80,    "max_score": 89,    "description": "Applies skills confidently and handles complex situations" },
+    { "level": 5, "label": "Expert",      "color": "#F9AB00", "bg": "#FEF7E0", "min_score": 90,    "max_score": 100,   "description": "Mastery level — able to teach and troubleshoot at expert level", "extra_requirement": "at_least_1_mission" }
+  ],
+  "readiness_bands": [
+    { "band": "Critical",   "min": 0,  "max": 39,  "color": "#EA4335", "bg": "#FDECEA", "advice": "Immediate lecturer intervention recommended. Focus on CLO2 practical skills first." },
+    { "band": "Developing", "min": 40, "max": 59,  "color": "#FBBC04", "bg": "#FEF8E1", "advice": "Targeted revision needed. Revisit labs for your weakest domains." },
+    { "band": "Ready",      "min": 60, "max": 79,  "color": "#1A73E8", "bg": "#E8F0FE", "advice": "On track. Consolidate weak areas and complete all Packet Tracer labs." },
+    { "band": "Confident",  "min": 80, "max": 89,  "color": "#34A853", "bg": "#E6F4EA", "advice": "Well prepared. Light review of troubleshooting commands recommended." },
+    { "band": "Exam-Ready", "min": 90, "max": 100, "color": "#F9AB00", "bg": "#FEF7E0", "advice": "Excellent readiness. Proceed with confidence to your final assessment." }
+  ]
+}

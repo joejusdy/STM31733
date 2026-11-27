@@ -1,0 +1,312 @@
+<div id="view-content">
+
+<!-- Synthetic Data Banner -->
+<div class="synthetic-banner">⚠ SYNTHETIC DATA — DEMONSTRATION MODE ONLY — This data does not represent any real student</div>
+
+<!-- Page Header -->
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Early Intervention Analytics</h1>
+    <p class="page-subtitle">STM31733 — Session I 2025/2026</p>
+  </div>
+</div>
+
+<!-- Risk Summary Stat Cards -->
+<div class="grid grid-cols-4 gap-4 mb-6">
+  <div class="stat-card" style="border-left:4px solid var(--accent-red);">
+    <div class="stat-card-label">🔴 Critical</div>
+    <div class="stat-card-value" id="stat-critical">—</div>
+    <div class="stat-card-delta" style="color:var(--accent-red);">4–5 risk flags</div>
+  </div>
+  <div class="stat-card" style="border-left:4px solid #EA4335;">
+    <div class="stat-card-label">🟠 High</div>
+    <div class="stat-card-value" id="stat-high">—</div>
+    <div class="stat-card-delta" style="color:#EA4335;">3 risk flags</div>
+  </div>
+  <div class="stat-card" style="border-left:4px solid var(--accent-amber);">
+    <div class="stat-card-label">🟡 Medium</div>
+    <div class="stat-card-value" id="stat-medium">—</div>
+    <div class="stat-card-delta" style="color:#9A6700;">2 risk flags</div>
+  </div>
+  <div class="stat-card" style="border-left:4px solid var(--accent-blue);">
+    <div class="stat-card-label">🔵 Low</div>
+    <div class="stat-card-value" id="stat-low">—</div>
+    <div class="stat-card-delta" style="color:var(--accent-blue);">1 risk flag</div>
+  </div>
+</div>
+
+<!-- At-Risk Student Table -->
+<div class="card mb-6">
+  <div class="card-header">
+    <div class="card-title">At-Risk Student List</div>
+    <div class="card-subtitle">Students with 1 or more risk flags</div>
+  </div>
+  <div class="card-body" style="padding:0;">
+    <div class="table-wrapper" style="border:none;border-radius:0;">
+      <table class="na360-table">
+        <thead>
+          <tr>
+            <th>Student Name</th>
+            <th>Risk Level</th>
+            <th>Risk Flags</th>
+            <th>Recommended Action</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="risk-table-body">
+          <tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted);">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Engagement Drop-off Chart -->
+<div class="card mb-6">
+  <div class="card-header">
+    <div class="card-title">Engagement Drop-off Trend</div>
+    <div class="card-subtitle">% students who reached each week (cumulative)</div>
+  </div>
+  <div class="card-body"><canvas id="dropoff-chart" height="100"></canvas></div>
+</div>
+
+<!-- Alert Thresholds -->
+<div class="card mb-6">
+  <div class="card-header">
+    <div class="card-title">Alert Thresholds</div>
+    <div class="card-subtitle">Criteria used to flag at-risk students</div>
+  </div>
+  <div class="card-body">
+    <div class="grid grid-cols-2 gap-4">
+      <div class="form-group">
+        <label class="form-label">RI Score Below (%)</label>
+        <input type="number" id="thresh-ri" class="form-input" value="50" min="0" max="100">
+        <div class="form-hint">Students with RI below this value are flagged</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Domain Score Below (%)</label>
+        <input type="number" id="thresh-domain" class="form-input" value="40" min="0" max="100">
+        <div class="form-hint">Any domain below this triggers domain_failure_risk</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Mission Completion Below (%)</label>
+        <input type="number" id="thresh-mission" class="form-input" value="30" min="0" max="100">
+        <div class="form-hint">Mission rate below this triggers low_mission_engagement</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Weeks Completed (Inactivity threshold)</label>
+        <input type="number" id="thresh-inactivity" class="form-input" value="6" min="0" max="14">
+        <div class="form-hint">Fewer weeks than this triggers inactivity flag</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Assessment Missed (threshold)</label>
+        <input type="number" id="thresh-missed" class="form-input" value="1" min="0" max="4">
+        <div class="form-hint">More than this many null scores = missed_assessments</div>
+      </div>
+    </div>
+    <div class="flex gap-2 mt-4">
+      <button class="btn btn-primary btn-sm" id="btn-save-thresholds">Save Thresholds</button>
+    </div>
+  </div>
+</div>
+
+<!-- Intervention Log -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">Intervention Log</div>
+  </div>
+  <div class="card-body">
+    <!-- Log entries -->
+    <div id="intervention-log-list" style="margin-bottom:1.5rem;">
+      <div style="color:var(--text-muted);font-size:var(--font-size-sm);">No interventions logged yet.</div>
+    </div>
+    <!-- Add new entry form -->
+    <div style="border-top:1px solid var(--border);padding-top:1rem;">
+      <div style="font-size:var(--font-size-sm);font-weight:600;margin-bottom:.75rem;color:var(--text-primary);">Log New Intervention</div>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="form-group">
+          <label class="form-label">Student Name</label>
+          <input type="text" id="intv-student" class="form-input" placeholder="Student name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Action Taken</label>
+          <select id="intv-action" class="form-select">
+            <option value="email">Email / Message Sent</option>
+            <option value="consultation">One-to-one Consultation</option>
+            <option value="remedial">Remedial Session Scheduled</option>
+            <option value="parent">Parent / Guardian Notified</option>
+            <option value="counselling">Referred to Counselling</option>
+            <option value="lab_support">Additional Lab Support</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group mt-4">
+        <label class="form-label">Notes</label>
+        <textarea id="intv-notes" class="form-textarea" placeholder="Additional notes…" style="min-height:70px;"></textarea>
+      </div>
+      <button class="btn btn-primary btn-sm mt-4" id="btn-log-intv">Save Intervention</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div class="toast-container" id="toast-container"></div>
+
+<script type="module">
+import DataModel from '../core/data-model.js';
+
+let dropoffChart = null;
+
+function showToast(msg, type = 'success') {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.innerHTML = `<span>${msg}</span>`;
+  container.appendChild(toast);
+  setTimeout(() => { toast.remove(); }, 3500);
+}
+
+function getRiskLevel(flags) {
+  const n = flags.length;
+  if (n >= 4) return { label: 'Critical', cls: 'badge-red',   level: 4 };
+  if (n === 3) return { label: 'High',    cls: 'badge-red',   level: 3 };
+  if (n === 2) return { label: 'Medium',  cls: 'badge-amber', level: 2 };
+  if (n === 1) return { label: 'Low',     cls: 'badge-blue',  level: 1 };
+  return { label: 'None', cls: 'badge-grey', level: 0 };
+}
+
+const FLAG_LABELS = {
+  low_ri:                 'Low RI',
+  domain_failure_risk:    'Domain Failure Risk',
+  low_mission_engagement: 'Low Mission Engagement',
+  inactivity:             'Inactivity',
+  missed_assessments:     'Missed Assessments',
+};
+
+function getRecommendedAction(flags) {
+  if (flags.includes('domain_failure_risk') && flags.includes('low_ri')) return 'Urgent: Remedial session + lecturer consultation required.';
+  if (flags.includes('inactivity'))           return 'Contact student — check for personal issues or disengagement.';
+  if (flags.includes('low_mission_engagement')) return 'Encourage mission completion — assign peer mentor.';
+  if (flags.includes('low_ri'))               return 'Schedule revision session focusing on weakest domains.';
+  if (flags.includes('missed_assessments'))   return 'Follow up on missed assessments and arrange make-up opportunity.';
+  return 'Monitor progress and provide supportive check-in.';
+}
+
+function avg(arr) {
+  return arr.length ? Math.round(arr.reduce((a,b)=>a+b,0)/arr.length) : 0;
+}
+
+function renderInterventionLog() {
+  const logs = DataModel.Interventions.get();
+  const container = document.getElementById('intervention-log-list');
+  if (logs.length === 0) {
+    container.innerHTML = '<div style="color:var(--text-muted);font-size:var(--font-size-sm);">No interventions logged yet.</div>';
+    return;
+  }
+  const sorted = [...logs].reverse();
+  container.innerHTML = sorted.map(l => `
+    <div class="activity-item">
+      <div class="activity-dot" style="background:var(--accent-blue);"></div>
+      <div class="activity-content">
+        <div class="activity-text"><strong>${l.student_name}</strong> — ${l.action}</div>
+        <div style="font-size:var(--font-size-xs);color:var(--text-secondary);margin-top:2px;">${l.note || ''}</div>
+        <div class="activity-time">${l.timestamp ? new Date(l.timestamp).toLocaleString() : ''}</div>
+      </div>
+    </div>`).join('');
+}
+
+function init(students) {
+  const atRisk = students.filter(s => s.at_risk && s.risk_flags.length > 0);
+
+  // Risk level counts
+  let critical = 0, high = 0, medium = 0, low = 0;
+  atRisk.forEach(s => {
+    const level = getRiskLevel(s.risk_flags).level;
+    if (level >= 4) critical++;
+    else if (level === 3) high++;
+    else if (level === 2) medium++;
+    else if (level === 1) low++;
+  });
+  document.getElementById('stat-critical').textContent = critical;
+  document.getElementById('stat-high').textContent     = high;
+  document.getElementById('stat-medium').textContent   = medium;
+  document.getElementById('stat-low').textContent      = low;
+
+  // Risk table
+  const tbody = document.getElementById('risk-table-body');
+  if (atRisk.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted);">No at-risk students — well done!</td></tr>';
+  } else {
+    tbody.innerHTML = atRisk.map(s => {
+      const rl     = getRiskLevel(s.risk_flags);
+      const flags  = s.risk_flags.map(f => `<span class="badge badge-grey" style="margin-right:2px;">${FLAG_LABELS[f] || f}</span>`).join('');
+      const action = getRecommendedAction(s.risk_flags);
+      return `<tr>
+        <td style="font-weight:600;">${s.name}</td>
+        <td><span class="badge ${rl.cls}">${rl.label}</span></td>
+        <td>${flags}</td>
+        <td style="font-size:var(--font-size-xs);max-width:220px;">${action}</td>
+        <td><button class="btn btn-primary btn-sm" onclick="document.getElementById('intv-student').value='${s.name.replace(/'/g,"\\'")}';document.getElementById('intv-student').scrollIntoView({behavior:'smooth'})">Log</button></td>
+      </tr>`;
+    }).join('');
+  }
+
+  // Engagement drop-off chart
+  const weekData = Array.from({ length: 14 }, (_, i) => {
+    const weekNum = i + 1;
+    const reached = students.filter(s => s.weeks_completed >= weekNum).length;
+    return Math.round((reached / students.length) * 100);
+  });
+  if (dropoffChart) dropoffChart.destroy();
+  dropoffChart = new Chart(document.getElementById('dropoff-chart').getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: Array.from({length:14},(_,i)=>`Week ${i+1}`),
+      datasets: [{
+        label: '% Reached',
+        data: weekData,
+        borderColor: '#1A73E8',
+        backgroundColor: 'rgba(26,115,232,0.08)',
+        fill: true,
+        tension: 0.3,
+        borderWidth: 2,
+        pointBackgroundColor: weekData.map(v => v < 60 ? '#EA4335' : '#1A73E8'),
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      scales: {
+        y: { min: 0, max: 100, ticks: { callback: v => v + '%' } }
+      },
+      plugins: { legend: { display: false } }
+    }
+  });
+}
+
+// Save thresholds button
+document.getElementById('btn-save-thresholds').addEventListener('click', () => {
+  showToast('Thresholds saved successfully ✓', 'success');
+});
+
+// Log intervention
+document.getElementById('btn-log-intv').addEventListener('click', () => {
+  const student = document.getElementById('intv-student').value.trim();
+  const action  = document.getElementById('intv-action').value;
+  const notes   = document.getElementById('intv-notes').value.trim();
+  if (!student) { showToast('Please enter a student name.', 'error'); return; }
+  DataModel.Interventions.add('manual', student, action, notes);
+  document.getElementById('intv-student').value = '';
+  document.getElementById('intv-notes').value   = '';
+  renderInterventionLog();
+  showToast(`Intervention logged for ${student} ✓`, 'success');
+});
+
+renderInterventionLog();
+
+fetch('../data/synthetic-class.json')
+  .then(r => r.json())
+  .then(d => init(d.students))
+  .catch(e => console.error('[Intervention] Failed to load data:', e));
+</script>
+</div>

@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="NetAdmin 360 — Intelligent Network Competency Platform for STM31733 Network Administration, Kolej Komuniti Papar">
+  <title>NetAdmin 360 | STM31733 Network Administration</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- NetAdmin 360 CSS -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/charts.css">
+  <link rel="stylesheet" href="css/dark-mode.css">
+
+  <!-- Prism.js (Cisco IOS syntax highlighting) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism-tomorrow.min.css">
+
+  <!-- Phosphor Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1/src/index.js" defer></script>
+
+  <style>
+    /* ── Onboarding Modal custom styles ── */
+    .onboarding-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 22, 40, 0.92);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .onboarding-card {
+      background: var(--bg-card);
+      border-radius: 20px;
+      padding: 2.5rem;
+      max-width: 440px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+
+    .onboarding-logo {
+      width: 64px;
+      height: 64px;
+      background: var(--accent-blue);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      margin: 0 auto 1.5rem;
+    }
+
+    .onboarding-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .onboarding-subtitle {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    .onboarding-input-wrap {
+      text-align: left;
+      margin-bottom: 1.5rem;
+    }
+
+    .onboarding-input-wrap label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .onboarding-input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: var(--bg-surface);
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      font-size: 1rem;
+      color: var(--text-primary);
+      transition: border-color 0.2s;
+      outline: none;
+    }
+
+    .onboarding-input:focus { border-color: var(--accent-blue); }
+    .onboarding-input.error { border-color: var(--accent-red); }
+
+    .onboarding-error {
+      font-size: 0.75rem;
+      color: var(--accent-red);
+      margin-top: 0.4rem;
+      display: none;
+    }
+
+    .onboarding-btn {
+      width: 100%;
+      padding: 0.875rem;
+      background: var(--accent-blue);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .onboarding-btn:hover  { background: #1557B0; }
+    .onboarding-btn:active { transform: scale(0.98); }
+
+    .onboarding-footer {
+      margin-top: 1.5rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════
+     ONBOARDING MODAL (shown on first visit)
+     ══════════════════════════════════════════════════════════ -->
+<div class="onboarding-overlay" id="onboarding-overlay" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="onboarding-title">
+  <div class="onboarding-card">
+    <div class="onboarding-logo" aria-hidden="true">🌐</div>
+    <h1 class="onboarding-title" id="onboarding-title">Welcome to NetAdmin 360</h1>
+    <p class="onboarding-subtitle">
+      Your intelligent network competency platform for<br>
+      <strong>STM31733 Network Administration</strong><br>
+      Kolej Komuniti Papar
+    </p>
+    <div class="onboarding-input-wrap">
+      <label for="onboarding-name">Your Full Name</label>
+      <input
+        type="text"
+        id="onboarding-name"
+        class="onboarding-input"
+        placeholder="e.g. Ahmad Firdaus bin Abdullah"
+        autocomplete="name"
+        maxlength="80"
+      >
+      <div class="onboarding-error" id="onboarding-error">Please enter your name to continue.</div>
+    </div>
+    <button class="onboarding-btn" id="onboarding-submit" type="button">
+      Start Learning →
+    </button>
+    <p class="onboarding-footer">
+      Your name is stored locally on this device only.<br>
+      No data is sent to any server.
+    </p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     APP SHELL
+     ══════════════════════════════════════════════════════════ -->
+<div class="na360-app" id="na360-app">
+
+  <!-- SIDEBAR -->
+  <nav class="na360-sidebar" id="na360-sidebar" aria-label="Main navigation">
+
+    <!-- Logo -->
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon" aria-hidden="true">🌐</div>
+      <div class="sidebar-logo-text">
+        <span class="sidebar-logo-title">NetAdmin 360</span>
+        <span class="sidebar-logo-sub">STM31733</span>
+      </div>
+    </div>
+
+    <!-- Student Profile Strip -->
+    <div class="sidebar-profile" id="sidebar-profile">
+      <div class="sidebar-profile-avatar" id="profile-avatar">S</div>
+      <div>
+        <div class="sidebar-profile-name" id="profile-name">Student</div>
+        <div class="sidebar-profile-role">Network Administration</div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="sidebar-nav" aria-label="Module navigation">
+
+      <!-- Student Workspace -->
+      <div class="sidebar-section-label">Student Workspace</div>
+
+      <a class="sidebar-nav-item" data-route="/student/dashboard"       href="#/student/dashboard"       role="menuitem">
+        <span class="nav-icon" aria-hidden="true"><i class="ph ph-squares-four"></i></span>
+        <span class="nav-label">Dashboard</span>
+      </a>
+      <a class="sidebar-nav-item" data-route="/student/radar"           href="#/student/radar"           role="menuitem">
+        <span class="nav-icon" aria-hidden="true"><i class="ph ph-chart-polar"></i></span>
+        <span class="nav-label">Competency Radar</span>
+      </a>
+      <a class="sidebar-nav-item" data-route="/student/skill-tree"      href="#/student/skill-tree"      role="menuitem">
+        <span class="nav-icon" aria-hidden="true"><i class="ph ph-tree-structure"></i></span>
+        <span class="nav-label">Skill Tree</span>
+      </a>
+      <a class="sidebar-nav-item" data-route="/student/mastery"         href="#/student/mastery"         role="menuitem">
+        <span class="nav-icon" aria-hidden="true"><i class="ph ph-star"></i></span>
+        <span class="nav-label">Skill Mastery</span>
+      </a>
+      <a class="sidebar-nav-item" data-route="/student/cisco-analyzer"  href="#/student/cisco-analyzer"  role="menuitem">
+        <span class="nav-icon" aria-hidden="true"><i class="ph ph-terminal"></i></span>
+        <span class="nav-label">Cisco Analyzer</span>
+      </a>
+      <a class="sidebar-nav-item" data-route="/student/vnoc"            href="#/student/vnoc"            role="menuitem">
+        <span class="nav-icon" aria-hidden="true"><i class="ph ph-monitor"></i></span>
+        <span class="nav-label">Virtual NOC</span>
+      </a>
+      <a class="sidebar-nav-item" data-route="/student/missions"        href="#/student/missions"        role="menuitem">
+        <span class="nav-icon" aria-hidden="true"><i class="ph ph-lightning"></i></span>
+        <span class="nav-label">Missions</span>
+      </a>
+      <a class="sidebar-nav-item" data-route="/student/readiness"       href="#/student/readiness"       role="menuitem">
+        <span class="nav-icon" aria-hidden="true"><i class="ph ph-check-circle"></i></span>
+        <span class="nav-label">Readiness Index</span>
+      </a>
+      <a class="sidebar-nav-item" data-route="/student/recommendations" href="#/student/recommendations" role="menuitem">
+        <span class="nav-icon" aria-hidden="true"><i class="ph ph-sparkle"></i></span>
+        <span class="nav-label">Recommendations</span>
+      </a>
+      <a class="sidebar-nav-item" data-route="/student/passport"        href="#/student/passport"        role="menuitem">
+        <span class="nav-icon" aria-hidden="true"><i class="ph ph-certificate"></i></span>
+        <span class="nav-label">Skill Passport</span>
+      </a>
+
+      <div class="sidebar-divider"></div>
+
+      <!-- Lecturer Tools -->
+      <div class="sidebar-section-label">Lecturer Tools</div>
+
+      <a class="sidebar-nav-item" data-route="/lecturer/dashboard"      href="#/lecturer/dashboard"      role="menuitem">
+        <span class="nav-icon" aria-hidden="true"><i class="ph ph-chalkboard-teacher"></i></span>
+        <span class="nav-label">Intelligence Dashboard</span>
+      </a>
+      <a class="sidebar-nav-item" data-route="/lecturer/heatmap"        href="#/lecturer/heatmap"        role="menuitem">
+        <span class="nav-icon" aria-hidden="true"><i class="ph ph-table"></i></span>
+        <span class="nav-label">Class Heatmap</span>
+      </a>
+      <a class="sidebar-nav-item" data-route="/lecturer/intervention"   href="#/lecturer/intervention"   role="menuitem">
+        <span class="nav-icon" aria-hidden="true"><i class="ph ph-warning"></i></span>
+        <span class="nav-label">Interventions</span>
+      </a>
+      <a class="sidebar-nav-item" data-route="/lecturer/clo-attainment" href="#/lecturer/clo-attainment" role="menuitem">
+        <span class="nav-icon" aria-hidden="true"><i class="ph ph-chart-bar"></i></span>
+        <span class="nav-label">CLO/PLO Attainment</span>
+      </a>
+
+      <div class="sidebar-divider"></div>
+
+      <!-- Course Content -->
+      <div class="sidebar-section-label">Course Content</div>
+
+      <!-- Week links — dynamically generated by JS -->
+      <div id="sidebar-weeks"></div>
+
+      <div class="sidebar-divider"></div>
+    </nav>
+
+    <!-- Footer / Theme Toggle -->
+    <div class="sidebar-footer">
+      <button class="theme-toggle-btn" id="theme-toggle-btn" type="button" aria-label="Toggle dark/light mode">
+        <span class="theme-toggle-icon" aria-hidden="true">☾</span>
+        <span class="theme-toggle-label">Dark Mode</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- SIDEBAR OVERLAY (mobile) -->
+  <div class="sidebar-overlay" id="sidebar-overlay" aria-hidden="true"></div>
+
+  <!-- MAIN AREA -->
+  <div class="na360-main" id="na360-main">
+
+    <!-- TOPBAR -->
+    <header class="na360-topbar" role="banner">
+      <button class="topbar-hamburger" id="topbar-hamburger" aria-label="Toggle sidebar" aria-expanded="false" aria-controls="na360-sidebar">
+        <i class="ph ph-list" aria-hidden="true"></i>
+      </button>
+
+      <nav class="topbar-breadcrumb" id="topbar-breadcrumb" aria-label="Breadcrumb">
+        <span class="breadcrumb-item">NetAdmin 360</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-item current">Dashboard</span>
+      </nav>
+
+      <div class="topbar-search" role="search">
+        <i class="ph ph-magnifying-glass topbar-search-icon" aria-hidden="true"></i>
+        <input type="search" placeholder="Search modules..." aria-label="Search modules" id="topbar-search-input">
+      </div>
+
+      <div class="topbar-actions">
+        <button class="topbar-btn" id="topbar-notify-btn" title="Notifications" aria-label="Notifications">
+          <i class="ph ph-bell" aria-hidden="true"></i>
+        </button>
+        <button class="topbar-btn" id="topbar-help-btn" title="Help" aria-label="Help">
+          <i class="ph ph-question" aria-hidden="true"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- VIEW CONTENT -->
+    <main class="na360-content" id="na360-view" tabindex="-1" aria-live="polite">
+      <!-- Module views are loaded here by router.js -->
+      <div style="display:flex;align-items:center;justify-content:center;height:300px;">
+        <div style="text-align:center;color:var(--text-muted);">
+          <div style="font-size:40px;margin-bottom:1rem;">🌐</div>
+          <div>Loading NetAdmin 360...</div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- BOTTOM NAV (mobile) -->
+  <nav class="bottom-nav" aria-label="Quick navigation">
+    <a class="bottom-nav-item" href="#/student/dashboard" aria-label="Dashboard">
+      <i class="ph-fill ph-squares-four bottom-nav-icon" aria-hidden="true"></i>
+      <span>Home</span>
+    </a>
+    <a class="bottom-nav-item" href="#/student/radar" aria-label="Competency Radar">
+      <i class="ph-fill ph-chart-polar bottom-nav-icon" aria-hidden="true"></i>
+      <span>Radar</span>
+    </a>
+    <a class="bottom-nav-item" href="#/student/missions" aria-label="Missions">
+      <i class="ph-fill ph-lightning bottom-nav-icon" aria-hidden="true"></i>
+      <span>Missions</span>
+    </a>
+    <a class="bottom-nav-item" href="#/student/readiness" aria-label="Readiness">
+      <i class="ph-fill ph-check-circle bottom-nav-icon" aria-hidden="true"></i>
+      <span>Readiness</span>
+    </a>
+    <a class="bottom-nav-item" href="#/lecturer/dashboard" aria-label="Lecturer">
+      <i class="ph-fill ph-chalkboard-teacher bottom-nav-icon" aria-hidden="true"></i>
+      <span>Lecturer</span>
+    </a>
+  </nav>
+
+</div><!-- /.na360-app -->
+
+<!-- Toast container -->
+<div class="toast-container" id="toast-container" aria-live="polite" role="status"></div>
+
+<!-- CDN Libraries -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1/prism.min.js"></script>
+
+<!-- App Boot -->
+<script type="module">
+  import DataModel from './core/data-model.js';
+  import Theme     from './core/theme.js';
+  import Router    from './core/router.js';
+  import EventBus  from './core/event-bus.js';
+
+  // ── Onboarding ────────────────────────────────────────────
+  function showOnboarding() {
+    const overlay = document.getElementById('onboarding-overlay');
+    overlay.style.display = 'flex';
+    setTimeout(() => document.getElementById('onboarding-name').focus(), 100);
+  }
+
+  function hideOnboarding() {
+    const overlay = document.getElementById('onboarding-overlay');
+    overlay.style.display = 'none';
+  }
+
+  document.getElementById('onboarding-submit').addEventListener('click', () => {
+    const input = document.getElementById('onboarding-name');
+    const error = document.getElementById('onboarding-error');
+    const name  = input.value.trim();
+
+    if (!name || name.length < 2) {
+      input.classList.add('error');
+      error.style.display = 'block';
+      input.focus();
+      return;
+    }
+
+    input.classList.remove('error');
+    error.style.display = 'none';
+    DataModel.Profile.set(name);
+    hideOnboarding();
+    updateProfileStrip();
+    showToast(`Welcome, ${name}!`, 'success');
+  });
+
+  document.getElementById('onboarding-name').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') document.getElementById('onboarding-submit').click();
+  });
+
+  // ── Profile Strip ─────────────────────────────────────────
+  function updateProfileStrip() {
+    const profile = DataModel.Profile.get();
+    if (!profile) return;
+    const avatarEl = document.getElementById('profile-avatar');
+    const nameEl   = document.getElementById('profile-name');
+    if (avatarEl) avatarEl.textContent = profile.name.charAt(0).toUpperCase();
+    if (nameEl)   nameEl.textContent   = profile.name;
+  }
+
+  // ── Sidebar Week Links ────────────────────────────────────
+  function buildWeekLinks() {
+    const container = document.getElementById('sidebar-weeks');
+    if (!container) return;
+    let html = '';
+    for (let w = 1; w <= 14; w++) {
+      html += `
+        <a class="sidebar-nav-item" href="../index.html#week${w}" target="_blank" title="Week ${w}" role="menuitem">
+          <span class="nav-icon" aria-hidden="true"><i class="ph ph-book-open"></i></span>
+          <span class="nav-label">Week ${w}</span>
+        </a>`;
+    }
+    html += `
+      <a class="sidebar-nav-item" href="../index.html" target="_blank" role="menuitem">
+        <span class="nav-icon" aria-hidden="true"><i class="ph ph-clipboard-text"></i></span>
+        <span class="nav-label">Course Home</span>
+      </a>`;
+    container.innerHTML = html;
+  }
+
+  // ── Sidebar Toggle ────────────────────────────────────────
+  const hamburger = document.getElementById('topbar-hamburger');
+  const sidebar   = document.getElementById('na360-sidebar');
+  const overlay   = document.getElementById('sidebar-overlay');
+
+  function openSidebar() {
+    sidebar.classList.add('open');
+    overlay.classList.add('active');
+    overlay.setAttribute('aria-hidden', 'false');
+    hamburger.setAttribute('aria-expanded', 'true');
+  }
+
+  function closeSidebar() {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('active');
+    overlay.setAttribute('aria-hidden', 'true');
+    hamburger.setAttribute('aria-expanded', 'false');
+  }
+
+  hamburger.addEventListener('click', () => {
+    sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
+  });
+
+  overlay.addEventListener('click', closeSidebar);
+
+  // Close sidebar on nav item click (mobile)
+  document.querySelectorAll('.sidebar-nav-item[data-route]').forEach(el => {
+    el.addEventListener('click', () => {
+      if (window.innerWidth < 1280) closeSidebar();
+    });
+  });
+
+  // ── Theme Toggle ──────────────────────────────────────────
+  document.getElementById('theme-toggle-btn').addEventListener('click', () => {
+    Theme.toggle();
+  });
+
+  // ── Toast Helper ──────────────────────────────────────────
+  window.showToast = function(message, type = 'info') {
+    const container = document.getElementById('toast-container');
+    const icons = { success: '✓', error: '✕', info: 'ℹ', warning: '⚠' };
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.innerHTML = `<span>${icons[type] || 'ℹ'}</span><span>${message}</span>`;
+    container.appendChild(toast);
+    setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.3s'; setTimeout(() => toast.remove(), 300); }, 3500);
+  };
+
+  // ── Search ────────────────────────────────────────────────
+  const searchInput = document.getElementById('topbar-search-input');
+  const SEARCHABLE = [
+    { label: 'Dashboard',              route: '/student/dashboard' },
+    { label: 'Competency Radar',       route: '/student/radar' },
+    { label: 'Skill Tree',             route: '/student/skill-tree' },
+    { label: 'Skill Mastery',          route: '/student/mastery' },
+    { label: 'Cisco Analyzer',         route: '/student/cisco-analyzer' },
+    { label: 'Virtual NOC',            route: '/student/vnoc' },
+    { label: 'Missions',               route: '/student/missions' },
+    { label: 'Readiness Index',        route: '/student/readiness' },
+    { label: 'Recommendations',        route: '/student/recommendations' },
+    { label: 'Skill Passport',         route: '/student/passport' },
+    { label: 'Lecturer Dashboard',     route: '/lecturer/dashboard' },
+    { label: 'Class Heatmap',          route: '/lecturer/heatmap' },
+    { label: 'Interventions',          route: '/lecturer/intervention' },
+    { label: 'CLO/PLO Attainment',     route: '/lecturer/clo-attainment' },
+  ];
+
+  searchInput.addEventListener('input', (e) => {
+    const q = e.target.value.trim().toLowerCase();
+    if (!q) return;
+    const match = SEARCHABLE.find(s => s.label.toLowerCase().includes(q));
+    if (match) {
+      Router.navigate(match.route);
+      searchInput.value = '';
+      searchInput.blur();
+    }
+  });
+
+  // ── Badge Earned Notification ─────────────────────────────
+  EventBus.on('passport:badge_earned', ({ label }) => {
+    window.showToast(`🏅 Badge earned: ${label}`, 'success');
+  });
+
+  // ── Init ──────────────────────────────────────────────────
+  Theme.init();
+  updateProfileStrip();
+  buildWeekLinks();
+
+  if (!DataModel.Profile.exists()) {
+    showOnboarding();
+  }
+
+  Router.init();
+</script>
+
+</body>
+</html>

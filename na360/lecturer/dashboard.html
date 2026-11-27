@@ -1,0 +1,218 @@
+<div id="view-content">
+
+<!-- Synthetic Data Banner -->
+<div class="synthetic-banner">⚠ SYNTHETIC DATA — DEMONSTRATION MODE ONLY — This data does not represent any real student</div>
+
+<!-- Page Header -->
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Intelligence Dashboard — STM31733</h1>
+    <p class="page-subtitle">Jusdy bin Juwait | Kolej Komuniti Papar | Session I 2025/2026</p>
+  </div>
+</div>
+
+<!-- Stat Cards -->
+<div class="grid grid-cols-4 gap-4 mb-6">
+  <div class="stat-card">
+    <div class="stat-card-icon" style="background:var(--accent-blue-light);color:var(--accent-blue);">👥</div>
+    <div class="stat-card-label">Total Students</div>
+    <div class="stat-card-value" id="stat-total">25</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card-icon" style="background:var(--accent-green-light);color:var(--accent-green);">📊</div>
+    <div class="stat-card-label">Average RI</div>
+    <div class="stat-card-value" id="stat-avg-ri">—</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card-icon" style="background:var(--accent-red-light);color:var(--accent-red);">⚠️</div>
+    <div class="stat-card-label">At-Risk Count</div>
+    <div class="stat-card-value" id="stat-at-risk">—</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card-icon" style="background:var(--accent-purple-light);color:var(--accent-purple);">🎯</div>
+    <div class="stat-card-label">Avg Competency</div>
+    <div class="stat-card-value" id="stat-avg-comp">—</div>
+  </div>
+</div>
+
+<!-- Charts Row -->
+<div class="grid grid-cols-2 gap-4 mb-6">
+  <div class="card">
+    <div class="card-header"><div class="card-title">Class Competency Radar</div><div class="card-subtitle">Average across 6 domains</div></div>
+    <div class="card-body"><canvas id="radar-chart" height="260"></canvas></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><div class="card-title">Assessment Score Distribution</div><div class="card-subtitle">Class averages per component</div></div>
+    <div class="card-body"><canvas id="score-dist-chart" height="260"></canvas></div>
+  </div>
+</div>
+
+<!-- Weekly Engagement Chart -->
+<div class="card mb-6">
+  <div class="card-header">
+    <div class="card-title">Weekly Engagement</div>
+    <div class="card-subtitle">% students who reached each week (based on weeks_completed)</div>
+  </div>
+  <div class="card-body"><canvas id="engagement-chart" height="100"></canvas></div>
+</div>
+
+<!-- At-Risk Students Panel -->
+<div class="card mb-6">
+  <div class="card-header">
+    <div class="card-title">At-Risk Students (Top 5)</div>
+    <span class="badge badge-red" id="at-risk-count-badge">0</span>
+  </div>
+  <div class="card-body">
+    <div id="at-risk-panel" class="grid grid-cols-2 gap-3">
+      <!-- Rendered by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- Module Usage Note -->
+<div class="alert alert-info">
+  <div>
+    <div style="font-weight:600;">Module Usage Tracking</div>
+    <div>Module usage tracking available in Phase 2 with real student data.</div>
+  </div>
+</div>
+
+<script type="module">
+let radarChart = null;
+let scoreDistChart = null;
+let engagementChart = null;
+
+function computeRI(s) {
+  return Math.round(s.test * 0.15 + s.practical1 * 0.45 + s.practical2 * 0.30 + s.presentation * 0.10);
+}
+
+function avg(arr) {
+  return arr.length ? Math.round(arr.reduce((a, b) => a + b, 0) / arr.length) : 0;
+}
+
+function init(students) {
+  const riScores  = students.map(s => computeRI(s.scores));
+  const atRisk    = students.filter(s => s.at_risk);
+  const avgComp   = avg(students.map(s =>
+    Math.round((s.competency.domain1 + s.competency.domain2 + s.competency.domain3 +
+                s.competency.domain4 + s.competency.domain5 + s.competency.domain6) / 6)
+  ));
+
+  document.getElementById('stat-avg-ri').textContent   = avg(riScores) + '%';
+  document.getElementById('stat-at-risk').textContent  = atRisk.length;
+  document.getElementById('stat-avg-comp').textContent = avgComp + '%';
+  document.getElementById('at-risk-count-badge').textContent = atRisk.length + ' at risk';
+
+  // Radar Chart
+  const domains = ['domain1','domain2','domain3','domain4','domain5','domain6'];
+  const domainLabels = ['D1: Fundamentals','D2: Infrastructure','D3: Configuration','D4: Troubleshooting','D5: Monitoring','D6: Professional'];
+  const domainAvgs = domains.map(d => avg(students.map(s => s.competency[d] || 0)));
+
+  if (radarChart) radarChart.destroy();
+  radarChart = new Chart(document.getElementById('radar-chart').getContext('2d'), {
+    type: 'radar',
+    data: {
+      labels: domainLabels,
+      datasets: [{
+        label: 'Class Average',
+        data: domainAvgs,
+        borderColor: '#1A73E8',
+        backgroundColor: 'rgba(26,115,232,0.15)',
+        pointBackgroundColor: '#1A73E8',
+        borderWidth: 2,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      scales: { r: { min: 0, max: 100, ticks: { stepSize: 20 } } },
+      plugins: { legend: { display: false } }
+    }
+  });
+
+  // Score Distribution Bar Chart
+  const compAvgs = [
+    avg(students.map(s => s.scores.test)),
+    avg(students.map(s => s.scores.practical1)),
+    avg(students.map(s => s.scores.practical2)),
+    avg(students.map(s => s.scores.presentation)),
+  ];
+  if (scoreDistChart) scoreDistChart.destroy();
+  scoreDistChart = new Chart(document.getElementById('score-dist-chart').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: ['Test', 'Practical 1', 'Practical 2', 'Presentation'],
+      datasets: [{
+        label: 'Class Average',
+        data: compAvgs,
+        backgroundColor: ['#1A73E8','#7C5CD8','#34A853','#F9AB00'],
+        borderRadius: 6,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      scales: { y: { min: 0, max: 100 } },
+      plugins: { legend: { display: false } }
+    }
+  });
+
+  // Weekly Engagement Chart
+  const weekLabels = Array.from({ length: 14 }, (_, i) => `W${i + 1}`);
+  const weekEngagement = Array.from({ length: 14 }, (_, i) => {
+    const weekNum = i + 1;
+    const reached = students.filter(s => s.weeks_completed >= weekNum).length;
+    return Math.round((reached / students.length) * 100);
+  });
+  if (engagementChart) engagementChart.destroy();
+  engagementChart = new Chart(document.getElementById('engagement-chart').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: weekLabels,
+      datasets: [{
+        label: '% Students Reached',
+        data: weekEngagement,
+        backgroundColor: weekEngagement.map(v =>
+          v >= 80 ? 'rgba(52,168,83,0.7)' : v >= 60 ? 'rgba(26,115,232,0.7)' : 'rgba(234,67,53,0.7)'
+        ),
+        borderRadius: 4,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      scales: { y: { min: 0, max: 100, ticks: { callback: v => v + '%' } } },
+      plugins: { legend: { display: false } }
+    }
+  });
+
+  // At-Risk Panel
+  const topAtRisk = atRisk.slice(0, 5);
+  const panel = document.getElementById('at-risk-panel');
+  if (topAtRisk.length === 0) {
+    panel.innerHTML = '<div style="color:var(--text-muted);font-size:var(--font-size-sm);">No at-risk students — great performance!</div>';
+    return;
+  }
+  const domainNames = { domain1:'D1 Fundamentals', domain2:'D2 Infrastructure', domain3:'D3 Configuration', domain4:'D4 Troubleshooting', domain5:'D5 Monitoring', domain6:'D6 Professional' };
+  panel.innerHTML = topAtRisk.map(s => {
+    const ri = computeRI(s.scores);
+    const weakDomain = domains.reduce((a, b) => s.competency[a] < s.competency[b] ? a : b);
+    const flags = s.risk_flags.length;
+    return `
+      <div class="card" style="padding:.75rem 1rem;">
+        <div class="flex items-center justify-between mb-2">
+          <span style="font-weight:600;font-size:var(--font-size-sm);">${s.name}</span>
+          <span class="badge badge-red">RI: ${ri}%</span>
+        </div>
+        <div style="font-size:var(--font-size-xs);color:var(--text-secondary);">Weak: ${domainNames[weakDomain]}</div>
+        <div style="font-size:var(--font-size-xs);color:var(--accent-red);margin-top:4px;">⚑ ${flags} risk flag${flags !== 1 ? 's' : ''}</div>
+      </div>`;
+  }).join('');
+}
+
+fetch('../data/synthetic-class.json')
+  .then(r => r.json())
+  .then(d => init(d.students))
+  .catch(e => console.error('[Dashboard] Failed to load synthetic data:', e));
+</script>
+</div>

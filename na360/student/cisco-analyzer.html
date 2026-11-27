@@ -1,0 +1,305 @@
+<div id="view-content">
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">Cisco Configuration Analyzer</h1>
+    <p class="page-subtitle">Paste Cisco IOS config — get instant feedback (CLO2)</p>
+  </div>
+</div>
+
+<div class="grid grid-cols-12 gap-4">
+
+  <!-- Left: Input Panel -->
+  <div class="card col-span-6" style="display:flex;flex-direction:column;">
+    <div class="card-header">
+      <div class="card-title">Configuration Input</div>
+      <div style="display:flex;gap:.5rem;align-items:center;">
+        <select id="sample-select" class="btn btn-ghost btn-sm" style="cursor:pointer;">
+          <option value="">Load Sample Config…</option>
+        </select>
+        <button class="btn btn-ghost btn-sm" id="btn-clear">Clear</button>
+      </div>
+    </div>
+    <div class="card-body" style="flex:1;display:flex;flex-direction:column;gap:.75rem;">
+      <textarea id="config-input" class="form-textarea"
+        placeholder="Paste your Cisco IOS running-config here…"
+        spellcheck="false"
+        style="flex:1;min-height:400px;font-family:var(--font-mono);font-size:var(--font-size-xs);line-height:1.6;
+               resize:vertical;border:1px solid var(--border);border-radius:var(--radius-md);padding:.75rem;
+               background:var(--bg-surface);color:var(--text-primary);width:100%;outline:none;
+               transition:border-color .15s;"></textarea>
+      <button class="btn btn-primary" id="btn-analyse" style="width:100%;">
+        🔍 Analyse Configuration
+      </button>
+    </div>
+  </div>
+
+  <!-- Right: Results Panel -->
+  <div class="col-span-6" style="display:flex;flex-direction:column;gap:1rem;">
+
+    <!-- Score Gauge -->
+    <div class="card" id="results-panel" style="display:none;">
+      <div class="card-header">
+        <div class="card-title">Analysis Results</div>
+        <span class="badge badge-blue">CLO2 — Unit 3.1–4.2</span>
+      </div>
+      <div class="card-body">
+        <!-- Score Gauge -->
+        <div style="display:flex;align-items:center;gap:1.5rem;padding:.75rem;background:var(--bg-surface);border-radius:var(--radius-md);margin-bottom:1rem;">
+          <div id="score-gauge" style="width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:var(--font-size-xl);font-weight:700;border:4px solid var(--accent-blue);flex-shrink:0;">
+            —
+          </div>
+          <div>
+            <div style="font-size:var(--font-size-sm);font-weight:600;color:var(--text-primary);" id="score-label">—</div>
+            <div style="font-size:var(--font-size-xs);color:var(--text-muted);" id="score-desc">Run analysis to see your score</div>
+          </div>
+        </div>
+
+        <!-- Issue List -->
+        <div style="font-size:var(--font-size-xs);font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-secondary);margin-bottom:.5rem;">
+          Issues Found
+        </div>
+        <div id="issue-list" style="display:flex;flex-direction:column;gap:.5rem;max-height:300px;overflow-y:auto;"></div>
+      </div>
+    </div>
+
+    <!-- Empty state -->
+    <div class="card" id="results-empty" style="text-align:center;padding:2.5rem;">
+      <div style="font-size:2rem;margin-bottom:.5rem;">📋</div>
+      <div style="font-size:var(--font-size-sm);color:var(--text-secondary);">Paste a config and click Analyse to see results</div>
+    </div>
+
+    <!-- Score History Chart -->
+    <div class="card" id="history-card">
+      <div class="card-header">
+        <div class="card-title">Score History</div>
+        <span style="font-size:var(--font-size-xs);color:var(--text-muted);" id="history-count">Last 5 analyses</span>
+      </div>
+      <div class="card-body">
+        <canvas id="history-chart" height="80"></canvas>
+        <div id="history-empty" style="text-align:center;padding:1.5rem;color:var(--text-muted);font-size:var(--font-size-xs);">
+          No analyses yet
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script type="module">
+import DataModel        from '../core/data-model.js';
+import CompetencyEngine from '../core/competency-engine.js';
+import EventBus         from '../core/event-bus.js';
+
+let rules = [];
+let historyChart = null;
+
+async function loadTemplates() {
+  try {
+    const res = await fetch('../data/cisco-templates.json');
+    const data = await res.json();
+    rules = data.rules || [];
+
+    const sel = document.getElementById('sample-select');
+    (data.sample_configs || []).forEach(sc => {
+      const opt = document.createElement('option');
+      opt.value = sc.id;
+      opt.textContent = sc.label;
+      opt.dataset.config = sc.config;
+      sel.appendChild(opt);
+    });
+
+    // Store sample configs for quick lookup
+    sel._configs = {};
+    (data.sample_configs || []).forEach(sc => { sel._configs[sc.id] = sc.config; });
+  } catch (e) {
+    console.warn('[CiscoAnalyzer] Could not load cisco-templates.json', e);
+  }
+}
+
+function analyse(configText) {
+  if (!configText.trim()) return null;
+  const lines = configText.split('\n');
+  const lowerConfig = configText.toLowerCase();
+
+  const issues = [];
+  let deductions = 0;
+
+  // Determine context booleans
+  const hasDHCP     = /ip dhcp pool/i.test(configText);
+  const hasSSH      = /transport input ssh/i.test(configText) || /crypto key generate rsa/i.test(configText);
+  const hasRIP      = /router rip/i.test(configText);
+
+  rules.forEach(rule => {
+    let triggered = false;
+    const pattern = new RegExp(rule.pattern, 'im');
+
+    switch (rule.pattern_type) {
+      case 'must_contain':
+        triggered = !pattern.test(configText);
+        break;
+      case 'must_not_contain':
+        triggered = pattern.test(configText);
+        break;
+      case 'may_contain':
+        // info-only: not a problem if missing, but flag if rule severity is error/warning
+        triggered = rule.severity !== 'info' && !pattern.test(configText);
+        break;
+      case 'rip_context':
+        triggered = hasRIP && !pattern.test(configText);
+        break;
+      case 'switch_context':
+        // flag ip routing missing if vlan config is present but no ip routing
+        triggered = /interface vlan/i.test(configText) && !/ip routing/i.test(configText);
+        break;
+      case 'dhcp_context':
+        triggered = hasDHCP && !pattern.test(configText);
+        break;
+      case 'must_contain_if_dhcp':
+        triggered = hasDHCP && !pattern.test(configText);
+        break;
+      case 'vty_context':
+        triggered = /line vty/i.test(configText) && !pattern.test(configText);
+        break;
+      case 'must_contain_if_ssh':
+        triggered = hasSSH && !pattern.test(configText);
+        break;
+      default:
+        break;
+    }
+
+    if (triggered) {
+      deductions += rule.points || 0;
+      issues.push(rule);
+    }
+  });
+
+  const score = Math.max(0, Math.min(100, 100 - deductions));
+  return { score, issues };
+}
+
+function renderResults(result) {
+  const { score, issues } = result;
+  document.getElementById('results-empty').style.display = 'none';
+  const panel = document.getElementById('results-panel');
+  panel.style.display = 'block';
+
+  // Gauge
+  const gauge = document.getElementById('score-gauge');
+  let gaugeColor = 'var(--accent-green)';
+  let scoreLabel = 'Excellent';
+  let scoreDesc  = 'Configuration is well-structured';
+  if (score < 40) { gaugeColor = 'var(--accent-red)';   scoreLabel = 'Critical Issues';  scoreDesc = 'Significant security and config problems found'; }
+  else if (score < 60) { gaugeColor = 'var(--accent-amber)'; scoreLabel = 'Needs Improvement'; scoreDesc = 'Several important items missing'; }
+  else if (score < 80) { gaugeColor = 'var(--accent-blue)';  scoreLabel = 'Good';             scoreDesc = 'Minor improvements recommended'; }
+
+  gauge.textContent = score;
+  gauge.style.borderColor = gaugeColor;
+  gauge.style.color = gaugeColor;
+  document.getElementById('score-label').textContent = scoreLabel;
+  document.getElementById('score-desc').textContent  = scoreDesc;
+
+  // Issue list
+  const issueList = document.getElementById('issue-list');
+  if (issues.length === 0) {
+    issueList.innerHTML = `<div style="color:var(--accent-green);font-size:var(--font-size-sm);padding:.5rem 0;">✅ No issues found — excellent configuration!</div>`;
+  } else {
+    issueList.innerHTML = issues.map(iss => {
+      const sevColor = iss.severity === 'error' ? 'var(--accent-red)' : iss.severity === 'warning' ? 'var(--accent-amber)' : 'var(--accent-blue)';
+      const sevBg    = iss.severity === 'error' ? 'var(--mastery-1-bg)' : iss.severity === 'warning' ? 'var(--mastery-2-bg)' : 'var(--accent-blue-light)';
+      return `
+      <div style="border:1px solid var(--border);border-radius:var(--radius-md);padding:.6rem .75rem;background:var(--bg-card);">
+        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.25rem;">
+          <span style="font-size:var(--font-size-xs);padding:1px 7px;border-radius:var(--radius-pill);background:${sevBg};color:${sevColor};font-weight:700;text-transform:uppercase;">
+            ${iss.severity}
+          </span>
+          <span style="font-size:var(--font-size-xs);color:var(--text-muted);">${iss.unit} · ${iss.clo}</span>
+        </div>
+        <div style="font-size:var(--font-size-xs);color:var(--text-primary);font-weight:500;margin-bottom:.2rem;">${iss.message}</div>
+        <div style="font-size:var(--font-size-xs);color:var(--text-muted);">💡 ${iss.suggestion}</div>
+      </div>`;
+    }).join('');
+  }
+}
+
+function renderHistory() {
+  const history = DataModel.CiscoHistory.getLast(5);
+  const histEmpty = document.getElementById('history-empty');
+  document.getElementById('history-count').textContent = `Last ${history.length} analys${history.length === 1 ? 'is' : 'es'}`;
+
+  if (history.length === 0) {
+    histEmpty.style.display = 'block';
+    if (historyChart) { historyChart.destroy(); historyChart = null; }
+    return;
+  }
+  histEmpty.style.display = 'none';
+
+  const labels = history.map((h, i) => `#${i + 1}`);
+  const scores = history.map(h => h.score);
+
+  if (historyChart) historyChart.destroy();
+  const ctx = document.getElementById('history-chart').getContext('2d');
+  historyChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Score',
+        data: scores,
+        backgroundColor: scores.map(s =>
+          s >= 80 ? 'rgba(52,168,83,.7)' : s >= 60 ? 'rgba(26,115,232,.7)' : s >= 40 ? 'rgba(251,188,4,.7)' : 'rgba(234,67,53,.7)'
+        ),
+        borderRadius: 4,
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { min: 0, max: 100, ticks: { font: { size: 10 } } },
+        x: { ticks: { font: { size: 10 } } },
+      },
+    },
+  });
+}
+
+// Event listeners
+document.getElementById('sample-select').addEventListener('change', function () {
+  const sel = this;
+  const config = sel._configs && sel._configs[this.value];
+  if (config) {
+    document.getElementById('config-input').value = config;
+    this.value = '';
+  }
+});
+
+document.getElementById('btn-clear').addEventListener('click', () => {
+  document.getElementById('config-input').value = '';
+  document.getElementById('results-panel').style.display = 'none';
+  document.getElementById('results-empty').style.display = 'block';
+});
+
+document.getElementById('btn-analyse').addEventListener('click', () => {
+  const configText = document.getElementById('config-input').value;
+  if (!configText.trim()) {
+    document.getElementById('config-input').style.borderColor = 'var(--accent-red)';
+    setTimeout(() => document.getElementById('config-input').style.borderColor = '', 1200);
+    return;
+  }
+  const result = analyse(configText);
+  if (!result) return;
+
+  DataModel.CiscoHistory.add(result.score, result.issues.length, configText.length);
+  CompetencyEngine.recalculateAll();
+  renderResults(result);
+  renderHistory();
+  EventBus.emit('cisco:analyzed', { score: result.score });
+});
+
+EventBus.on('cisco:analyzed', renderHistory);
+
+await loadTemplates();
+renderHistory();
+</script>
+</div>

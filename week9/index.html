@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 9 — DHCP Configuration | STM31733</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../week-shared.css">
+</head>
+<body>
+
+<!-- Topbar -->
+<nav class="week-topbar">
+  <div class="week-topbar-left">
+    <div class="week-topbar-logo">🌐</div>
+    <div>
+      <div class="week-topbar-title">STM31733 Network Administration</div>
+      <div class="week-topbar-sub">Kolej Komuniti Papar · Jusdy bin Juwait</div>
+    </div>
+  </div>
+  <div class="week-topbar-nav">
+    <a href="../index.html" class="topbar-link">← Course Home</a>
+    <a href="../na360/index.html" class="topbar-link">NetAdmin 360</a>
+    <a href="../week8/index.html" class="topbar-link">← Week 8</a>
+    <a href="../week10/index.html" class="topbar-link">Week 10 →</a>
+  </div>
+</nav>
+
+<div class="week-container">
+
+  <!-- Hero -->
+  <div class="week-hero">
+    <div>
+      <div class="hero-week-num">Week 9 · Unit 3.0 / Subtopic 3.4</div>
+      <h1 class="hero-title">DHCP Configuration</h1>
+      <div class="hero-unit">STM31733 Network Administration</div>
+      <div class="hero-clo-tags">
+        <span class="clo-tag">CLO2</span>
+        <span class="clo-tag">P3</span>
+        <span class="clo-tag">PLO3</span>
+      </div>
+      <p style="color:rgba(255,255,255,.75);margin-top:.9rem;font-size:.9375rem;">
+        Configure a Cisco router as a DHCP server, exclude static addresses, verify bindings, and set up a DHCP relay agent for multi-segment networks.
+      </p>
+    </div>
+    <div class="hero-meta">
+      <div class="hero-week-badge">9</div>
+    </div>
+  </div>
+
+  <!-- Topics Covered -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#E8F0FE;">📋</div>
+      <div>
+        <div class="card-header-title">Topics Covered</div>
+        <div class="card-header-sub">Unit 3.0 — Subtopic 3.4</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <ul class="topic-list">
+        <li><span class="topic-dot" style="background:var(--blue);"></span>DHCP concepts — DORA process (Discover → Offer → Request → Acknowledge)</li>
+        <li><span class="topic-dot" style="background:var(--blue);"></span>Configuring a DHCP pool: <code>ip dhcp pool</code>, <code>network</code>, <code>default-router</code>, <code>dns-server</code>, <code>lease</code></li>
+        <li><span class="topic-dot" style="background:var(--green);"></span>Excluding static IP addresses: <code>ip dhcp excluded-address</code></li>
+        <li><span class="topic-dot" style="background:var(--green);"></span>Verifying DHCP: <code>show ip dhcp binding</code>, <code>show ip dhcp pool</code></li>
+        <li><span class="topic-dot" style="background:var(--amber);"></span>DHCP relay agent: <code>ip helper-address</code></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Sub-topics -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#E6F4EA;">📖</div>
+      <div>
+        <div class="card-header-title">Sub-topic Detail</div>
+        <div class="card-header-sub">Expand each section to study</div>
+      </div>
+    </div>
+    <div class="card-body">
+
+      <details class="subtopic">
+        <summary class="subtopic-header">
+          <span class="subtopic-code">3.4.1</span> DORA Process
+        </summary>
+        <div class="subtopic-body">
+          <ul>
+            <li><strong>Discover:</strong> Client broadcasts to find a DHCP server (src 0.0.0.0, dst 255.255.255.255).</li>
+            <li><strong>Offer:</strong> Server unicasts/broadcasts an IP address offer.</li>
+            <li><strong>Request:</strong> Client broadcasts acceptance of the offer.</li>
+            <li><strong>Acknowledge:</strong> Server confirms — client can now use the IP address.</li>
+            <li>DHCP uses UDP port 67 (server) and 68 (client).</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="subtopic">
+        <summary class="subtopic-header">
+          <span class="subtopic-code">3.4.2</span> Configuring a DHCP Pool
+        </summary>
+        <div class="subtopic-body">
+          <ul>
+            <li><code>ip dhcp pool &lt;name&gt;</code> — creates and enters DHCP pool config mode.</li>
+            <li><code>network &lt;network&gt; &lt;mask&gt;</code> — defines the address pool range.</li>
+            <li><code>default-router &lt;ip&gt;</code> — sets the gateway handed to clients.</li>
+            <li><code>dns-server &lt;ip&gt;</code> — DNS server(s) pushed to clients.</li>
+            <li><code>lease &lt;days&gt; [hours] [minutes]</code> — lease duration (default 1 day).</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="subtopic">
+        <summary class="subtopic-header">
+          <span class="subtopic-code">3.4.3</span> Excluded Addresses &amp; Verification
+        </summary>
+        <div class="subtopic-body">
+          <ul>
+            <li><code>ip dhcp excluded-address &lt;low&gt; [high]</code> — prevents these IPs from being leased.</li>
+            <li>Always exclude router interfaces, servers, printers, and other static devices.</li>
+            <li><code>show ip dhcp binding</code> — lists all current client leases.</li>
+            <li><code>show ip dhcp pool</code> — pool stats including leases in use and available.</li>
+            <li><code>show ip dhcp conflict</code> — IPs that caused address conflicts.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="subtopic">
+        <summary class="subtopic-header">
+          <span class="subtopic-code">3.4.4</span> DHCP Relay Agent
+        </summary>
+        <div class="subtopic-body">
+          <ul>
+            <li>DHCP broadcasts cannot cross router boundaries by default.</li>
+            <li>The relay agent forwards DHCP broadcasts as unicast to the centralised DHCP server.</li>
+            <li>Configured on the router interface <em>facing the clients</em>.</li>
+            <li>Command: <code>ip helper-address &lt;dhcp-server-ip&gt;</code></li>
+            <li>Enables a single DHCP server to serve multiple VLANs/subnets.</li>
+          </ul>
+        </div>
+      </details>
+
+    </div>
+  </div>
+
+  <!-- Key Concepts -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#EDE7FF;">💡</div>
+      <div>
+        <div class="card-header-title">Key Concepts</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="info-box note">
+        <span class="info-box-icon">ℹ️</span>
+        <div><strong>DHCP Lease:</strong> The lease time determines how long a client keeps its IP. Short leases suit guest networks; longer leases suit stable office environments. Default on Cisco IOS is 1 day.</div>
+      </div>
+      <div class="info-box tip">
+        <span class="info-box-icon">✅</span>
+        <div><strong>Always exclude before defining pool:</strong> The <code>ip dhcp excluded-address</code> command must appear before the <code>ip dhcp pool</code> commands in the config (or at least before clients request leases).</div>
+      </div>
+      <div class="info-box warning">
+        <span class="info-box-icon">⚠️</span>
+        <div><strong>IP Conflicts:</strong> If a client manually sets an IP that is in the DHCP pool, a conflict will occur. Run <code>show ip dhcp conflict</code> and <code>clear ip dhcp conflict *</code> to resolve.</div>
+      </div>
+      <div class="info-box cisco">
+        <span class="info-box-icon">🔧</span>
+        <div><strong>Relay Agent Placement:</strong> <code>ip helper-address</code> goes on the client-side interface (sub-interface or physical) of the router — NOT on the interface facing the DHCP server.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cisco Config Examples -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#EDE7FF;">⌨️</div>
+      <div>
+        <div class="card-header-title">Cisco IOS Configuration Examples</div>
+        <div class="card-header-sub">Full DHCP server, exclusions, and relay agent</div>
+      </div>
+    </div>
+    <div class="card-body">
+
+      <p style="font-weight:600;margin-bottom:.5rem;">Example 1 — Full DHCP Server on a Router</p>
+      <pre class="config-block"><span class="config-comment">! ── Exclude the first 10 addresses (router, servers, printers)</span>
+<span class="config-cmd">Router(config)#</span> <span class="config-param">ip dhcp excluded-address</span> <span class="config-value">192.168.1.1 192.168.1.10</span>
+
+<span class="config-comment">! ── Create DHCP pool for LAN_USERS</span>
+<span class="config-cmd">Router(config)#</span> <span class="config-param">ip dhcp pool</span> <span class="config-value">LAN_USERS</span>
+<span class="config-cmd">Router(dhcp-config)#</span> <span class="config-param">network</span> <span class="config-value">192.168.1.0 255.255.255.0</span>
+<span class="config-cmd">Router(dhcp-config)#</span> <span class="config-param">default-router</span> <span class="config-value">192.168.1.1</span>
+<span class="config-cmd">Router(dhcp-config)#</span> <span class="config-param">dns-server</span> <span class="config-value">8.8.8.8 8.8.4.4</span>
+<span class="config-cmd">Router(dhcp-config)#</span> <span class="config-param">lease</span> <span class="config-value">7</span>
+<span class="config-cmd">Router(dhcp-config)#</span> <span class="config-param">exit</span>
+
+<span class="config-comment">! ── Verify</span>
+<span class="config-cmd">Router#</span> <span class="config-param">show ip dhcp pool</span>
+<span class="config-cmd">Router#</span> <span class="config-param">show ip dhcp binding</span></pre>
+
+      <p style="font-weight:600;margin:.75rem 0 .5rem;">Example 2 — DHCP Relay Agent</p>
+      <pre class="config-block"><span class="config-comment">! ── On the branch router, interface facing clients</span>
+<span class="config-cmd">BranchR(config)#</span> <span class="config-param">interface</span> <span class="config-value">GigabitEthernet0/0</span>
+<span class="config-cmd">BranchR(config-if)#</span> <span class="config-param">ip address</span> <span class="config-value">10.10.10.1 255.255.255.0</span>
+<span class="config-cmd">BranchR(config-if)#</span> <span class="config-param">ip helper-address</span> <span class="config-value">192.168.100.10</span>
+<span class="config-cmd">BranchR(config-if)#</span> <span class="config-param">no shutdown</span>
+<span class="config-comment">! 192.168.100.10 = centralised DHCP server address</span></pre>
+
+    </div>
+  </div>
+
+  <!-- Packet Tracer Activity -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#E8F0FE;">📦</div>
+      <div>
+        <div class="card-header-title">Packet Tracer Activity</div>
+        <div class="card-header-sub">Hands-on lab</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="pt-activity">
+        <div class="pt-activity-title">🖥️ Lab 5 — DHCP Configuration on a Cisco Router</div>
+        <p style="font-size:.875rem;color:var(--muted);margin-bottom:.75rem;">Open the Lab 5 Packet Tracer file. Complete the following steps:</p>
+        <ol class="pt-steps">
+          <li>Examine the topology: Router0 connected to two switches each with two PCs.</li>
+          <li>Assign IP addresses to both router Gi interfaces (192.168.1.1/24 and 192.168.2.1/24).</li>
+          <li>Exclude the first 10 addresses from each subnet on the router.</li>
+          <li>Configure DHCP pool <code>POOL_A</code> for the 192.168.1.0/24 network with appropriate gateway and DNS.</li>
+          <li>Configure DHCP pool <code>POOL_B</code> for the 192.168.2.0/24 network.</li>
+          <li>On each PC, set NIC to obtain IP automatically; click "Fast Forward Time" and confirm addresses are assigned.</li>
+          <li>Run <code>show ip dhcp binding</code> on the router and verify four bindings.</li>
+          <li>Add a second router simulating a relay scenario; configure <code>ip helper-address</code> and verify clients still receive IPs.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quiz -->
+  <div class="quiz-section" id="quizSection9">
+    <div class="quiz-title">📝 Week 9 Quiz — DHCP Configuration (5 Questions)</div>
+
+    <div class="quiz-question">
+      <div class="quiz-q-text">1. What does DORA stand for in the DHCP process?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q1" value="a"> a) Deploy, Obtain, Register, Activate</label>
+        <label class="quiz-option"><input type="radio" name="q1" value="b"> b) Discover, Offer, Request, Acknowledge</label>
+        <label class="quiz-option"><input type="radio" name="q1" value="c"> c) Define, Offer, Reserve, Assign</label>
+        <label class="quiz-option"><input type="radio" name="q1" value="d"> d) Discover, Order, Reply, Accept</label>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <div class="quiz-q-text">2. Which command prevents 192.168.1.1 through 192.168.1.5 from being assigned by DHCP?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q2" value="a"> a) <code>ip dhcp exclude 192.168.1.1 192.168.1.5</code></label>
+        <label class="quiz-option"><input type="radio" name="q2" value="b"> b) <code>no ip dhcp pool 192.168.1.1</code></label>
+        <label class="quiz-option"><input type="radio" name="q2" value="c"> c) <code>ip dhcp excluded-address 192.168.1.1 192.168.1.5</code></label>
+        <label class="quiz-option"><input type="radio" name="q2" value="d"> d) <code>ip dhcp reserve 192.168.1.1 192.168.1.5</code></label>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <div class="quiz-q-text">3. What is the purpose of the <code>ip helper-address</code> command?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q3" value="a"> a) Sets the IP address of the router interface</label>
+        <label class="quiz-option"><input type="radio" name="q3" value="b"> b) Forwards DHCP broadcast packets as unicast to a remote DHCP server</label>
+        <label class="quiz-option"><input type="radio" name="q3" value="c"> c) Disables the DHCP client on the router</label>
+        <label class="quiz-option"><input type="radio" name="q3" value="d"> d) Reserves a specific IP for a MAC address</label>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <div class="quiz-q-text">4. Which command shows current DHCP address leases on a Cisco router?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q4" value="a"> a) <code>show ip dhcp pool</code></label>
+        <label class="quiz-option"><input type="radio" name="q4" value="b"> b) <code>show ip dhcp binding</code></label>
+        <label class="quiz-option"><input type="radio" name="q4" value="c"> c) <code>show ip dhcp lease</code></label>
+        <label class="quiz-option"><input type="radio" name="q4" value="d"> d) <code>show dhcp clients</code></label>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <div class="quiz-q-text">5. Which UDP ports does DHCP use?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q5" value="a"> a) Port 53 and 54</label>
+        <label class="quiz-option"><input type="radio" name="q5" value="b"> b) Port 80 and 443</label>
+        <label class="quiz-option"><input type="radio" name="q5" value="c"> c) Port 67 (server) and 68 (client)</label>
+        <label class="quiz-option"><input type="radio" name="q5" value="d"> d) Port 69 and 70</label>
+      </div>
+    </div>
+
+    <button class="quiz-submit" onclick="submitQuiz9()">Submit Quiz</button>
+    <div class="quiz-result" id="quizResult9"></div>
+  </div>
+
+  <!-- Week nav footer -->
+  <div class="week-nav-footer">
+    <a href="../week8/index.html" class="week-nav-btn secondary">← Week 8: Static Routing &amp; RIPv2</a>
+    <button class="mark-done-btn" id="markDoneBtn9" onclick="markDone9()">✔ Mark Week 9 as Done</button>
+    <a href="../week10/index.html" class="week-nav-btn">Week 10: DNS Configuration →</a>
+  </div>
+
+</div><!-- /week-container -->
+
+<script>
+  const ANSWERS9 = { q1:'b', q2:'c', q3:'b', q4:'b', q5:'c' };
+
+  function submitQuiz9() {
+    let score = 0;
+    Object.keys(ANSWERS9).forEach(q => {
+      const sel = document.querySelector(`input[name="${q}"]:checked`);
+      document.querySelectorAll(`input[name="${q}"]`).forEach(inp => {
+        const lbl = inp.closest('.quiz-option');
+        if (inp.value === ANSWERS9[q]) lbl.classList.add('correct');
+        else if (sel && inp.value === sel.value) lbl.classList.add('wrong');
+        inp.disabled = true;
+      });
+      if (sel && sel.value === ANSWERS9[q]) score++;
+    });
+    const res = document.getElementById('quizResult9');
+    res.style.display = 'block';
+    res.textContent = `You scored ${score}/5. ${score >= 4 ? '🎉 Excellent!' : score >= 3 ? '👍 Good effort!' : '📚 Review the material and try again.'}`;
+    res.className = 'quiz-result ' + (score >= 3 ? 'pass' : 'fail');
+    document.querySelector('.quiz-submit').disabled = true;
+  }
+
+  function markDone9() {
+    const prog = JSON.parse(localStorage.getItem('na360_progress') || '{}');
+    prog.week9 = { visited: true, completed: true };
+    localStorage.setItem('na360_progress', JSON.stringify(prog));
+    const btn = document.getElementById('markDoneBtn9');
+    btn.textContent = '✔ Week 9 Completed';
+    btn.classList.add('done');
+  }
+
+  (function() {
+    const prog = JSON.parse(localStorage.getItem('na360_progress') || '{}');
+    if (prog.week9 && prog.week9.completed) {
+      const btn = document.getElementById('markDoneBtn9');
+      btn.textContent = '✔ Week 9 Completed';
+      btn.classList.add('done');
+    }
+    const p2 = JSON.parse(localStorage.getItem('na360_progress') || '{}');
+    if (!p2.week9) p2.week9 = {};
+    p2.week9.visited = true;
+    localStorage.setItem('na360_progress', JSON.stringify(p2));
+  })();
+</script>
+</body>
+</html>

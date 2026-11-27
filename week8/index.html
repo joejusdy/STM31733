@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 8 — Static Routing & RIPv2 | STM31733</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../week-shared.css">
+</head>
+<body>
+
+<!-- Topbar -->
+<nav class="week-topbar">
+  <div class="week-topbar-left">
+    <div class="week-topbar-logo">🌐</div>
+    <div>
+      <div class="week-topbar-title">STM31733 Network Administration</div>
+      <div class="week-topbar-sub">Kolej Komuniti Papar · Jusdy bin Juwait</div>
+    </div>
+  </div>
+  <div class="week-topbar-nav">
+    <a href="../index.html" class="topbar-link">← Course Home</a>
+    <a href="../na360/index.html" class="topbar-link">NetAdmin 360</a>
+    <a href="../week7/index.html" class="topbar-link">← Week 7</a>
+    <a href="../week9/index.html" class="topbar-link">Week 9 →</a>
+  </div>
+</nav>
+
+<div class="week-container">
+
+  <!-- Hero -->
+  <div class="week-hero">
+    <div>
+      <div class="hero-week-num">Week 8 · Unit 3.0 / Subtopic 3.3</div>
+      <h1 class="hero-title">Static Routing &amp; RIPv2</h1>
+      <div class="hero-unit">STM31733 Network Administration</div>
+      <div class="hero-clo-tags">
+        <span class="clo-tag">CLO2</span>
+        <span class="clo-tag">P3</span>
+        <span class="clo-tag">PLO3</span>
+      </div>
+      <p style="color:rgba(255,255,255,.75);margin-top:.9rem;font-size:.9375rem;">
+        Learn to configure static routes and the RIPv2 dynamic routing protocol on Cisco routers. Understand route verification using show commands and grasp when to use each approach.
+      </p>
+    </div>
+    <div class="hero-meta">
+      <div class="hero-week-badge">8</div>
+    </div>
+  </div>
+
+  <!-- Topics Covered -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#E8F0FE;">🗺️</div>
+      <div>
+        <div class="card-header-title">Topics Covered</div>
+        <div class="card-header-sub">Unit 3.0 — Subtopic 3.3</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <ul class="topic-list">
+        <li><span class="topic-dot" style="background:var(--blue);"></span>Static routing — <code>ip route</code> command syntax and logic</li>
+        <li><span class="topic-dot" style="background:var(--blue);"></span>Default static route — <code>0.0.0.0 0.0.0.0</code></li>
+        <li><span class="topic-dot" style="background:var(--blue);"></span>Verifying static routes with <code>show ip route</code></li>
+        <li><span class="topic-dot" style="background:var(--green);"></span>RIPv2 — enabling with <code>router rip</code> and <code>version 2</code></li>
+        <li><span class="topic-dot" style="background:var(--green);"></span>Advertising networks with <code>network</code> command</li>
+        <li><span class="topic-dot" style="background:var(--green);"></span>Disabling auto-summarisation — <code>no auto-summary</code></li>
+        <li><span class="topic-dot" style="background:var(--green);"></span>Passive interfaces — <code>passive-interface</code></li>
+        <li><span class="topic-dot" style="background:var(--amber);"></span>Verification — <code>show ip protocols</code> and <code>show ip route</code></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Sub-topics -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#E6F4EA;">📖</div>
+      <div>
+        <div class="card-header-title">Sub-topic Detail</div>
+        <div class="card-header-sub">Expand each section to study</div>
+      </div>
+    </div>
+    <div class="card-body">
+
+      <details class="subtopic">
+        <summary class="subtopic-header">
+          <span class="subtopic-code">3.3.1</span> Static Routing Fundamentals
+        </summary>
+        <div class="subtopic-body">
+          <ul>
+            <li>Static routes are manually configured paths — no routing protocol overhead.</li>
+            <li>Syntax: <code>ip route &lt;network&gt; &lt;mask&gt; &lt;next-hop-ip | exit-interface&gt;</code></li>
+            <li>Administrative distance = 1 (most trusted after connected routes).</li>
+            <li>Best suited for stub networks and small topologies.</li>
+            <li>Floating static route: set AD higher (e.g. 10) to serve as a backup.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="subtopic">
+        <summary class="subtopic-header">
+          <span class="subtopic-code">3.3.2</span> Default Static Route (Gateway of Last Resort)
+        </summary>
+        <div class="subtopic-body">
+          <ul>
+            <li>Command: <code>ip route 0.0.0.0 0.0.0.0 &lt;next-hop&gt;</code></li>
+            <li>Matches ANY destination that has no more specific route.</li>
+            <li>Commonly used at stub routers connecting to the ISP.</li>
+            <li>Appears in routing table as <code>S*</code> (candidate default).</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="subtopic">
+        <summary class="subtopic-header">
+          <span class="subtopic-code">3.3.3</span> RIPv2 Configuration
+        </summary>
+        <div class="subtopic-body">
+          <ul>
+            <li>Distance-vector protocol; maximum hop count = 15 (16 = unreachable).</li>
+            <li>RIPv2 supports VLSM and sends subnet masks in updates (classless).</li>
+            <li>Must use <code>no auto-summary</code> to prevent route summarisation to classful boundaries.</li>
+            <li><code>passive-interface</code> stops RIP hellos on user-facing ports — improves security.</li>
+            <li>Update timer: 30 s · Invalid: 180 s · Flush: 240 s.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="subtopic">
+        <summary class="subtopic-header">
+          <span class="subtopic-code">3.3.4</span> Verification Commands
+        </summary>
+        <div class="subtopic-body">
+          <ul>
+            <li><code>show ip route</code> — view the routing table; look for <code>S</code> (static) and <code>R</code> (RIP) entries.</li>
+            <li><code>show ip protocols</code> — confirm RIP version, advertised networks, timers.</li>
+            <li><code>debug ip rip</code> — live RIP update messages (disable after use!).</li>
+            <li><code>ping &lt;ip&gt;</code> — end-to-end connectivity test.</li>
+          </ul>
+        </div>
+      </details>
+
+    </div>
+  </div>
+
+  <!-- Key Concepts -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#EDE7FF;">💡</div>
+      <div>
+        <div class="card-header-title">Key Concepts</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="info-box note">
+        <span class="info-box-icon">ℹ️</span>
+        <div><strong>Static vs Dynamic:</strong> Static routes give full control but require manual updates when topology changes. Dynamic protocols like RIPv2 adapt automatically but consume bandwidth with periodic updates.</div>
+      </div>
+      <div class="info-box tip">
+        <span class="info-box-icon">✅</span>
+        <div><strong>Tip — no auto-summary:</strong> Always enter <code>no auto-summary</code> in RIPv2 when using discontiguous subnets or VLSM. Without it, RIPv2 behaves like RIPv1 and summarises to classful boundaries.</div>
+      </div>
+      <div class="info-box warning">
+        <span class="info-box-icon">⚠️</span>
+        <div><strong>Routing Loops:</strong> RIP uses split-horizon, poison reverse, and hold-down timers to prevent routing loops. Maximum hop count of 15 is an additional safeguard.</div>
+      </div>
+      <div class="info-box cisco">
+        <span class="info-box-icon">🔧</span>
+        <div><strong>Cisco IOS Shortcut:</strong> You can use the exit interface name instead of a next-hop IP for point-to-point links: <code>ip route 10.0.0.0 255.255.255.0 Serial0/0/0</code></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cisco Config Examples -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#EDE7FF;">⌨️</div>
+      <div>
+        <div class="card-header-title">Cisco IOS Configuration Examples</div>
+        <div class="card-header-sub">Static routes on 2-router topology; RIPv2 on 3-router topology</div>
+      </div>
+    </div>
+    <div class="card-body">
+
+      <p style="font-weight:600;margin-bottom:.5rem;">Example 1 — Static Routes (R1 ↔ R2 topology)</p>
+      <pre class="config-block"><span class="config-comment">! ── R1: 192.168.1.0/24 ── Gi0/0 ── [R1] ── Se0/0/0 ── [R2] ── Gi0/0 ── 192.168.2.0/24</span>
+<span class="config-comment">! Configure static route on R1 to reach R2's LAN</span>
+<span class="config-cmd">R1(config)#</span> <span class="config-param">ip route</span> <span class="config-value">192.168.2.0 255.255.255.0 10.0.0.2</span>
+
+<span class="config-comment">! Configure static route on R2 to reach R1's LAN</span>
+<span class="config-cmd">R2(config)#</span> <span class="config-param">ip route</span> <span class="config-value">192.168.1.0 255.255.255.0 10.0.0.1</span>
+
+<span class="config-comment">! Default static route on R1 pointing to ISP</span>
+<span class="config-cmd">R1(config)#</span> <span class="config-param">ip route</span> <span class="config-value">0.0.0.0 0.0.0.0 203.0.113.1</span>
+
+<span class="config-comment">! Verify</span>
+<span class="config-cmd">R1#</span> <span class="config-param">show ip route</span></pre>
+
+      <p style="font-weight:600;margin:.75rem 0 .5rem;">Example 2 — RIPv2 (3-router topology: R1–R2–R3)</p>
+      <pre class="config-block"><span class="config-comment">! ── Configure RIPv2 on R1</span>
+<span class="config-cmd">R1(config)#</span> <span class="config-param">router rip</span>
+<span class="config-cmd">R1(config-router)#</span> <span class="config-param">version 2</span>
+<span class="config-cmd">R1(config-router)#</span> <span class="config-param">network</span> <span class="config-value">192.168.1.0</span>
+<span class="config-cmd">R1(config-router)#</span> <span class="config-param">network</span> <span class="config-value">10.0.0.0</span>
+<span class="config-cmd">R1(config-router)#</span> <span class="config-param">no auto-summary</span>
+<span class="config-cmd">R1(config-router)#</span> <span class="config-param">passive-interface</span> <span class="config-value">GigabitEthernet0/0</span>
+
+<span class="config-comment">! ── Repeat on R2 and R3 with their respective networks</span>
+<span class="config-cmd">R2(config)#</span> <span class="config-param">router rip</span>
+<span class="config-cmd">R2(config-router)#</span> <span class="config-param">version 2</span>
+<span class="config-cmd">R2(config-router)#</span> <span class="config-param">network</span> <span class="config-value">10.0.0.0</span>
+<span class="config-cmd">R2(config-router)#</span> <span class="config-param">network</span> <span class="config-value">10.1.0.0</span>
+<span class="config-cmd">R2(config-router)#</span> <span class="config-param">no auto-summary</span>
+
+<span class="config-comment">! ── Verify RIPv2 operation</span>
+<span class="config-cmd">R1#</span> <span class="config-param">show ip protocols</span>
+<span class="config-cmd">R1#</span> <span class="config-param">show ip route</span>
+<span class="config-comment">! Look for R (RIP) entries in the routing table</span></pre>
+
+    </div>
+  </div>
+
+  <!-- Packet Tracer Activity -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#E8F0FE;">📦</div>
+      <div>
+        <div class="card-header-title">Packet Tracer Activity</div>
+        <div class="card-header-sub">Hands-on lab</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="pt-activity">
+        <div class="pt-activity-title">🖥️ Lab 4 — Configuring Static Routes and RIPv2</div>
+        <p style="font-size:.875rem;color:var(--muted);margin-bottom:.75rem;">Open the Lab 4 Packet Tracer file provided by your lecturer. Complete the following steps:</p>
+        <ol class="pt-steps">
+          <li>Open the topology file and examine the existing IP addressing scheme.</li>
+          <li>On R1, assign IP addresses to Gi0/0 and Se0/0/0 interfaces; bring them up with <code>no shutdown</code>.</li>
+          <li>On R2, assign IP addresses to both serial and Ethernet interfaces.</li>
+          <li>Configure a static route on R1 to reach R2's LAN (192.168.2.0/24) via the serial link.</li>
+          <li>Configure the reciprocal static route on R2 for R1's LAN.</li>
+          <li>Add a default static route on R1 simulating an ISP connection.</li>
+          <li>Add a third router R3; enable RIPv2 on all three routers with correct network statements and <code>no auto-summary</code>.</li>
+          <li>Verify with <code>show ip route</code> and confirm end-to-end pings from PC1 to PC3.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quiz -->
+  <div class="quiz-section" id="quizSection">
+    <div class="quiz-title">📝 Week 8 Quiz — Static Routing &amp; RIPv2 (5 Questions)</div>
+
+    <div class="quiz-question">
+      <div class="quiz-q-text">1. What administrative distance does a static route have by default?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q1" value="a"> a) 90</label>
+        <label class="quiz-option"><input type="radio" name="q1" value="b"> b) 110</label>
+        <label class="quiz-option"><input type="radio" name="q1" value="c"> c) 1</label>
+        <label class="quiz-option"><input type="radio" name="q1" value="d"> d) 120</label>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <div class="quiz-q-text">2. Which command correctly configures a default static route?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q2" value="a"> a) <code>ip route default 0.0.0.0 10.0.0.1</code></label>
+        <label class="quiz-option"><input type="radio" name="q2" value="b"> b) <code>ip route 0.0.0.0 0.0.0.0 10.0.0.1</code></label>
+        <label class="quiz-option"><input type="radio" name="q2" value="c"> c) <code>ip route 255.255.255.255 0.0.0.0 10.0.0.1</code></label>
+        <label class="quiz-option"><input type="radio" name="q2" value="d"> d) <code>ip default-route 10.0.0.1</code></label>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <div class="quiz-q-text">3. What is the maximum hop count in RIP before a route is considered unreachable?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q3" value="a"> a) 10</label>
+        <label class="quiz-option"><input type="radio" name="q3" value="b"> b) 15</label>
+        <label class="quiz-option"><input type="radio" name="q3" value="c"> c) 16</label>
+        <label class="quiz-option"><input type="radio" name="q3" value="d"> d) 255</label>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <div class="quiz-q-text">4. What does the command <code>no auto-summary</code> do in RIPv2?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q4" value="a"> a) Disables split-horizon</label>
+        <label class="quiz-option"><input type="radio" name="q4" value="b"> b) Prevents route updates from being sent</label>
+        <label class="quiz-option"><input type="radio" name="q4" value="c"> c) Disables automatic summarisation to classful network boundaries</label>
+        <label class="quiz-option"><input type="radio" name="q4" value="d"> d) Enables VLSM by increasing hop count</label>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <div class="quiz-q-text">5. In the routing table, which code indicates a RIP-learned route?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q5" value="a"> a) S</label>
+        <label class="quiz-option"><input type="radio" name="q5" value="b"> b) C</label>
+        <label class="quiz-option"><input type="radio" name="q5" value="c"> c) O</label>
+        <label class="quiz-option"><input type="radio" name="q5" value="d"> d) R</label>
+      </div>
+    </div>
+
+    <button class="quiz-submit" onclick="submitQuiz8()">Submit Quiz</button>
+    <div class="quiz-result" id="quizResult8"></div>
+  </div>
+
+  <!-- Week nav footer -->
+  <div class="week-nav-footer">
+    <a href="../week7/index.html" class="week-nav-btn secondary">← Week 7: Inter-VLAN Routing</a>
+    <button class="mark-done-btn" id="markDoneBtn8" onclick="markDone8()">✔ Mark Week 8 as Done</button>
+    <a href="../week9/index.html" class="week-nav-btn">Week 9: DHCP Configuration →</a>
+  </div>
+
+</div><!-- /week-container -->
+
+<script>
+  const ANSWERS8 = { q1:'c', q2:'b', q3:'c', q4:'c', q5:'d' };
+
+  function submitQuiz8() {
+    let score = 0;
+    Object.keys(ANSWERS8).forEach(q => {
+      const sel = document.querySelector(`input[name="${q}"]:checked`);
+      document.querySelectorAll(`input[name="${q}"]`).forEach(inp => {
+        const lbl = inp.closest('.quiz-option');
+        if (inp.value === ANSWERS8[q]) lbl.classList.add('correct');
+        else if (sel && inp.value === sel.value) lbl.classList.add('wrong');
+        inp.disabled = true;
+      });
+      if (sel && sel.value === ANSWERS8[q]) score++;
+    });
+    const res = document.getElementById('quizResult8');
+    res.style.display = 'block';
+    res.textContent = `You scored ${score}/5. ${score >= 4 ? '🎉 Excellent!' : score >= 3 ? '👍 Good effort!' : '📚 Review the material and try again.'}`;
+    res.className = 'quiz-result ' + (score >= 3 ? 'pass' : 'fail');
+    document.querySelector('.quiz-submit').disabled = true;
+  }
+
+  function markDone8() {
+    const prog = JSON.parse(localStorage.getItem('na360_progress') || '{}');
+    prog.week8 = { visited: true, completed: true };
+    localStorage.setItem('na360_progress', JSON.stringify(prog));
+    const btn = document.getElementById('markDoneBtn8');
+    btn.textContent = '✔ Week 8 Completed';
+    btn.classList.add('done');
+  }
+
+  // Restore done state on load
+  (function() {
+    const prog = JSON.parse(localStorage.getItem('na360_progress') || '{}');
+    if (prog.week8 && prog.week8.completed) {
+      const btn = document.getElementById('markDoneBtn8');
+      btn.textContent = '✔ Week 8 Completed';
+      btn.classList.add('done');
+    }
+    // Mark visited
+    const p2 = JSON.parse(localStorage.getItem('na360_progress') || '{}');
+    if (!p2.week8) p2.week8 = {};
+    p2.week8.visited = true;
+    localStorage.setItem('na360_progress', JSON.stringify(p2));
+  })();
+</script>
+</body>
+</html>

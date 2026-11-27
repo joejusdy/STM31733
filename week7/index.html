@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 7 — Inter-VLAN Routing | STM31733</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../week-shared.css">
+</head>
+<body>
+
+<!-- ── Topbar ── -->
+<nav class="week-topbar">
+  <div class="week-topbar-left">
+    <div class="week-topbar-logo">🌐</div>
+    <div>
+      <div class="week-topbar-title">STM31733 Network Administration</div>
+      <div class="week-topbar-sub">Kolej Komuniti Papar · Jusdy bin Juwait</div>
+    </div>
+  </div>
+  <div class="week-topbar-nav">
+    <a href="../index.html" class="topbar-link">← Course Home</a>
+    <a href="../na360/index.html" class="topbar-link">NetAdmin 360</a>
+    <a href="../week6/index.html" class="topbar-link">← Week 6</a>
+    <span class="topbar-link" style="opacity:.4;cursor:not-allowed;">Week 8 →</span>
+  </div>
+</nav>
+
+<div class="week-container">
+
+  <!-- ── Hero ── -->
+  <div class="week-hero">
+    <div>
+      <div class="hero-week-num">Week 7 · Unit 3.0 · Subtopic 3.2 (Part 2)</div>
+      <h1 class="hero-title">Inter-VLAN Routing</h1>
+      <div class="hero-unit">STM31733 — Network Administration | Kolej Komuniti Papar</div>
+      <div class="hero-clo-tags">
+        <span class="clo-tag">CLO2</span>
+        <span class="clo-tag">P3 — Precision</span>
+        <span class="clo-tag">PLO3</span>
+        <span class="clo-tag">Practical 3</span>
+      </div>
+    </div>
+    <div class="hero-meta">
+      <div class="hero-week-badge">7</div>
+    </div>
+  </div>
+
+  <!-- ── Context Note ── -->
+  <div class="info-box note" style="margin-bottom:1.5rem;">
+    <span class="info-box-icon">📌</span>
+    <div><strong>Building on Week 6:</strong> In Week 6 you configured VLANs and trunking — PCs in different VLANs could not communicate. This week you solve that problem by adding inter-VLAN routing using two different methods: Router-on-a-Stick and Layer 3 switch SVIs.</div>
+  </div>
+
+  <!-- ── Topics Covered ── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#E8F0FE;">📋</div>
+      <div>
+        <div class="card-header-title">Topics Covered This Week</div>
+        <div class="card-header-sub">Unit 3.0 — Enabling Communication Between VLANs</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <ul class="topic-list">
+        <li><span class="topic-dot" style="background:var(--purple);"></span>Why inter-VLAN routing is needed — VLANs are isolated Layer 2 domains</li>
+        <li><span class="topic-dot" style="background:var(--purple);"></span>Method 1: Router-on-a-Stick — single physical link with subinterfaces</li>
+        <li><span class="topic-dot" style="background:var(--purple);"></span>Subinterface configuration with 802.1Q encapsulation</li>
+        <li><span class="topic-dot" style="background:var(--purple);"></span>Method 2: Layer 3 switch — enabling <code>ip routing</code> and using SVIs</li>
+        <li><span class="topic-dot" style="background:var(--purple);"></span>Configuring SVI interfaces for each VLAN on a Layer 3 switch</li>
+        <li><span class="topic-dot" style="background:var(--purple);"></span>Comparison: Router-on-a-Stick vs Layer 3 switch — when to use each</li>
+        <li><span class="topic-dot" style="background:var(--purple);"></span>Verifying inter-VLAN routing: <code>show ip route</code>, ping tests</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ── Sub-topics ── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#E6F4EA;">📖</div>
+      <div>
+        <div class="card-header-title">Sub-topic Details</div>
+        <div class="card-header-sub">Expand each section for detailed notes</div>
+      </div>
+    </div>
+    <div class="card-body">
+
+      <div class="subtopic">
+        <details>
+          <summary class="subtopic-header">
+            <span class="subtopic-code">3.2</span> Why Inter-VLAN Routing is Needed
+          </summary>
+          <div class="subtopic-body">
+            <ul>
+              <li>VLANs create separate broadcast domains — by design, traffic cannot pass between VLANs at Layer 2.</li>
+              <li>To route packets between VLANs, a Layer 3 device is required (router or Layer 3 switch).</li>
+              <li>Scenario: PC in VLAN 10 (192.168.10.0/24) needs to reach a server in VLAN 30 (192.168.30.0/24). Without inter-VLAN routing, the packets are dropped at the switch — the destination is unreachable.</li>
+              <li>Three historical methods: (1) Using a separate physical router interface per VLAN — impractical (wastes ports). (2) Router-on-a-Stick — one physical link, multiple subinterfaces. (3) Layer 3 switch SVIs — the modern enterprise standard.</li>
+            </ul>
+          </div>
+        </details>
+      </div>
+
+      <div class="subtopic">
+        <details>
+          <summary class="subtopic-header">
+            <span class="subtopic-code">3.2</span> Method 1: Router-on-a-Stick
+          </summary>
+          <div class="subtopic-body">
+            <ul>
+              <li>One physical router interface is connected to a switch trunk port. Multiple logical <strong>subinterfaces</strong> are created on that physical interface — one per VLAN.</li>
+              <li>Each subinterface is configured with: 802.1Q encapsulation for its VLAN ID, and an IP address that becomes the default gateway for that VLAN's hosts.</li>
+              <li>The switch port connecting to the router must be a <strong>trunk port</strong> (carries all VLAN tags).</li>
+              <li>Subinterface naming convention: <code>GigabitEthernet0/0.10</code> (physical interface + dot + VLAN number).</li>
+              <li><strong>Advantages:</strong> Simple, inexpensive (uses one router port). <strong>Disadvantages:</strong> Single link becomes a bottleneck as VLAN traffic increases. Not suitable for high-traffic environments.</li>
+              <li>The <code>encapsulation dot1q &lt;vlan-id&gt;</code> command is mandatory on each subinterface before assigning an IP. For the native VLAN subinterface, add the <code>native</code> keyword.</li>
+            </ul>
+          </div>
+        </details>
+      </div>
+
+      <div class="subtopic">
+        <details>
+          <summary class="subtopic-header">
+            <span class="subtopic-code">3.2</span> Method 2: Layer 3 Switch with SVIs
+          </summary>
+          <div class="subtopic-body">
+            <ul>
+              <li>A Layer 3 switch (multilayer switch) can perform both switching and routing. It routes between VLANs internally without an external router.</li>
+              <li>Enable routing on the switch with the global command: <code>ip routing</code>.</li>
+              <li>Create an SVI (Switched Virtual Interface) for each VLAN: <code>interface vlan &lt;id&gt;</code> → assign IP address → <code>no shutdown</code>. The SVI IP becomes the default gateway for hosts in that VLAN.</li>
+              <li>Routing decisions are made in hardware (ASIC), making Layer 3 switches much faster than Router-on-a-Stick for inter-VLAN routing.</li>
+              <li><strong>Advantages:</strong> High performance, scalable, no external router bottleneck, single device management. <strong>Disadvantages:</strong> More expensive than a Layer 2 switch — requires a multilayer switch model (Cisco 3560, 3650, 3850, Catalyst 9000 series).</li>
+            </ul>
+          </div>
+        </details>
+      </div>
+
+      <div class="subtopic">
+        <details>
+          <summary class="subtopic-header">
+            <span class="subtopic-code">3.2</span> Verification — show ip route and Ping Tests
+          </summary>
+          <div class="subtopic-body">
+            <ul>
+              <li><code>show ip route</code> on the router or Layer 3 switch — confirms directly connected routes for each VLAN subnet are installed (shown with <code>C</code> for connected and <code>L</code> for local).</li>
+              <li>Ping between PCs in different VLANs — should succeed after inter-VLAN routing is correctly configured.</li>
+              <li><code>show ip interface brief</code> — verify that all subinterfaces (or SVIs) are <code>up/up</code> and have correct IP addresses.</li>
+              <li><code>traceroute</code> from PC — shows the router's subinterface IP as the first hop, confirming the router is forwarding between VLANs.</li>
+              <li>If ping fails: check (1) subinterface encapsulation VLAN ID matches switch VLAN IDs, (2) PC default gateway matches subinterface IP, (3) trunk port allows the VLAN, (4) SVI is not shutdown.</li>
+            </ul>
+          </div>
+        </details>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Cisco Config Blocks ── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#EDE7FF;">⌨️</div>
+      <div>
+        <div class="card-header-title">Cisco IOS — Inter-VLAN Routing Configuration Examples</div>
+        <div class="card-header-sub">Both methods: Router-on-a-Stick and Layer 3 Switch SVIs</div>
+      </div>
+    </div>
+    <div class="card-body">
+
+      <div class="info-box cisco" style="margin-bottom:1rem;">
+        <span class="info-box-icon">🔵</span>
+        <div><strong>Scenario:</strong> Three VLANs — VLAN 10 (SALES: 192.168.10.0/24), VLAN 20 (IT: 192.168.20.0/24), VLAN 30 (FINANCE: 192.168.30.0/24). Router connected to switch via a trunk link.</div>
+      </div>
+
+      <p style="font-weight:600;margin-bottom:.5rem;color:var(--navy);">Method 1 — Router-on-a-Stick (on the Router):</p>
+<pre class="config-block"><span class="config-comment">! ── Prerequisite: SW1 G0/1 configured as trunk (see Week 6 config) ──</span>
+
+<span class="config-comment">! ── On the router: bring up the physical interface (no IP on physical) ──</span>
+Router(config)# <span class="config-cmd">interface</span> <span class="config-param">GigabitEthernet0/0</span>
+Router(config-if)# <span class="config-cmd">description</span> <span class="config-value">Trunk link to SW1</span>
+Router(config-if)# <span class="config-cmd">no shutdown</span>
+Router(config-if)# <span class="config-cmd">exit</span>
+
+<span class="config-comment">! ── Subinterface for VLAN 10 (SALES) ──</span>
+Router(config)# <span class="config-cmd">interface</span> <span class="config-param">GigabitEthernet0/0.10</span>
+Router(config-subif)# <span class="config-cmd">description</span> <span class="config-value">VLAN 10 - SALES Gateway</span>
+Router(config-subif)# <span class="config-cmd">encapsulation dot1Q</span> <span class="config-value">10</span>
+Router(config-subif)# <span class="config-cmd">ip address</span> <span class="config-value">192.168.10.1 255.255.255.0</span>
+Router(config-subif)# <span class="config-cmd">exit</span>
+
+<span class="config-comment">! ── Subinterface for VLAN 20 (IT) ──</span>
+Router(config)# <span class="config-cmd">interface</span> <span class="config-param">GigabitEthernet0/0.20</span>
+Router(config-subif)# <span class="config-cmd">description</span> <span class="config-value">VLAN 20 - IT Gateway</span>
+Router(config-subif)# <span class="config-cmd">encapsulation dot1Q</span> <span class="config-value">20</span>
+Router(config-subif)# <span class="config-cmd">ip address</span> <span class="config-value">192.168.20.1 255.255.255.0</span>
+Router(config-subif)# <span class="config-cmd">exit</span>
+
+<span class="config-comment">! ── Subinterface for VLAN 30 (FINANCE) ──</span>
+Router(config)# <span class="config-cmd">interface</span> <span class="config-param">GigabitEthernet0/0.30</span>
+Router(config-subif)# <span class="config-cmd">description</span> <span class="config-value">VLAN 30 - FINANCE Gateway</span>
+Router(config-subif)# <span class="config-cmd">encapsulation dot1Q</span> <span class="config-value">30</span>
+Router(config-subif)# <span class="config-cmd">ip address</span> <span class="config-value">192.168.30.1 255.255.255.0</span>
+Router(config-subif)# <span class="config-cmd">end</span>
+
+<span class="config-comment">! ── Verify ──</span>
+Router# <span class="config-cmd">show ip route</span>
+Router# <span class="config-cmd">show ip interface brief</span>
+Router# <span class="config-cmd">wr</span></pre>
+
+      <p style="font-weight:600;margin:.75rem 0 .5rem;color:var(--navy);">Method 2 — Layer 3 Switch SVIs:</p>
+<pre class="config-block"><span class="config-comment">! ── On a Layer 3 switch (e.g., Cisco 3560 or 3650) ──</span>
+<span class="config-comment">! ── Prerequisite: VLANs 10, 20, 30 already created (see Week 6) ──</span>
+
+<span class="config-comment">! ── Step 1: Enable IP routing on the switch ──</span>
+L3Switch(config)# <span class="config-cmd">ip routing</span>
+
+<span class="config-comment">! ── Step 2: Create SVI for VLAN 10 ──</span>
+L3Switch(config)# <span class="config-cmd">interface vlan</span> <span class="config-value">10</span>
+L3Switch(config-if)# <span class="config-cmd">description</span> <span class="config-value">VLAN 10 SALES Gateway</span>
+L3Switch(config-if)# <span class="config-cmd">ip address</span> <span class="config-value">192.168.10.1 255.255.255.0</span>
+L3Switch(config-if)# <span class="config-cmd">no shutdown</span>
+L3Switch(config-if)# <span class="config-cmd">exit</span>
+
+<span class="config-comment">! ── Step 3: Create SVI for VLAN 20 ──</span>
+L3Switch(config)# <span class="config-cmd">interface vlan</span> <span class="config-value">20</span>
+L3Switch(config-if)# <span class="config-cmd">description</span> <span class="config-value">VLAN 20 IT Gateway</span>
+L3Switch(config-if)# <span class="config-cmd">ip address</span> <span class="config-value">192.168.20.1 255.255.255.0</span>
+L3Switch(config-if)# <span class="config-cmd">no shutdown</span>
+L3Switch(config-if)# <span class="config-cmd">exit</span>
+
+<span class="config-comment">! ── Step 4: Create SVI for VLAN 30 ──</span>
+L3Switch(config)# <span class="config-cmd">interface vlan</span> <span class="config-value">30</span>
+L3Switch(config-if)# <span class="config-cmd">description</span> <span class="config-value">VLAN 30 FINANCE Gateway</span>
+L3Switch(config-if)# <span class="config-cmd">ip address</span> <span class="config-value">192.168.30.1 255.255.255.0</span>
+L3Switch(config-if)# <span class="config-cmd">no shutdown</span>
+L3Switch(config-if)# <span class="config-cmd">end</span>
+
+<span class="config-comment">! ── Verify ──</span>
+L3Switch# <span class="config-cmd">show ip route</span>
+L3Switch# <span class="config-cmd">show ip interface brief</span>
+L3Switch# <span class="config-cmd">show interfaces vlan 10</span>
+L3Switch# <span class="config-cmd">wr</span></pre>
+
+    </div>
+  </div>
+
+  <!-- ── Packet Tracer Activity ── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#EDE7FF;">🧪</div>
+      <div>
+        <div class="card-header-title">Packet Tracer Lab Activity</div>
+        <div class="card-header-sub">Hands-on practice — Practical 3 component</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="pt-activity">
+        <div class="pt-activity-title">🖥️ Lab 3 — Inter-VLAN Routing using Router-on-a-Stick</div>
+        <p style="font-size:.875rem;color:var(--muted);margin-bottom:.75rem;">Topology: 1 Cisco Router (ISR4321) + 1 Cisco 2960 Switch. 6 PCs (2 per VLAN: VLAN 10, 20, 30). Router Gi0/0 connected to Switch G0/1 (trunk). Start with the completed Week 6 switch configuration.</p>
+        <ol class="pt-steps">
+          <li>Load the Week 6 saved topology or rebuild it: 1 Router + 1 Switch + 6 PCs. Connect Router Gi0/0 to Switch G0/1 using a straight-through cable.</li>
+          <li>On the switch (if not done from Week 6): confirm VLANs 10, 20, 30 exist. Confirm access port assignments. Configure G0/1 as a trunk: <code>switchport mode trunk</code>, allowed VLANs 10,20,30. Verify with <code>show interfaces trunk</code>.</li>
+          <li>On the router — bring up the physical interface: <code>interface GigabitEthernet0/0</code> → <code>no shutdown</code> (do NOT assign an IP to the physical interface).</li>
+          <li>Create subinterface <code>GigabitEthernet0/0.10</code>: <code>encapsulation dot1Q 10</code> → <code>ip address 192.168.10.1 255.255.255.0</code>. This is the default gateway for VLAN 10 hosts.</li>
+          <li>Create subinterface <code>GigabitEthernet0/0.20</code>: <code>encapsulation dot1Q 20</code> → <code>ip address 192.168.20.1 255.255.255.0</code>. Create subinterface <code>GigabitEthernet0/0.30</code>: <code>encapsulation dot1Q 30</code> → <code>ip address 192.168.30.1 255.255.255.0</code>.</li>
+          <li>Verify the router: run <code>show ip route</code> — confirm routes for 192.168.10.0/24, 192.168.20.0/24, 192.168.30.0/24 appear as directly connected (C). Run <code>show ip interface brief</code> — all subinterfaces should be up/up.</li>
+          <li>Configure all 6 PCs with IP addresses in their VLAN subnets and set the correct default gateways: VLAN 10 PCs → gateway 192.168.10.1; VLAN 20 PCs → gateway 192.168.20.1; VLAN 30 PCs → gateway 192.168.30.1.</li>
+          <li>Test connectivity: (a) Ping from a VLAN 10 PC to a VLAN 10 PC (same VLAN — should work). (b) Ping from a VLAN 10 PC to a VLAN 20 PC (different VLAN — should now work via the router). (c) Ping from VLAN 10 to VLAN 30. (d) Run traceroute and confirm the router subinterface IP appears as the first hop. Save all configurations.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Key Concepts ── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#FEF8E1;">💡</div>
+      <div>
+        <div class="card-header-title">Key Concepts &amp; Study Notes</div>
+        <div class="card-header-sub">Critical points for CLO2 practical assessment</div>
+      </div>
+    </div>
+    <div class="card-body">
+
+      <div class="info-box note">
+        <span class="info-box-icon">📌</span>
+        <div><strong>Router-on-a-Stick Critical Rule:</strong> The physical router interface must be <code>no shutdown</code> but must NOT have an IP address assigned. The IP addresses are on the subinterfaces only. The <code>encapsulation dot1Q &lt;vlan-id&gt;</code> command on each subinterface tells the router which VLAN tag to process.</div>
+      </div>
+
+      <div class="info-box tip">
+        <span class="info-box-icon">✅</span>
+        <div><strong>Layer 3 Switch advantage:</strong> With a Layer 3 switch, routing is performed in hardware (ASIC) at wire speed. With Router-on-a-Stick, all VLAN traffic must traverse the single trunk link to the router and back — this creates a bottleneck. For high-throughput environments, always use a Layer 3 switch.</div>
+      </div>
+
+      <div class="info-box warning">
+        <span class="info-box-icon">⚠️</span>
+        <div><strong>Common Lab Mistake:</strong> Setting the PC's default gateway to the wrong subinterface IP. VLAN 10 PCs must have gateway 192.168.10.1 (the VLAN 10 subinterface), NOT 192.168.20.1 or any other. Each VLAN has its own subnet and its own gateway (the subinterface IP on the router).</div>
+      </div>
+
+      <div class="info-box cisco">
+        <span class="info-box-icon">🔵</span>
+        <div><strong>Course Summary:</strong> You have now completed Units 1, 2, and 3 (Weeks 1–7). Key assessment milestones: CLO1 Test (Week 4) = 15%, CLO2 Practical assessments (Weeks 5–7) = 45%, CLO3 Presentation = 10%, Final Assessment = 30%. Review all configuration commands from Weeks 5–7 for the practical exams.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Method Comparison ── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#E8F0FE;">📊</div>
+      <div>
+        <div class="card-header-title">Inter-VLAN Routing: Method Comparison</div>
+        <div class="card-header-sub">Router-on-a-Stick vs Layer 3 Switch</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="two-col">
+        <div>
+          <div style="font-weight:700;margin-bottom:.5rem;color:var(--purple);">🔀 Router-on-a-Stick</div>
+          <ul class="topic-list">
+            <li><span class="topic-dot" style="background:var(--green);"></span>Inexpensive — uses a standard router</li>
+            <li><span class="topic-dot" style="background:var(--green);"></span>Easy to understand and configure</li>
+            <li><span class="topic-dot" style="background:var(--green);"></span>Good for small networks / labs</li>
+            <li><span class="topic-dot" style="background:var(--red);"></span>Single link bottleneck</li>
+            <li><span class="topic-dot" style="background:var(--red);"></span>Software routing — slower than ASIC</li>
+            <li><span class="topic-dot" style="background:var(--red);"></span>Not scalable for high traffic</li>
+          </ul>
+        </div>
+        <div>
+          <div style="font-weight:700;margin-bottom:.5rem;color:var(--blue);">🔄 Layer 3 Switch (SVIs)</div>
+          <ul class="topic-list">
+            <li><span class="topic-dot" style="background:var(--green);"></span>Hardware ASIC routing — very fast</li>
+            <li><span class="topic-dot" style="background:var(--green);"></span>Highly scalable for enterprise</li>
+            <li><span class="topic-dot" style="background:var(--green);"></span>No external router bottleneck</li>
+            <li><span class="topic-dot" style="background:var(--green);"></span>Single device management</li>
+            <li><span class="topic-dot" style="background:var(--red);"></span>More expensive than Layer 2 switch</li>
+            <li><span class="topic-dot" style="background:var(--red);"></span>Requires multilayer switch model</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Quiz ── -->
+  <div class="quiz-section">
+    <div class="quiz-title">🧠 Week 7 Knowledge Check — 5 Questions</div>
+
+    <div class="quiz-question" id="q1">
+      <div class="quiz-q-text">1. In the Router-on-a-Stick method, what must be configured on the router's physical interface connecting to the switch?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q1" value="a"> a) An IP address for each VLAN</label>
+        <label class="quiz-option"><input type="radio" name="q1" value="b"> b) <code>switchport mode trunk</code></label>
+        <label class="quiz-option"><input type="radio" name="q1" value="c"> c) <code>no shutdown</code> only — no IP address on the physical interface itself</label>
+        <label class="quiz-option"><input type="radio" name="q1" value="d"> d) <code>encapsulation dot1Q</code> directly on the physical interface</label>
+      </div>
+    </div>
+
+    <div class="quiz-question" id="q2">
+      <div class="quiz-q-text">2. Which command on a router subinterface specifies that it should process tagged frames for VLAN 20?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q2" value="a"> a) <code>switchport access vlan 20</code></label>
+        <label class="quiz-option"><input type="radio" name="q2" value="b"> b) <code>vlan 20</code></label>
+        <label class="quiz-option"><input type="radio" name="q2" value="c"> c) <code>encapsulation dot1Q 20</code></label>
+        <label class="quiz-option"><input type="radio" name="q2" value="d"> d) <code>ip vlan 20</code></label>
+      </div>
+    </div>
+
+    <div class="quiz-question" id="q3">
+      <div class="quiz-q-text">3. What command must be entered in Global Config mode to enable Layer 3 routing on a Cisco multilayer switch?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q3" value="a"> a) <code>routing enable</code></label>
+        <label class="quiz-option"><input type="radio" name="q3" value="b"> b) <code>ip routing</code></label>
+        <label class="quiz-option"><input type="radio" name="q3" value="c"> c) <code>enable routing</code></label>
+        <label class="quiz-option"><input type="radio" name="q3" value="d"> d) <code>router ospf 1</code></label>
+      </div>
+    </div>
+
+    <div class="quiz-question" id="q4">
+      <div class="quiz-q-text">4. After configuring Router-on-a-Stick, a PC in VLAN 10 (gateway 192.168.10.1) cannot ping a PC in VLAN 20. What is the MOST likely cause?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q4" value="a"> a) The switch does not have VLANs configured</label>
+        <label class="quiz-option"><input type="radio" name="q4" value="b"> b) The VLAN 10 PC's default gateway is set to 192.168.20.1 instead of 192.168.10.1</label>
+        <label class="quiz-option"><input type="radio" name="q4" value="c"> c) The router has too many subinterfaces</label>
+        <label class="quiz-option"><input type="radio" name="q4" value="d"> d) VLAN 10 and VLAN 20 are using the same subnet</label>
+      </div>
+    </div>
+
+    <div class="quiz-question" id="q5">
+      <div class="quiz-q-text">5. Which inter-VLAN routing method is preferred in a high-traffic enterprise environment and why?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q5" value="a"> a) Router-on-a-Stick, because it uses less hardware</label>
+        <label class="quiz-option"><input type="radio" name="q5" value="b"> b) Layer 3 switch SVIs, because routing is done in hardware (ASIC) at wire speed with no single bottleneck</label>
+        <label class="quiz-option"><input type="radio" name="q5" value="c"> c) Router-on-a-Stick, because it scales to hundreds of VLANs without performance loss</label>
+        <label class="quiz-option"><input type="radio" name="q5" value="d"> d) Both methods are identical in performance</label>
+      </div>
+    </div>
+
+    <button class="quiz-submit" onclick="submitQuiz()">Submit Answers</button>
+    <div class="quiz-result" id="quizResult"></div>
+  </div>
+
+  <!-- ── Week Nav Footer ── -->
+  <div class="week-nav-footer">
+    <a href="../week6/index.html" class="week-nav-btn secondary">← Week 6 — VLAN Configuration</a>
+    <button class="mark-done-btn" id="markDoneBtn" onclick="markDone()">✔ Mark Week 7 as Done</button>
+    <span class="week-nav-btn" style="opacity:.4;cursor:not-allowed;">Week 8 Coming Soon</span>
+  </div>
+
+</div>
+
+<script>
+  const WEEK = 'week7';
+
+  function markDone() {
+    const data = JSON.parse(localStorage.getItem('na360_progress') || '{}');
+    data[WEEK] = { visited: true, timestamp: Date.now() };
+    localStorage.setItem('na360_progress', JSON.stringify(data));
+    const btn = document.getElementById('markDoneBtn');
+    btn.textContent = '✔ Week 7 Complete!';
+    btn.classList.add('done');
+  }
+
+  (function() {
+    const data = JSON.parse(localStorage.getItem('na360_progress') || '{}');
+    if (data[WEEK] && data[WEEK].visited) {
+      const btn = document.getElementById('markDoneBtn');
+      btn.textContent = '✔ Week 7 Complete!';
+      btn.classList.add('done');
+    }
+  })();
+
+  const answers = { q1: 'c', q2: 'c', q3: 'b', q4: 'b', q5: 'b' };
+
+  function submitQuiz() {
+    let score = 0;
+    Object.keys(answers).forEach(function(q) {
+      const selected = document.querySelector('input[name="' + q + '"]:checked');
+      const options = document.querySelectorAll('input[name="' + q + '"]');
+      options.forEach(function(opt) {
+        const label = opt.parentElement;
+        label.classList.remove('correct', 'wrong');
+        if (opt.value === answers[q]) label.classList.add('correct');
+      });
+      if (selected) {
+        if (selected.value === answers[q]) {
+          score++;
+        } else {
+          selected.parentElement.classList.add('wrong');
+        }
+      }
+    });
+    const result = document.getElementById('quizResult');
+    result.style.display = 'block';
+    if (score >= 3) {
+      result.className = 'quiz-result pass';
+      result.textContent = '✅ Score: ' + score + '/5 — Excellent! You understand inter-VLAN routing methods.';
+    } else {
+      result.className = 'quiz-result fail';
+      result.textContent = '❌ Score: ' + score + '/5 — Review Router-on-a-Stick and Layer 3 switch SVI configuration.';
+    }
+  }
+</script>
+
+</body>
+</html>

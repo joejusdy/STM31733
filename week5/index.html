@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 5 — Initial Switch &amp; Router Configuration | STM31733</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../week-shared.css">
+</head>
+<body>
+
+<!-- ── Topbar ── -->
+<nav class="week-topbar">
+  <div class="week-topbar-left">
+    <div class="week-topbar-logo">🌐</div>
+    <div>
+      <div class="week-topbar-title">STM31733 Network Administration</div>
+      <div class="week-topbar-sub">Kolej Komuniti Papar · Jusdy bin Juwait</div>
+    </div>
+  </div>
+  <div class="week-topbar-nav">
+    <a href="../index.html" class="topbar-link">← Course Home</a>
+    <a href="../na360/index.html" class="topbar-link">NetAdmin 360</a>
+    <a href="../week4/index.html" class="topbar-link">← Week 4</a>
+    <a href="../week6/index.html" class="topbar-link active">Week 6 →</a>
+  </div>
+</nav>
+
+<div class="week-container">
+
+  <!-- ── Hero ── -->
+  <div class="week-hero">
+    <div>
+      <div class="hero-week-num">Week 5 · Unit 3.0 · Subtopic 3.1</div>
+      <h1 class="hero-title">Initial Switch and Router Configuration</h1>
+      <div class="hero-unit">STM31733 — Network Administration | Kolej Komuniti Papar</div>
+      <div class="hero-clo-tags">
+        <span class="clo-tag">CLO2</span>
+        <span class="clo-tag">P3 — Precision</span>
+        <span class="clo-tag">PLO3</span>
+        <span class="clo-tag">Practical 1</span>
+      </div>
+    </div>
+    <div class="hero-meta">
+      <div class="hero-week-badge">5</div>
+    </div>
+  </div>
+
+  <!-- ── Practical Alert ── -->
+  <div class="info-box cisco" style="margin-bottom:1.5rem;">
+    <span class="info-box-icon">🔵</span>
+    <div><strong>First Practical Week — CLO2 (45%):</strong> Unit 3 begins here. This week's lab work contributes to Practical 1 assessment. All commands in this week must be practiced in Cisco Packet Tracer until they are second nature.</div>
+  </div>
+
+  <!-- ── Topics Covered ── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#E8F0FE;">📋</div>
+      <div>
+        <div class="card-header-title">Topics Covered This Week</div>
+        <div class="card-header-sub">Unit 3.0 — Cisco IOS Initial Device Configuration</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <ul class="topic-list">
+        <li><span class="topic-dot" style="background:var(--purple);"></span>Cisco IOS CLI modes — User EXEC, Privileged EXEC, Global Config, Interface Config</li>
+        <li><span class="topic-dot" style="background:var(--purple);"></span>Navigating between IOS modes</li>
+        <li><span class="topic-dot" style="background:var(--purple);"></span>Setting device hostname</li>
+        <li><span class="topic-dot" style="background:var(--purple);"></span>enable secret vs enable password — which to use and why</li>
+        <li><span class="topic-dot" style="background:var(--purple);"></span>Local user database authentication (username/password)</li>
+        <li><span class="topic-dot" style="background:var(--purple);"></span>Console line (line con 0) authentication configuration</li>
+        <li><span class="topic-dot" style="background:var(--purple);"></span>VTY line (line vty 0 4) authentication — SSH/Telnet access</li>
+        <li><span class="topic-dot" style="background:var(--purple);"></span>Service password-encryption</li>
+        <li><span class="topic-dot" style="background:var(--purple);"></span>MOTD banner (Message of the Day)</li>
+        <li><span class="topic-dot" style="background:var(--purple);"></span>Saving configuration: copy running-config startup-config / write memory</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ── Sub-topics ── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#E6F4EA;">📖</div>
+      <div>
+        <div class="card-header-title">Sub-topic Details</div>
+        <div class="card-header-sub">Expand each section for detailed notes</div>
+      </div>
+    </div>
+    <div class="card-body">
+
+      <div class="subtopic">
+        <details>
+          <summary class="subtopic-header">
+            <span class="subtopic-code">3.1</span> Cisco IOS CLI Modes
+          </summary>
+          <div class="subtopic-body">
+            <ul>
+              <li><strong>User EXEC Mode:</strong> Prompt is <code>Router&gt;</code>. Limited commands — show version, ping, traceroute. Cannot make configuration changes. Entry point when you first connect to a device.</li>
+              <li><strong>Privileged EXEC Mode:</strong> Prompt is <code>Router#</code>. Full show commands, copy, reload, debug. Enter from User EXEC with <code>enable</code> command. Exit with <code>disable</code>.</li>
+              <li><strong>Global Configuration Mode:</strong> Prompt is <code>Router(config)#</code>. Enter from Privileged EXEC with <code>configure terminal</code> (or <code>conf t</code>). Changes apply to the entire device.</li>
+              <li><strong>Interface Configuration Mode:</strong> Prompt is <code>Router(config-if)#</code>. Enter from Global Config with <code>interface &lt;type&gt; &lt;number&gt;</code>. Changes apply to that specific interface.</li>
+              <li>Other sub-modes: Line config <code>(config-line)#</code>, Router config <code>(config-router)#</code></li>
+              <li>Use <code>exit</code> to go back one level, <code>end</code> or Ctrl+Z to return directly to Privileged EXEC.</li>
+            </ul>
+          </div>
+        </details>
+      </div>
+
+      <div class="subtopic">
+        <details>
+          <summary class="subtopic-header">
+            <span class="subtopic-code">3.1</span> Passwords — enable secret vs enable password
+          </summary>
+          <div class="subtopic-body">
+            <ul>
+              <li><strong>enable password &lt;password&gt;:</strong> Stored as plain text in the running-config (unless <code>service password-encryption</code> is set, which applies a weak Type 7 encryption). Legacy command — avoid in production.</li>
+              <li><strong>enable secret &lt;password&gt;:</strong> Stored as a one-way MD5 hash (Type 5) in the running-config. Cannot be reversed. If both are set, <code>enable secret</code> always takes precedence.</li>
+              <li>Best practice: Always use <code>enable secret</code> and never rely on <code>enable password</code> alone. Combine with <code>service password-encryption</code> for all other passwords.</li>
+            </ul>
+          </div>
+        </details>
+      </div>
+
+      <div class="subtopic">
+        <details>
+          <summary class="subtopic-header">
+            <span class="subtopic-code">3.1</span> Line Authentication — Console and VTY
+          </summary>
+          <div class="subtopic-body">
+            <ul>
+              <li><strong>Console line (line con 0):</strong> Physical access via RJ-45 rollover cable or USB. Configure with <code>line con 0</code>. Set password, enable <code>login</code> (uses line password) or <code>login local</code> (uses local username database). Set <code>exec-timeout</code> to auto-logout idle sessions.</li>
+              <li><strong>VTY lines (line vty 0 4):</strong> Virtual terminal lines for Telnet/SSH access. Up to 16 VTY lines (0–15) on most devices. Configure with <code>line vty 0 4</code>. Use <code>login local</code> for username/password auth. Use <code>transport input ssh</code> to allow only SSH (not Telnet).</li>
+              <li><strong>Local user database:</strong> Created with <code>username &lt;name&gt; secret &lt;password&gt;</code> in Global Config. Used when <code>login local</code> is configured on lines.</li>
+            </ul>
+          </div>
+        </details>
+      </div>
+
+      <div class="subtopic">
+        <details>
+          <summary class="subtopic-header">
+            <span class="subtopic-code">3.1</span> MOTD Banner and Saving Configuration
+          </summary>
+          <div class="subtopic-body">
+            <ul>
+              <li><strong>MOTD Banner:</strong> <code>banner motd #&lt;message&gt;#</code> — Displays a message before the login prompt. Used for legal warning notices ("Authorized users only. Unauthorised access is prohibited.").</li>
+              <li><strong>Running-config:</strong> The current active configuration stored in RAM. Lost on reboot if not saved.</li>
+              <li><strong>Startup-config:</strong> Saved configuration stored in NVRAM. Loaded on boot.</li>
+              <li><strong>Save command:</strong> <code>copy running-config startup-config</code> (long form) or <code>write memory</code> / <code>wr</code> (shorthand). Both save the running-config to NVRAM.</li>
+              <li><strong>Verify:</strong> <code>show running-config</code> — view active config. <code>show startup-config</code> — view saved config.</li>
+            </ul>
+          </div>
+        </details>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Cisco Config Block ── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#EDE7FF;">⌨️</div>
+      <div>
+        <div class="card-header-title">Cisco IOS — Full Initial Configuration Example</div>
+        <div class="card-header-sub">Complete initial setup for a router or switch (Subtopic 3.1)</div>
+      </div>
+    </div>
+    <div class="card-body">
+
+      <div class="info-box cisco">
+        <span class="info-box-icon">🔵</span>
+        <div>Apply these commands to both routers and switches. For a switch, replace interface GigabitEthernet0/0 with the management SVI <code>interface vlan 1</code> (or your management VLAN). The password and authentication commands are identical.</div>
+      </div>
+
+<pre class="config-block"><span class="config-comment">! ── Step 1: Enter Privileged EXEC mode ──</span>
+Router&gt;
+Router&gt; <span class="config-cmd">enable</span>
+Router# 
+
+<span class="config-comment">! ── Step 2: Enter Global Configuration mode ──</span>
+Router# <span class="config-cmd">configure terminal</span>
+Router(config)#
+
+<span class="config-comment">! ── Step 3: Set hostname ──</span>
+Router(config)# <span class="config-cmd">hostname</span> <span class="config-value">KKP-Router1</span>
+KKP-Router1(config)#
+
+<span class="config-comment">! ── Step 4: Disable DNS lookup (prevents delay on typos) ──</span>
+KKP-Router1(config)# <span class="config-cmd">no ip domain-lookup</span>
+
+<span class="config-comment">! ── Step 5: Set enable secret (privileged EXEC password) ──</span>
+KKP-Router1(config)# <span class="config-cmd">enable secret</span> <span class="config-value">Admin@12345</span>
+
+<span class="config-comment">! ── Step 6: Create local user account ──</span>
+KKP-Router1(config)# <span class="config-cmd">username</span> <span class="config-param">admin</span> <span class="config-cmd">privilege</span> <span class="config-param">15</span> <span class="config-cmd">secret</span> <span class="config-value">P@ssw0rd</span>
+
+<span class="config-comment">! ── Step 7: Encrypt all plaintext passwords ──</span>
+KKP-Router1(config)# <span class="config-cmd">service password-encryption</span>
+
+<span class="config-comment">! ── Step 8: Configure MOTD banner ──</span>
+KKP-Router1(config)# <span class="config-cmd">banner motd</span> <span class="config-value">#</span>
+<span class="config-banner">***********************************************
+*  AUTHORISED ACCESS ONLY                     *
+*  Kolej Komuniti Papar — KKP Network         *
+*  Unauthorised access will be prosecuted     *
+***********************************************</span>
+<span class="config-value">#</span>
+
+<span class="config-comment">! ── Step 9: Configure console line authentication ──</span>
+KKP-Router1(config)# <span class="config-cmd">line con 0</span>
+KKP-Router1(config-line)# <span class="config-cmd">login local</span>
+KKP-Router1(config-line)# <span class="config-cmd">exec-timeout</span> <span class="config-value">5 0</span>
+KKP-Router1(config-line)# <span class="config-cmd">logging synchronous</span>
+KKP-Router1(config-line)# <span class="config-cmd">exit</span>
+
+<span class="config-comment">! ── Step 10: Configure VTY lines (SSH access) ──</span>
+KKP-Router1(config)# <span class="config-cmd">line vty 0 4</span>
+KKP-Router1(config-line)# <span class="config-cmd">login local</span>
+KKP-Router1(config-line)# <span class="config-cmd">transport input ssh</span>
+KKP-Router1(config-line)# <span class="config-cmd">exec-timeout</span> <span class="config-value">5 0</span>
+KKP-Router1(config-line)# <span class="config-cmd">exit</span>
+
+<span class="config-comment">! ── Step 11: Configure SSH (requires domain name and RSA key) ──</span>
+KKP-Router1(config)# <span class="config-cmd">ip domain-name</span> <span class="config-value">kkpapar.edu.my</span>
+KKP-Router1(config)# <span class="config-cmd">crypto key generate rsa modulus</span> <span class="config-value">2048</span>
+KKP-Router1(config)# <span class="config-cmd">ip ssh version</span> <span class="config-value">2</span>
+
+<span class="config-comment">! ── Step 12: Configure management interface (router) ──</span>
+KKP-Router1(config)# <span class="config-cmd">interface</span> <span class="config-param">GigabitEthernet0/0</span>
+KKP-Router1(config-if)# <span class="config-cmd">ip address</span> <span class="config-value">192.168.1.1 255.255.255.0</span>
+KKP-Router1(config-if)# <span class="config-cmd">description</span> <span class="config-value">Link to Core Switch</span>
+KKP-Router1(config-if)# <span class="config-cmd">no shutdown</span>
+KKP-Router1(config-if)# <span class="config-cmd">end</span>
+
+<span class="config-comment">! ── Step 13: Save configuration ──</span>
+KKP-Router1# <span class="config-cmd">copy running-config startup-config</span>
+<span class="config-comment">! or simply:</span>
+KKP-Router1# <span class="config-cmd">wr</span>
+
+<span class="config-comment">! ── Verification commands ──</span>
+KKP-Router1# <span class="config-cmd">show running-config</span>
+KKP-Router1# <span class="config-cmd">show version</span>
+KKP-Router1# <span class="config-cmd">show ip interface brief</span></pre>
+
+    </div>
+  </div>
+
+  <!-- ── Packet Tracer Activity ── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#EDE7FF;">🧪</div>
+      <div>
+        <div class="card-header-title">Packet Tracer Lab Activity</div>
+        <div class="card-header-sub">Hands-on practice — Practical 1 component</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="pt-activity">
+        <div class="pt-activity-title">🖥️ Lab 1 — Configure a Cisco Router and Switch from Scratch</div>
+        <p style="font-size:.875rem;color:var(--muted);margin-bottom:.75rem;">Open Cisco Packet Tracer and build the topology: 1 Router (2811 or ISR4321) + 1 Switch (2960) + 2 PCs. Follow the steps below to complete the initial configuration.</p>
+        <ol class="pt-steps">
+          <li>Build the topology: connect PC0 and PC1 to the switch (Fa0/1 and Fa0/2), connect Switch Fa0/24 (or G0/1) to Router Gi0/0 using a straight-through cable.</li>
+          <li>On the <strong>Router</strong>: enter Privileged EXEC mode (<code>enable</code>), then Global Config (<code>conf t</code>). Set hostname to <code>KKP-Router1</code>.</li>
+          <li>Configure <code>enable secret Admin@12345</code>. Create a local user: <code>username admin privilege 15 secret P@ssw0rd</code>. Enable <code>service password-encryption</code>.</li>
+          <li>Configure the MOTD banner with a legal warning message using <code>banner motd #</code>.</li>
+          <li>Configure console line 0 with <code>login local</code> and <code>exec-timeout 5 0</code>. Configure VTY lines 0–4 with <code>login local</code> and <code>transport input ssh</code>.</li>
+          <li>Assign IP address <code>192.168.1.1/24</code> to <code>GigabitEthernet0/0</code>. Use <code>no shutdown</code> to bring the interface up. Verify with <code>show ip interface brief</code>.</li>
+          <li>On the <strong>Switch</strong>: repeat hostname, enable secret, local user, password encryption, MOTD, console, and VTY configuration steps. Configure the management SVI: <code>interface vlan 1</code> → IP <code>192.168.1.2/24</code> → <code>no shutdown</code>. Set the default gateway: <code>ip default-gateway 192.168.1.1</code>.</li>
+          <li>Assign IP addresses to PC0 (<code>192.168.1.10/24</code>) and PC1 (<code>192.168.1.20/24</code>) with default gateway <code>192.168.1.1</code>. Test connectivity by pinging between PCs and to the router. Save all configurations with <code>wr</code>.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Key Concepts ── -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#FEF8E1;">💡</div>
+      <div>
+        <div class="card-header-title">Key Concepts &amp; Study Notes</div>
+        <div class="card-header-sub">Critical points for CLO2 practical assessment</div>
+      </div>
+    </div>
+    <div class="card-body">
+
+      <div class="info-box note">
+        <span class="info-box-icon">📌</span>
+        <div><strong>IOS Mode Prompts Summary:</strong> <code>Router&gt;</code> = User EXEC · <code>Router#</code> = Privileged EXEC · <code>Router(config)#</code> = Global Config · <code>Router(config-if)#</code> = Interface Config · <code>Router(config-line)#</code> = Line Config. The prompt always tells you which mode you are in.</div>
+      </div>
+
+      <div class="info-box tip">
+        <span class="info-box-icon">✅</span>
+        <div><strong>enable secret always wins:</strong> If both <code>enable password</code> and <code>enable secret</code> are configured, <code>enable secret</code> is always used. Never set <code>enable password</code> in production. The secret is stored as an MD5 hash — it cannot be recovered, only reset.</div>
+      </div>
+
+      <div class="info-box warning">
+        <span class="info-box-icon">⚠️</span>
+        <div><strong>Always save your config!</strong> Running-config lives in RAM and is lost on power cycle. Use <code>copy running-config startup-config</code> or <code>wr</code> after every significant change. In a lab, forgetting to save is the most common mistake — your topology may reset between sessions.</div>
+      </div>
+
+      <div class="info-box cisco">
+        <span class="info-box-icon">🔵</span>
+        <div><strong>SSH requirement:</strong> To enable SSH, the device needs: (1) a hostname set, (2) an IP domain name (<code>ip domain-name</code>), (3) an RSA key (<code>crypto key generate rsa modulus 2048</code>), (4) <code>ip ssh version 2</code>. SSH uses TCP port 22; Telnet uses TCP port 23. Always use SSH in practice.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Quiz ── -->
+  <div class="quiz-section">
+    <div class="quiz-title">🧠 Week 5 Knowledge Check — 5 Questions</div>
+
+    <div class="quiz-question" id="q1">
+      <div class="quiz-q-text">1. Which IOS command do you use to move from User EXEC mode to Privileged EXEC mode?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q1" value="a"> a) configure terminal</label>
+        <label class="quiz-option"><input type="radio" name="q1" value="b"> b) enable</label>
+        <label class="quiz-option"><input type="radio" name="q1" value="c"> c) login</label>
+        <label class="quiz-option"><input type="radio" name="q1" value="d"> d) privilege exec</label>
+      </div>
+    </div>
+
+    <div class="quiz-question" id="q2">
+      <div class="quiz-q-text">2. What is the difference between <code>enable password</code> and <code>enable secret</code>?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q2" value="a"> a) They are identical — just two names for the same command</label>
+        <label class="quiz-option"><input type="radio" name="q2" value="b"> b) <code>enable password</code> is stored as an MD5 hash; <code>enable secret</code> is plain text</label>
+        <label class="quiz-option"><input type="radio" name="q2" value="c"> c) <code>enable secret</code> is stored as an MD5 hash and takes precedence over <code>enable password</code></label>
+        <label class="quiz-option"><input type="radio" name="q2" value="d"> d) <code>enable password</code> is used for SSH only</label>
+      </div>
+    </div>
+
+    <div class="quiz-question" id="q3">
+      <div class="quiz-q-text">3. Which command saves the running configuration to NVRAM so it survives a reboot?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q3" value="a"> a) save running-config</label>
+        <label class="quiz-option"><input type="radio" name="q3" value="b"> b) copy startup-config running-config</label>
+        <label class="quiz-option"><input type="radio" name="q3" value="c"> c) copy running-config startup-config</label>
+        <label class="quiz-option"><input type="radio" name="q3" value="d"> d) write flash</label>
+      </div>
+    </div>
+
+    <div class="quiz-question" id="q4">
+      <div class="quiz-q-text">4. To allow only SSH (not Telnet) on VTY lines, which command must be configured under <code>line vty 0 4</code>?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q4" value="a"> a) transport input telnet</label>
+        <label class="quiz-option"><input type="radio" name="q4" value="b"> b) no telnet</label>
+        <label class="quiz-option"><input type="radio" name="q4" value="c"> c) ip ssh only</label>
+        <label class="quiz-option"><input type="radio" name="q4" value="d"> d) transport input ssh</label>
+      </div>
+    </div>
+
+    <div class="quiz-question" id="q5">
+      <div class="quiz-q-text">5. What does the <code>service password-encryption</code> command do?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q5" value="a"> a) Encrypts all SSH sessions with AES-256</label>
+        <label class="quiz-option"><input type="radio" name="q5" value="b"> b) Applies Type 7 (weak) encryption to all currently unencrypted passwords in the config</label>
+        <label class="quiz-option"><input type="radio" name="q5" value="c"> c) Replaces the enable password with enable secret automatically</label>
+        <label class="quiz-option"><input type="radio" name="q5" value="d"> d) Disables Telnet access on all VTY lines</label>
+      </div>
+    </div>
+
+    <button class="quiz-submit" onclick="submitQuiz()">Submit Answers</button>
+    <div class="quiz-result" id="quizResult"></div>
+  </div>
+
+  <!-- ── Week Nav Footer ── -->
+  <div class="week-nav-footer">
+    <a href="../week4/index.html" class="week-nav-btn secondary">← Week 4 — Routing &amp; Servers</a>
+    <button class="mark-done-btn" id="markDoneBtn" onclick="markDone()">✔ Mark Week 5 as Done</button>
+    <a href="../week6/index.html" class="week-nav-btn">Week 6 — VLAN Configuration →</a>
+  </div>
+
+</div>
+
+<script>
+  const WEEK = 'week5';
+
+  function markDone() {
+    const data = JSON.parse(localStorage.getItem('na360_progress') || '{}');
+    data[WEEK] = { visited: true, timestamp: Date.now() };
+    localStorage.setItem('na360_progress', JSON.stringify(data));
+    const btn = document.getElementById('markDoneBtn');
+    btn.textContent = '✔ Week 5 Complete!';
+    btn.classList.add('done');
+  }
+
+  (function() {
+    const data = JSON.parse(localStorage.getItem('na360_progress') || '{}');
+    if (data[WEEK] && data[WEEK].visited) {
+      const btn = document.getElementById('markDoneBtn');
+      btn.textContent = '✔ Week 5 Complete!';
+      btn.classList.add('done');
+    }
+  })();
+
+  const answers = { q1: 'b', q2: 'c', q3: 'c', q4: 'd', q5: 'b' };
+
+  function submitQuiz() {
+    let score = 0;
+    Object.keys(answers).forEach(function(q) {
+      const selected = document.querySelector('input[name="' + q + '"]:checked');
+      const options = document.querySelectorAll('input[name="' + q + '"]');
+      options.forEach(function(opt) {
+        const label = opt.parentElement;
+        label.classList.remove('correct', 'wrong');
+        if (opt.value === answers[q]) label.classList.add('correct');
+      });
+      if (selected) {
+        if (selected.value === answers[q]) {
+          score++;
+        } else {
+          selected.parentElement.classList.add('wrong');
+        }
+      }
+    });
+    const result = document.getElementById('quizResult');
+    result.style.display = 'block';
+    if (score >= 3) {
+      result.className = 'quiz-result pass';
+      result.textContent = '✅ Score: ' + score + '/5 — Great! You understand initial Cisco IOS configuration.';
+    } else {
+      result.className = 'quiz-result fail';
+      result.textContent = '❌ Score: ' + score + '/5 — Review the IOS modes and initial configuration commands.';
+    }
+  }
+</script>
+
+</body>
+</html>

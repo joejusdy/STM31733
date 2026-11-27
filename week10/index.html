@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 10 — DNS Configuration | STM31733</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../week-shared.css">
+</head>
+<body>
+
+<!-- Topbar -->
+<nav class="week-topbar">
+  <div class="week-topbar-left">
+    <div class="week-topbar-logo">🌐</div>
+    <div>
+      <div class="week-topbar-title">STM31733 Network Administration</div>
+      <div class="week-topbar-sub">Kolej Komuniti Papar · Jusdy bin Juwait</div>
+    </div>
+  </div>
+  <div class="week-topbar-nav">
+    <a href="../index.html" class="topbar-link">← Course Home</a>
+    <a href="../na360/index.html" class="topbar-link">NetAdmin 360</a>
+    <a href="../week9/index.html" class="topbar-link">← Week 9</a>
+    <a href="../week11/index.html" class="topbar-link">Week 11 →</a>
+  </div>
+</nav>
+
+<div class="week-container">
+
+  <!-- Hero -->
+  <div class="week-hero">
+    <div>
+      <div class="hero-week-num">Week 10 · Unit 3.0 / Subtopic 3.5</div>
+      <h1 class="hero-title">DNS Configuration</h1>
+      <div class="hero-unit">STM31733 Network Administration</div>
+      <div class="hero-clo-tags">
+        <span class="clo-tag">CLO2</span>
+        <span class="clo-tag">P3</span>
+        <span class="clo-tag">PLO3</span>
+      </div>
+      <p style="color:rgba(255,255,255,.75);margin-top:.9rem;font-size:.9375rem;">
+        Understand how DNS resolves hostnames to IP addresses. Configure DNS on a Cisco router and a Packet Tracer server, then verify resolution using nslookup and hostname pings.
+      </p>
+    </div>
+    <div class="hero-meta">
+      <div class="hero-week-badge">10</div>
+    </div>
+  </div>
+
+  <!-- Topics Covered -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#E8F0FE;">🔍</div>
+      <div>
+        <div class="card-header-title">Topics Covered</div>
+        <div class="card-header-sub">Unit 3.0 — Subtopic 3.5</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <ul class="topic-list">
+        <li><span class="topic-dot" style="background:var(--blue);"></span>DNS concepts — how names resolve, recursive vs iterative queries, DNS hierarchy</li>
+        <li><span class="topic-dot" style="background:var(--blue);"></span>Configuring DNS on a router: <code>ip name-server</code>, <code>ip domain-name</code>, <code>ip domain-lookup</code></li>
+        <li><span class="topic-dot" style="background:var(--green);"></span>Configuring a DNS server in Packet Tracer — IP, services, A records</li>
+        <li><span class="topic-dot" style="background:var(--green);"></span>Verifying with <code>nslookup</code> and ping by hostname</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Sub-topics -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#E6F4EA;">📖</div>
+      <div>
+        <div class="card-header-title">Sub-topic Detail</div>
+        <div class="card-header-sub">Expand each section to study</div>
+      </div>
+    </div>
+    <div class="card-body">
+
+      <details class="subtopic">
+        <summary class="subtopic-header">
+          <span class="subtopic-code">3.5.1</span> DNS Concepts &amp; Hierarchy
+        </summary>
+        <div class="subtopic-body">
+          <ul>
+            <li>DNS maps fully qualified domain names (FQDNs) to IP addresses.</li>
+            <li>Hierarchy: Root (.) → TLD (.com, .my) → Second-level domain → Subdomain → Host.</li>
+            <li><strong>Recursive query:</strong> Client asks resolver; resolver queries on behalf of client until answered.</li>
+            <li><strong>Iterative query:</strong> Resolver gets referrals and must query each server itself.</li>
+            <li>DNS uses UDP port 53 for queries; TCP port 53 for zone transfers.</li>
+            <li>TTL (Time To Live) controls how long records are cached.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="subtopic">
+        <summary class="subtopic-header">
+          <span class="subtopic-code">3.5.2</span> Configuring DNS on a Cisco Router
+        </summary>
+        <div class="subtopic-body">
+          <ul>
+            <li><code>ip domain-lookup</code> — enables DNS lookups (enabled by default; disable with <code>no ip domain-lookup</code>).</li>
+            <li><code>ip domain-name &lt;domain&gt;</code> — appends domain to unqualified hostnames.</li>
+            <li><code>ip name-server &lt;ip1&gt; [ip2]</code> — specifies the DNS server(s) the router queries.</li>
+            <li>The router itself does not become a DNS server with these commands — it only queries external DNS.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="subtopic">
+        <summary class="subtopic-header">
+          <span class="subtopic-code">3.5.3</span> Configuring a DNS Server in Packet Tracer
+        </summary>
+        <div class="subtopic-body">
+          <ul>
+            <li>Click the server device → <strong>Config</strong> tab → set IP address, subnet mask, and default gateway.</li>
+            <li>Go to <strong>Services</strong> tab → <strong>DNS</strong>.</li>
+            <li>Toggle DNS service to <strong>On</strong>.</li>
+            <li>Add A records: enter hostname (e.g. <code>www.kkpapar.edu.my</code>) and the target IP address → click <strong>Add</strong>.</li>
+            <li>Direct PCs to use this server: set DNS server field in PC IP settings to server's IP.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="subtopic">
+        <summary class="subtopic-header">
+          <span class="subtopic-code">3.5.4</span> Verification Methods
+        </summary>
+        <div class="subtopic-body">
+          <ul>
+            <li><code>nslookup &lt;hostname&gt;</code> — queries DNS and returns resolved IP; confirms server is reachable.</li>
+            <li><code>ping www.kkpapar.edu.my</code> — tests both DNS resolution AND Layer 3 connectivity.</li>
+            <li>On Cisco router: <code>ping &lt;hostname&gt;</code> uses configured name-server.</li>
+            <li>Troubleshoot: check <code>ip name-server</code>, firewall rules blocking UDP 53, and A record spelling.</li>
+          </ul>
+        </div>
+      </details>
+
+    </div>
+  </div>
+
+  <!-- Key Concepts -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#EDE7FF;">💡</div>
+      <div>
+        <div class="card-header-title">Key Concepts</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="info-box note">
+        <span class="info-box-icon">ℹ️</span>
+        <div><strong>DNS Record Types:</strong> A record = hostname → IPv4; AAAA = hostname → IPv6; CNAME = alias; MX = mail server; PTR = reverse lookup (IP → hostname).</div>
+      </div>
+      <div class="info-box tip">
+        <span class="info-box-icon">✅</span>
+        <div><strong>Disable domain lookup on routers in labs:</strong> Use <code>no ip domain-lookup</code> to prevent the router from treating mistyped commands as hostnames and hanging for 30 seconds.</div>
+      </div>
+      <div class="info-box warning">
+        <span class="info-box-icon">⚠️</span>
+        <div><strong>DNS vs DHCP DNS option:</strong> Even if DHCP pushes a DNS server IP, the host must have Layer 3 connectivity to that server for DNS to work. Verify the route exists first.</div>
+      </div>
+      <div class="info-box cisco">
+        <span class="info-box-icon">🔧</span>
+        <div><strong>Packet Tracer Limitation:</strong> Packet Tracer's DNS server is simplified — it supports A and CNAME records only. Use a real BIND or Windows DNS server for full record type testing.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cisco Config Examples -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#EDE7FF;">⌨️</div>
+      <div>
+        <div class="card-header-title">Cisco IOS Configuration Examples</div>
+        <div class="card-header-sub">Router DNS commands and Packet Tracer server setup</div>
+      </div>
+    </div>
+    <div class="card-body">
+
+      <p style="font-weight:600;margin-bottom:.5rem;">Example 1 — DNS Configuration on a Cisco Router</p>
+      <pre class="config-block"><span class="config-comment">! ── Enable DNS lookup (on by default)</span>
+<span class="config-cmd">Router(config)#</span> <span class="config-param">ip domain-lookup</span>
+
+<span class="config-comment">! ── Set the local domain name</span>
+<span class="config-cmd">Router(config)#</span> <span class="config-param">ip domain-name</span> <span class="config-value">kkpapar.edu.my</span>
+
+<span class="config-comment">! ── Point router to DNS server(s)</span>
+<span class="config-cmd">Router(config)#</span> <span class="config-param">ip name-server</span> <span class="config-value">192.168.1.100 8.8.8.8</span>
+
+<span class="config-comment">! ── Verify — router now resolves hostnames</span>
+<span class="config-cmd">Router#</span> <span class="config-param">ping</span> <span class="config-value">www.kkpapar.edu.my</span>
+
+<span class="config-comment">! ── Disable lookup to avoid CLI typo delays in labs</span>
+<span class="config-cmd">Router(config)#</span> <span class="config-param">no ip domain-lookup</span></pre>
+
+      <p style="font-weight:600;margin:.75rem 0 .5rem;">Example 2 — Packet Tracer DNS Server Setup (Step-by-Step)</p>
+      <pre class="config-block"><span class="config-comment">Step 1: Select DNS server PC/Server in topology</span>
+<span class="config-comment">Step 2: Config tab → FastEthernet0</span>
+<span class="config-banner">  IP Address  : 192.168.1.100</span>
+<span class="config-banner">  Subnet Mask : 255.255.255.0</span>
+<span class="config-banner">  Gateway     : 192.168.1.1</span>
+
+<span class="config-comment">Step 3: Services tab → DNS → Toggle ON</span>
+<span class="config-comment">Step 4: Add A records:</span>
+<span class="config-banner">  Name : www.kkpapar.edu.my  Address : 192.168.1.200</span>
+<span class="config-banner">  Name : ftp.kkpapar.edu.my  Address : 192.168.1.201</span>
+
+<span class="config-comment">Step 5: On each PC → Config → DNS Server = 192.168.1.100</span>
+<span class="config-comment">Step 6: PC Command Prompt → nslookup www.kkpapar.edu.my</span>
+<span class="config-comment">Step 7: PC Command Prompt → ping www.kkpapar.edu.my</span></pre>
+
+    </div>
+  </div>
+
+  <!-- Packet Tracer Activity -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#E8F0FE;">📦</div>
+      <div>
+        <div class="card-header-title">Packet Tracer Activity</div>
+        <div class="card-header-sub">Hands-on lab</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="pt-activity">
+        <div class="pt-activity-title">🖥️ Lab 6 — DNS Configuration on Router and Server</div>
+        <p style="font-size:.875rem;color:var(--muted);margin-bottom:.75rem;">Open the Lab 6 Packet Tracer file. Complete the following steps:</p>
+        <ol class="pt-steps">
+          <li>Build a topology: Router0, Switch, DNS Server (Server0), Web Server (Server1), two PCs.</li>
+          <li>Assign static IP addresses — DNS Server: 192.168.1.100, Web Server: 192.168.1.200, PCs and router on 192.168.1.0/24.</li>
+          <li>On Server0 (DNS): go to Services → DNS → turn ON → add A record <code>www.lab.local → 192.168.1.200</code>.</li>
+          <li>On Server1 (Web): go to Services → HTTP → turn ON; leave default page.</li>
+          <li>On each PC, configure DNS server = 192.168.1.100.</li>
+          <li>From PC0 command prompt, run <code>nslookup www.lab.local</code> — verify IP returned matches 192.168.1.200.</li>
+          <li>From PC0 open Web Browser → type <code>http://www.lab.local</code> — verify page loads.</li>
+          <li>On the router, configure <code>ip name-server 192.168.1.100</code> and test <code>ping www.lab.local</code> from router console.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quiz -->
+  <div class="quiz-section" id="quizSection10">
+    <div class="quiz-title">📝 Week 10 Quiz — DNS Configuration (5 Questions)</div>
+
+    <div class="quiz-question">
+      <div class="quiz-q-text">1. What type of DNS record maps a hostname to an IPv4 address?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q1" value="a"> a) MX record</label>
+        <label class="quiz-option"><input type="radio" name="q1" value="b"> b) CNAME record</label>
+        <label class="quiz-option"><input type="radio" name="q1" value="c"> c) A record</label>
+        <label class="quiz-option"><input type="radio" name="q1" value="d"> d) PTR record</label>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <div class="quiz-q-text">2. Which Cisco IOS command specifies the DNS server IP address a router should query?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q2" value="a"> a) <code>ip dns-server &lt;ip&gt;</code></label>
+        <label class="quiz-option"><input type="radio" name="q2" value="b"> b) <code>ip name-server &lt;ip&gt;</code></label>
+        <label class="quiz-option"><input type="radio" name="q2" value="c"> c) <code>dns-server &lt;ip&gt;</code></label>
+        <label class="quiz-option"><input type="radio" name="q2" value="d"> d) <code>ip domain-server &lt;ip&gt;</code></label>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <div class="quiz-q-text">3. What port does DNS primarily use for standard queries?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q3" value="a"> a) TCP 443</label>
+        <label class="quiz-option"><input type="radio" name="q3" value="b"> b) UDP 67</label>
+        <label class="quiz-option"><input type="radio" name="q3" value="c"> c) UDP 53</label>
+        <label class="quiz-option"><input type="radio" name="q3" value="d"> d) TCP 25</label>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <div class="quiz-q-text">4. In a recursive DNS query, who does the work of contacting multiple DNS servers?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q4" value="a"> a) The client's browser</label>
+        <label class="quiz-option"><input type="radio" name="q4" value="b"> b) The root DNS server</label>
+        <label class="quiz-option"><input type="radio" name="q4" value="c"> c) The DNS resolver (usually ISP's DNS server)</label>
+        <label class="quiz-option"><input type="radio" name="q4" value="d"> d) The TLD server</label>
+      </div>
+    </div>
+
+    <div class="quiz-question">
+      <div class="quiz-q-text">5. What effect does <code>no ip domain-lookup</code> have on a Cisco router?</div>
+      <div class="quiz-options">
+        <label class="quiz-option"><input type="radio" name="q5" value="a"> a) Removes the domain name from the router</label>
+        <label class="quiz-option"><input type="radio" name="q5" value="b"> b) Disables the router from acting as a DNS server</label>
+        <label class="quiz-option"><input type="radio" name="q5" value="c"> c) Prevents the router from trying to resolve mistyped commands as hostnames via DNS</label>
+        <label class="quiz-option"><input type="radio" name="q5" value="d"> d) Clears the DNS cache on the router</label>
+      </div>
+    </div>
+
+    <button class="quiz-submit" onclick="submitQuiz10()">Submit Quiz</button>
+    <div class="quiz-result" id="quizResult10"></div>
+  </div>
+
+  <!-- Week nav footer -->
+  <div class="week-nav-footer">
+    <a href="../week9/index.html" class="week-nav-btn secondary">← Week 9: DHCP Configuration</a>
+    <button class="mark-done-btn" id="markDoneBtn10" onclick="markDone10()">✔ Mark Week 10 as Done</button>
+    <a href="../week11/index.html" class="week-nav-btn">Week 11: Network Troubleshooting →</a>
+  </div>
+
+</div><!-- /week-container -->
+
+<script>
+  const ANSWERS10 = { q1:'c', q2:'b', q3:'c', q4:'c', q5:'c' };
+
+  function submitQuiz10() {
+    let score = 0;
+    Object.keys(ANSWERS10).forEach(q => {
+      const sel = document.querySelector(`input[name="${q}"]:checked`);
+      document.querySelectorAll(`input[name="${q}"]`).forEach(inp => {
+        const lbl = inp.closest('.quiz-option');
+        if (inp.value === ANSWERS10[q]) lbl.classList.add('correct');
+        else if (sel && inp.value === sel.value) lbl.classList.add('wrong');
+        inp.disabled = true;
+      });
+      if (sel && sel.value === ANSWERS10[q]) score++;
+    });
+    const res = document.getElementById('quizResult10');
+    res.style.display = 'block';
+    res.textContent = `You scored ${score}/5. ${score >= 4 ? '🎉 Excellent!' : score >= 3 ? '👍 Good effort!' : '📚 Review the material and try again.'}`;
+    res.className = 'quiz-result ' + (score >= 3 ? 'pass' : 'fail');
+    document.querySelector('.quiz-submit').disabled = true;
+  }
+
+  function markDone10() {
+    const prog = JSON.parse(localStorage.getItem('na360_progress') || '{}');
+    prog.week10 = { visited: true, completed: true };
+    localStorage.setItem('na360_progress', JSON.stringify(prog));
+    const btn = document.getElementById('markDoneBtn10');
+    btn.textContent = '✔ Week 10 Completed';
+    btn.classList.add('done');
+  }
+
+  (function() {
+    const prog = JSON.parse(localStorage.getItem('na360_progress') || '{}');
+    if (prog.week10 && prog.week10.completed) {
+      const btn = document.getElementById('markDoneBtn10');
+      btn.textContent = '✔ Week 10 Completed';
+      btn.classList.add('done');
+    }
+    const p2 = JSON.parse(localStorage.getItem('na360_progress') || '{}');
+    if (!p2.week10) p2.week10 = {};
+    p2.week10.visited = true;
+    localStorage.setItem('na360_progress', JSON.stringify(p2));
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 14 — Group Discussion &amp; Final Assessment | STM31733</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../week-shared.css">
+  <style>
+    /* ── Week 14 extras ── */
+    .assessment-box {
+      background: linear-gradient(135deg, #FEF8E1 0%, #FFF8F0 100%);
+      border: 2px solid #FBBC04;
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin: .75rem 0;
+    }
+    .assessment-box-title {
+      font-size: 1.0625rem; font-weight: 700; color: #7A4F01;
+      display: flex; align-items: center; gap: .5rem;
+      margin-bottom: .75rem;
+    }
+    .rubric-table {
+      width: 100%; border-collapse: collapse; font-size: .875rem;
+      border-radius: 8px; overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .rubric-table th {
+      background: var(--navy); color: #fff;
+      padding: .6rem .9rem; text-align: left; font-weight: 600;
+    }
+    .rubric-table td {
+      padding: .55rem .9rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .rubric-table tr:nth-child(even) td { background: var(--bg); }
+    .rubric-table tr:last-child td { border-bottom: none; }
+    .rubric-total td { background: var(--navy) !important; color: #fff; font-weight: 700; }
+
+    .revision-unit {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      overflow: hidden;
+    }
+    .revision-unit-header {
+      background: var(--bg);
+      padding: .65rem 1rem;
+      font-weight: 700; font-size: .9rem;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .revision-commands {
+      padding: .75rem 1rem;
+      display: flex; flex-wrap: wrap; gap: .4rem;
+    }
+    .cmd-chip {
+      display: inline-block;
+      padding: .2rem .6rem;
+      background: #0D1117;
+      color: #79C0FF;
+      font-family: var(--mono, monospace);
+      font-size: .75rem;
+      border-radius: 4px;
+      border: 1px solid #30363D;
+    }
+
+    .checklist-item {
+      display: flex; align-items: flex-start; gap: .75rem;
+      padding: .65rem .75rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background .12s;
+      border: 1px solid var(--border);
+      margin-bottom: .5rem;
+      background: #fff;
+      user-select: none;
+    }
+    .checklist-item:hover { background: var(--bg); }
+    .checklist-item.checked { background: #E6F4EA; border-color: var(--green); }
+    .checklist-item input[type="checkbox"] {
+      width: 18px; height: 18px; accent-color: var(--green);
+      flex-shrink: 0; margin-top: 1px; cursor: pointer;
+    }
+    .checklist-item label { cursor: pointer; font-size: .9rem; }
+    .checklist-item.checked label { color: #1B5E20; text-decoration: line-through; opacity: .8; }
+    .checklist-progress {
+      margin-top: .75rem; font-weight: 700; color: var(--navy);
+      font-size: .9375rem;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Topbar -->
+<nav class="week-topbar">
+  <div class="week-topbar-left">
+    <div class="week-topbar-logo">🌐</div>
+    <div>
+      <div class="week-topbar-title">STM31733 Network Administration</div>
+      <div class="week-topbar-sub">Kolej Komuniti Papar · Jusdy bin Juwait</div>
+    </div>
+  </div>
+  <div class="week-topbar-nav">
+    <a href="../index.html" class="topbar-link">← Course Home</a>
+    <a href="../na360/index.html" class="topbar-link">NetAdmin 360</a>
+    <a href="../week13/index.html" class="topbar-link">← Week 13</a>
+    <span class="topbar-link" style="opacity:.4;cursor:default;">Week 15 →</span>
+  </div>
+</nav>
+
+<div class="week-container">
+
+  <!-- Hero -->
+  <div class="week-hero">
+    <div>
+      <div class="hero-week-num">Week 14 · Unit 4.0 / Subtopic 4.3 (Conclusion)</div>
+      <h1 class="hero-title">Group Discussion — Network Monitoring &amp; Final Assessment</h1>
+      <div class="hero-unit">STM31733 Network Administration</div>
+      <div class="hero-clo-tags">
+        <span class="clo-tag">CLO2</span>
+        <span class="clo-tag">P3</span>
+        <span class="clo-tag">PLO3</span>
+        <span class="clo-tag">CLO3</span>
+        <span class="clo-tag">A2</span>
+        <span class="clo-tag">PLO8</span>
+      </div>
+      <p style="color:rgba(255,255,255,.75);margin-top:.9rem;font-size:.9375rem;">
+        Final week — group presentation of network monitoring reports, revision of all units, and Practical Final Assessment. CLO3 presentation is worth 10% of your final grade.
+      </p>
+    </div>
+    <div class="hero-meta">
+      <div class="hero-week-badge">14</div>
+    </div>
+  </div>
+
+  <!-- Assessment Info Box -->
+  <div class="assessment-box">
+    <div class="assessment-box-title">🎓 Practical Final Assessment — 30% of Final Grade</div>
+    <p style="font-size:.9rem;color:#7A4F01;margin-bottom:.6rem;">
+      The Practical Final Assessment covers all <strong>Unit 3.0 configuration topics</strong> (Weeks 7–13). You will be given a Packet Tracer topology and asked to configure devices from scratch within the time limit.
+    </p>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-top:.75rem;">
+      <div style="background:rgba(255,255,255,.7);border-radius:8px;padding:.75rem;text-align:center;">
+        <div style="font-size:1.5rem;font-weight:800;color:#7A4F01;">30%</div>
+        <div style="font-size:.75rem;color:var(--muted);">Assessment Weight</div>
+      </div>
+      <div style="background:rgba(255,255,255,.7);border-radius:8px;padding:.75rem;text-align:center;">
+        <div style="font-size:1.5rem;font-weight:800;color:#7A4F01;">90 min</div>
+        <div style="font-size:.75rem;color:var(--muted);">Duration</div>
+      </div>
+      <div style="background:rgba(255,255,255,.7);border-radius:8px;padding:.75rem;text-align:center;">
+        <div style="font-size:1.5rem;font-weight:800;color:#7A4F01;">Practical</div>
+        <div style="font-size:.75rem;color:var(--muted);">Format (Packet Tracer)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Topics Covered -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#E8F0FE;">🗒️</div>
+      <div>
+        <div class="card-header-title">Topics Covered This Week</div>
+        <div class="card-header-sub">Unit 4.0 — Subtopic 4.3 Conclusion</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <ul class="topic-list">
+        <li><span class="topic-dot" style="background:var(--blue);"></span>Group discussion guidelines and participation expectations</li>
+        <li><span class="topic-dot" style="background:var(--blue);"></span>Preparing a network monitoring traffic analysis report</li>
+        <li><span class="topic-dot" style="background:var(--green);"></span>Presentation structure — Introduction → Methodology → Findings → Recommendations → Conclusion</li>
+        <li><span class="topic-dot" style="background:var(--amber);"></span>Practical Final Assessment overview and rubric checklist</li>
+        <li><span class="topic-dot" style="background:var(--purple);"></span>Revision summary of all 4 units — key commands reference card</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Sub-topics -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#E6F4EA;">📖</div>
+      <div>
+        <div class="card-header-title">Sub-topic Detail</div>
+        <div class="card-header-sub">Expand each section to study</div>
+      </div>
+    </div>
+    <div class="card-body">
+
+      <details class="subtopic">
+        <summary class="subtopic-header">
+          <span class="subtopic-code">4.3.5</span> Group Discussion Guidelines
+        </summary>
+        <div class="subtopic-body">
+          <ul>
+            <li>Each group presents their network monitoring report (10–15 minutes + Q&amp;A).</li>
+            <li>All group members must contribute — allocate sections by member expertise.</li>
+            <li>Be prepared for questions on methodology, tools used, and recommendations.</li>
+            <li>Peer evaluation forms may be distributed — assess other groups fairly and constructively.</li>
+            <li>Professional language is expected — use correct technical terminology.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="subtopic">
+        <summary class="subtopic-header">
+          <span class="subtopic-code">4.3.6</span> Preparing the Monitoring Report
+        </summary>
+        <div class="subtopic-body">
+          <ul>
+            <li>Use the five-section structure below (matches the rubric).</li>
+            <li><strong>Introduction:</strong> Network overview, monitoring objectives, tools used.</li>
+            <li><strong>Methodology:</strong> How data was collected, duration, SNMP configuration details, capture setup.</li>
+            <li><strong>Findings:</strong> Data tables, graphs, anomalies detected, protocol distribution.</li>
+            <li><strong>Recommendations:</strong> Specific, actionable steps to improve network performance or security.</li>
+            <li><strong>Conclusion:</strong> Summary of findings and whether objectives were met.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details class="subtopic">
+        <summary class="subtopic-header">
+          <span class="subtopic-code">4.3.7</span> Final Assessment Overview
+        </summary>
+        <div class="subtopic-body">
+          <ul>
+            <li>You will receive a Packet Tracer <code>.pkt</code> file with a partially configured topology.</li>
+            <li>Tasks typically cover: VLAN, inter-VLAN routing, static routing, DHCP, DNS, SSH.</li>
+            <li>Marks awarded per working configuration (connectivity test scripts may be used).</li>
+            <li>Save your work frequently — use <code>Ctrl+S</code> in Packet Tracer.</li>
+            <li>Bring your student ID and ensure your laptop/PC is charged.</li>
+          </ul>
+        </div>
+      </details>
+
+    </div>
+  </div>
+
+  <!-- Key Concepts -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#EDE7FF;">💡</div>
+      <div>
+        <div class="card-header-title">Key Concepts</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="info-box note">
+        <span class="info-box-icon">ℹ️</span>
+        <div><strong>CLO3 — Presentation is 10% of your final grade.</strong> This is assessed independently from the Practical Final Assessment. Ensure your group has a complete, printed/digital report ready to submit.</div>
+      </div>
+      <div class="info-box tip">
+        <span class="info-box-icon">✅</span>
+        <div><strong>Presentation Delivery Tips:</strong> Speak clearly, face the audience, use visuals (screenshots, graphs) to support findings. Rehearse once so each member knows their section timing.</div>
+      </div>
+      <div class="info-box warning">
+        <span class="info-box-icon">⚠️</span>
+        <div><strong>Final Assessment Reminder:</strong> You must complete ALL configuration tasks — a partially completed topology may still earn partial marks. Always verify with <code>ping</code> after each configuration step.</div>
+      </div>
+      <div class="info-box cisco">
+        <span class="info-box-icon">🔧</span>
+        <div><strong>Quick Troubleshoot Sequence (Assessment Day):</strong> 1) <code>show ip int brief</code> → 2) <code>show ip route</code> → 3) ping adjacent router → 4) ping end-to-end.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Presentation Rubric -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#FEF8E1;">📊</div>
+      <div>
+        <div class="card-header-title">Presentation Rubric — CLO3 (20 Marks Total)</div>
+        <div class="card-header-sub">5 criteria × 4 marks each — 10% of final grade</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <table class="rubric-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Criterion</th>
+            <th>Marks</th>
+            <th>Descriptors</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td><strong>Content</strong></td>
+            <td style="text-align:center;font-weight:700;">/ 4</td>
+            <td>Accuracy and completeness of technical information presented</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td><strong>Analysis</strong></td>
+            <td style="text-align:center;font-weight:700;">/ 4</td>
+            <td>Depth of data interpretation, use of graphs/charts, anomaly identification</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td><strong>Recommendation</strong></td>
+            <td style="text-align:center;font-weight:700;">/ 4</td>
+            <td>Practicality, specificity, and justification of recommendations</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td><strong>Delivery</strong></td>
+            <td style="text-align:center;font-weight:700;">/ 4</td>
+            <td>Clarity of speech, pace, eye contact, and professional use of slides</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td><strong>Q&amp;A Response</strong></td>
+            <td style="text-align:center;font-weight:700;">/ 4</td>
+            <td>Ability to answer questions accurately, confidently, and concisely</td>
+          </tr>
+          <tr class="rubric-total">
+            <td colspan="2">TOTAL</td>
+            <td style="text-align:center;">20</td>
+            <td>Scaled to 10% of final grade</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Revision Summary -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#EDE7FF;">📚</div>
+      <div>
+        <div class="card-header-title">Revision Summary — All 4 Units</div>
+        <div class="card-header-sub">Key commands reference card</div>
+      </div>
+    </div>
+    <div class="card-body">
+
+      <div class="revision-unit">
+        <div class="revision-unit-header">
+          <span class="badge badge-blue">Unit 1</span> Introduction to Network Administration (Weeks 1–2)
+        </div>
+        <div class="revision-commands">
+          <span class="cmd-chip">show version</span>
+          <span class="cmd-chip">show running-config</span>
+          <span class="cmd-chip">show startup-config</span>
+          <span class="cmd-chip">hostname</span>
+          <span class="cmd-chip">enable secret</span>
+          <span class="cmd-chip">service password-encryption</span>
+          <span class="cmd-chip">banner motd</span>
+          <span class="cmd-chip">copy run start</span>
+          <span class="cmd-chip">show flash</span>
+        </div>
+      </div>
+
+      <div class="revision-unit">
+        <div class="revision-unit-header">
+          <span class="badge badge-green">Unit 2</span> VLAN &amp; Inter-VLAN Routing (Weeks 3–7)
+        </div>
+        <div class="revision-commands">
+          <span class="cmd-chip">vlan &lt;id&gt;</span>
+          <span class="cmd-chip">name &lt;name&gt;</span>
+          <span class="cmd-chip">interface vlan &lt;id&gt;</span>
+          <span class="cmd-chip">switchport mode access</span>
+          <span class="cmd-chip">switchport access vlan</span>
+          <span class="cmd-chip">switchport mode trunk</span>
+          <span class="cmd-chip">show vlan brief</span>
+          <span class="cmd-chip">show interfaces trunk</span>
+          <span class="cmd-chip">interface gi0/0.10</span>
+          <span class="cmd-chip">encapsulation dot1q &lt;id&gt;</span>
+          <span class="cmd-chip">ip address</span>
+          <span class="cmd-chip">show ip interface brief</span>
+        </div>
+      </div>
+
+      <div class="revision-unit">
+        <div class="revision-unit-header">
+          <span class="badge badge-amber">Unit 3</span> Routing, DHCP, DNS &amp; Troubleshooting (Weeks 8–11)
+        </div>
+        <div class="revision-commands">
+          <span class="cmd-chip">ip route &lt;net&gt; &lt;mask&gt; &lt;nh&gt;</span>
+          <span class="cmd-chip">ip route 0.0.0.0 0.0.0.0</span>
+          <span class="cmd-chip">router rip</span>
+          <span class="cmd-chip">version 2</span>
+          <span class="cmd-chip">network</span>
+          <span class="cmd-chip">no auto-summary</span>
+          <span class="cmd-chip">passive-interface</span>
+          <span class="cmd-chip">show ip protocols</span>
+          <span class="cmd-chip">show ip route</span>
+          <span class="cmd-chip">ip dhcp pool</span>
+          <span class="cmd-chip">ip dhcp excluded-address</span>
+          <span class="cmd-chip">default-router</span>
+          <span class="cmd-chip">dns-server</span>
+          <span class="cmd-chip">ip helper-address</span>
+          <span class="cmd-chip">show ip dhcp binding</span>
+          <span class="cmd-chip">ip name-server</span>
+          <span class="cmd-chip">ip domain-name</span>
+          <span class="cmd-chip">ping</span>
+          <span class="cmd-chip">traceroute</span>
+        </div>
+      </div>
+
+      <div class="revision-unit">
+        <div class="revision-unit-header">
+          <span class="badge badge-purple">Unit 4</span> Network Monitoring (Weeks 12–14)
+        </div>
+        <div class="revision-commands">
+          <span class="cmd-chip">ip ssh version 2</span>
+          <span class="cmd-chip">crypto key generate rsa</span>
+          <span class="cmd-chip">transport input ssh</span>
+          <span class="cmd-chip">login local</span>
+          <span class="cmd-chip">show ip ssh</span>
+          <span class="cmd-chip">show ssh</span>
+          <span class="cmd-chip">snmp-server community</span>
+          <span class="cmd-chip">snmp-server location</span>
+          <span class="cmd-chip">snmp-server contact</span>
+          <span class="cmd-chip">snmp-server host</span>
+          <span class="cmd-chip">show snmp</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Final Revision Checklist -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header-icon" style="background:#E6F4EA;">✅</div>
+      <div>
+        <div class="card-header-title">Final Revision Checklist</div>
+        <div class="card-header-sub">Tick off each item — progress saved automatically</div>
+      </div>
+    </div>
+    <div class="card-body">
+
+      <div id="checklist">
+        <div class="checklist-item" onclick="toggleCheck(0)">
+          <input type="checkbox" id="chk0"> <label for="chk0">I can configure VLANs and assign ports on a Cisco switch</label>
+        </div>
+        <div class="checklist-item" onclick="toggleCheck(1)">
+          <input type="checkbox" id="chk1"> <label for="chk1">I can set up a trunk link and configure inter-VLAN routing using router-on-a-stick</label>
+        </div>
+        <div class="checklist-item" onclick="toggleCheck(2)">
+          <input type="checkbox" id="chk2"> <label for="chk2">I can configure static routes and a default static route on a Cisco router</label>
+        </div>
+        <div class="checklist-item" onclick="toggleCheck(3)">
+          <input type="checkbox" id="chk3"> <label for="chk3">I can configure RIPv2 with <code>no auto-summary</code> and passive interfaces</label>
+        </div>
+        <div class="checklist-item" onclick="toggleCheck(4)">
+          <input type="checkbox" id="chk4"> <label for="chk4">I can set up a DHCP pool, exclude addresses, and verify bindings</label>
+        </div>
+        <div class="checklist-item" onclick="toggleCheck(5)">
+          <input type="checkbox" id="chk5"> <label for="chk5">I can configure a DHCP relay agent using <code>ip helper-address</code></label>
+        </div>
+        <div class="checklist-item" onclick="toggleCheck(6)">
+          <input type="checkbox" id="chk6"> <label for="chk6">I can configure DNS on a router and set up A records on a Packet Tracer server</label>
+        </div>
+        <div class="checklist-item" onclick="toggleCheck(7)">
+          <input type="checkbox" id="chk7"> <label for="chk7">I can apply the OSI bottom-up troubleshooting methodology and use ping, traceroute, and show commands</label>
+        </div>
+        <div class="checklist-item" onclick="toggleCheck(8)">
+          <input type="checkbox" id="chk8"> <label for="chk8">I can configure SSH (hostname, domain, RSA key, VTY transport) on a Cisco device</label>
+        </div>
+        <div class="checklist-item" onclick="toggleCheck(9)">
+          <input type="checkbox" id="chk9"> <label for="chk9">I can configure SNMP community strings and understand SNMPv1 vs v2c vs v3 differences</label>
+        </div>
+      </div>
+
+      <div class="checklist-progress" id="checklistProgress">0 / 10 completed</div>
+    </div>
+  </div>
+
+  <!-- Week nav footer -->
+  <div class="week-nav-footer">
+    <a href="../week13/index.html" class="week-nav-btn secondary">← Week 13: Monitoring Tools</a>
+    <button class="mark-done-btn" id="markDoneBtn14" onclick="markDone14()">✔ Mark Week 14 as Done</button>
+    <span class="week-nav-btn" style="opacity:.35;cursor:default;background:var(--bg);color:var(--muted);border:1px solid var(--border);">End of Course</span>
+  </div>
+
+</div><!-- /week-container -->
+
+<script>
+  // ── Checklist ──────────────────────────────────────
+  const CHECKLIST_KEY = 'na360_w14_checklist';
+
+  function saveChecklist() {
+    const states = [];
+    for (let i = 0; i < 10; i++) {
+      states.push(document.getElementById('chk' + i).checked);
+    }
+    localStorage.setItem(CHECKLIST_KEY, JSON.stringify(states));
+    updateProgress();
+  }
+
+  function updateProgress() {
+    let done = 0;
+    const items = document.querySelectorAll('.checklist-item');
+    for (let i = 0; i < 10; i++) {
+      const checked = document.getElementById('chk' + i).checked;
+      if (checked) {
+        done++;
+        items[i].classList.add('checked');
+      } else {
+        items[i].classList.remove('checked');
+      }
+    }
+    document.getElementById('checklistProgress').textContent =
+      done + ' / 10 completed' + (done === 10 ? ' — 🎉 You\'re ready for the assessment!' : '');
+  }
+
+  function toggleCheck(idx) {
+    const cb = document.getElementById('chk' + idx);
+    cb.checked = !cb.checked;
+    saveChecklist();
+  }
+
+  // ── Mark as Done ───────────────────────────────────
+  function markDone14() {
+    const prog = JSON.parse(localStorage.getItem('na360_progress') || '{}');
+    prog.week14 = { visited: true, completed: true };
+    localStorage.setItem('na360_progress', JSON.stringify(prog));
+    const btn = document.getElementById('markDoneBtn14');
+    btn.textContent = '✔ Week 14 Completed';
+    btn.classList.add('done');
+  }
+
+  // ── Restore state on load ──────────────────────────
+  (function() {
+    // Checklist
+    const saved = JSON.parse(localStorage.getItem(CHECKLIST_KEY) || 'null');
+    if (saved && Array.isArray(saved)) {
+      for (let i = 0; i < 10; i++) {
+        if (saved[i]) document.getElementById('chk' + i).checked = true;
+      }
+    }
+    updateProgress();
+
+    // Done button
+    const prog = JSON.parse(localStorage.getItem('na360_progress') || '{}');
+    if (prog.week14 && prog.week14.completed) {
+      const btn = document.getElementById('markDoneBtn14');
+      btn.textContent = '✔ Week 14 Completed';
+      btn.classList.add('done');
+    }
+
+    // Mark visited
+    const p2 = JSON.parse(localStorage.getItem('na360_progress') || '{}');
+    if (!p2.week14) p2.week14 = {};
+    p2.week14.visited = true;
+    localStorage.setItem('na360_progress', JSON.stringify(p2));
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,126 @@
+{
+  "_meta": {
+    "description": "CLO/PLO attainment matrix and CQI definitions for STM31733 Network Administration",
+    "version": "1.0",
+    "course": "STM31733",
+    "session": "Session I 2025/2026"
+  },
+  "attainment_targets": {
+    "student_pass_threshold": 60,
+    "class_attainment_threshold": 80,
+    "description": "A CLO is considered ATTAINED when at least 80% of students achieve a score of 60% or above on the mapped assessment(s)"
+  },
+  "clo_attainment": [
+    {
+      "clo_id": "CLO1",
+      "description": "Identify the concepts of network administration in managing network environment",
+      "bloom_level": "C3",
+      "bloom_domain": "Cognitive",
+      "plo": "PLO1",
+      "assessment_sources": ["test"],
+      "weight": 0.15,
+      "target_pct": 80,
+      "pass_mark": 60,
+      "cqi_actions_if_not_met": [
+        "Review lecture delivery for Unit 1.0 and 2.0 — increase use of real-world NOC case studies",
+        "Provide additional guided readings on FCAPS model and NOC team structure",
+        "Conduct revision session before Test with focus on CLO1 topic areas",
+        "Increase use of cooperative learning activities in Unit 1 and 2 topics"
+      ]
+    },
+    {
+      "clo_id": "CLO2",
+      "description": "Implement basic configuration for network devices in network environment",
+      "bloom_level": "P3",
+      "bloom_domain": "Psychomotor",
+      "plo": "PLO3",
+      "assessment_sources": ["practical1", "practical2"],
+      "weight": 0.75,
+      "target_pct": 80,
+      "pass_mark": 60,
+      "cqi_actions_if_not_met": [
+        "Increase supervised Packet Tracer lab time — allocate additional practicum hours for weaker students",
+        "Provide step-by-step configuration checklists for each lab (VLAN, Routing, DHCP, DNS)",
+        "Implement peer learning — pair high-performing students with struggling ones during labs",
+        "Review Practical 1 rubric to ensure criteria are clearly communicated before the assessment",
+        "Add targeted remediation sessions for Unit 3.0 topics with low completion rates"
+      ]
+    },
+    {
+      "clo_id": "CLO3",
+      "description": "Perform group discussion in network monitoring traffic by using related software",
+      "bloom_level": "A2",
+      "bloom_domain": "Affective",
+      "plo": "PLO8",
+      "assessment_sources": ["presentation"],
+      "weight": 0.10,
+      "target_pct": 80,
+      "pass_mark": 60,
+      "cqi_actions_if_not_met": [
+        "Provide structured presentation rubric to students at the start of Unit 4.0",
+        "Conduct a practice discussion session in Week 12 or 13 before the graded presentation",
+        "Use guided templates for network monitoring report structure",
+        "Assign roles within groups to ensure equitable participation (reporter, analyser, presenter)"
+      ]
+    }
+  ],
+  "plo_attainment": [
+    {
+      "plo_id": "PLO1",
+      "description": "Knowledge",
+      "mapped_clos": ["CLO1"],
+      "attainment_basis": "Derived from CLO1 attainment result",
+      "bloom_domains": ["Cognitive"]
+    },
+    {
+      "plo_id": "PLO3",
+      "description": "Practical Skills",
+      "mapped_clos": ["CLO2"],
+      "attainment_basis": "Derived from CLO2 attainment result",
+      "bloom_domains": ["Psychomotor"]
+    },
+    {
+      "plo_id": "PLO8",
+      "description": "Communication Skills",
+      "mapped_clos": ["CLO3"],
+      "attainment_basis": "Derived from CLO3 attainment result",
+      "bloom_domains": ["Affective"]
+    }
+  ],
+  "assessment_weights": {
+    "continuous": {
+      "test":         { "weight": 0.15, "clo": "CLO1" },
+      "practical1":   { "weight": 0.45, "clo": "CLO2" },
+      "presentation": { "weight": 0.10, "clo": "CLO3" }
+    },
+    "final": {
+      "practical2":   { "weight": 0.30, "clo": "CLO2" }
+    },
+    "ca_total": 0.70,
+    "fa_total": 0.30
+  },
+  "bloom_taxonomy": {
+    "cognitive": [
+      { "level": 1, "label": "Remember",   "action_verbs": ["recall", "list", "state", "identify"] },
+      { "level": 2, "label": "Understand", "action_verbs": ["explain", "describe", "summarise", "classify"] },
+      { "level": 3, "label": "Apply",      "action_verbs": ["apply", "use", "implement", "demonstrate"] },
+      { "level": 4, "label": "Analyse",    "action_verbs": ["analyse", "compare", "differentiate", "examine"] },
+      { "level": 5, "label": "Evaluate",   "action_verbs": ["evaluate", "justify", "critique", "assess"] },
+      { "level": 6, "label": "Create",     "action_verbs": ["create", "design", "construct", "develop"] }
+    ],
+    "psychomotor": [
+      { "level": 1, "label": "Imitation",   "code": "P1" },
+      { "level": 2, "label": "Manipulation","code": "P2" },
+      { "level": 3, "label": "Precision",   "code": "P3" },
+      { "level": 4, "label": "Articulation","code": "P4" },
+      { "level": 5, "label": "Naturalisation","code": "P5" }
+    ],
+    "affective": [
+      { "level": 1, "label": "Receiving",   "code": "A1" },
+      { "level": 2, "label": "Responding",  "code": "A2" },
+      { "level": 3, "label": "Valuing",     "code": "A3" },
+      { "level": 4, "label": "Organising",  "code": "A4" },
+      { "level": 5, "label": "Characterising","code": "A5" }
+    ]
+  }
+}

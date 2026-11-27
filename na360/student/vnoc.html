@@ -1,0 +1,311 @@
+<div id="view-content">
+
+<div class="noc-view" style="font-family:var(--font-mono);">
+
+  <!-- Simulation Banner -->
+  <div style="background:#2d0f0d;color:#ff9d97;border:1px solid #EA4335;border-radius:var(--radius-md);padding:.6rem 1rem;margin-bottom:1rem;font-size:var(--font-size-xs);font-weight:600;display:flex;align-items:center;gap:.5rem;">
+    🔴 SIMULATION MODE — All data is synthetic. This is a training environment.
+  </div>
+
+  <!-- Top Row Stat Panels -->
+  <div class="grid grid-cols-4 gap-4 mb-4">
+    <div class="stat-card" style="background:var(--bg-card);border:1px solid var(--border);">
+      <div class="stat-card-icon" style="background:var(--accent-green-light);color:var(--accent-green);">🖥</div>
+      <div class="stat-card-label">Devices Online</div>
+      <div class="stat-card-value" style="color:var(--accent-green);">12 / 15</div>
+      <div class="stat-card-delta" style="color:var(--text-muted);">3 offline</div>
+    </div>
+    <div class="stat-card" style="background:var(--bg-card);border:1px solid var(--border);">
+      <div class="stat-card-icon" style="background:var(--accent-red-light);color:var(--accent-red);">🚨</div>
+      <div class="stat-card-label">Active Alerts</div>
+      <div class="stat-card-value" id="active-alert-count" style="color:var(--accent-red);">3</div>
+      <div class="stat-card-delta" style="color:var(--text-muted);">unacknowledged</div>
+    </div>
+    <div class="stat-card" style="background:var(--bg-card);border:1px solid var(--border);">
+      <div class="stat-card-icon" style="background:var(--accent-blue-light);color:var(--accent-blue);">📶</div>
+      <div class="stat-card-label">Network Health</div>
+      <div class="stat-card-value" style="color:var(--accent-blue);">87%</div>
+      <div class="stat-card-delta" style="color:var(--accent-amber);">Minor Issues</div>
+    </div>
+    <div class="stat-card" style="background:var(--bg-card);border:1px solid var(--border);">
+      <div class="stat-card-icon" style="background:var(--accent-green-light);color:var(--accent-green);">⏱</div>
+      <div class="stat-card-label">Uptime</div>
+      <div class="stat-card-value" style="color:var(--accent-green);">99.2%</div>
+      <div class="stat-card-delta" style="color:var(--text-muted);">last 30 days</div>
+    </div>
+  </div>
+
+  <!-- Main Grid -->
+  <div class="grid grid-cols-12 gap-4 mb-4">
+
+    <!-- Left: Alert Ticker -->
+    <div class="card col-span-4" style="background:var(--bg-card);">
+      <div class="card-header">
+        <div class="card-title" style="font-family:var(--font-mono);">📡 Live Alerts</div>
+        <span style="font-size:var(--font-size-xs);color:var(--text-muted);" id="ticker-count"></span>
+      </div>
+      <div class="card-body" style="padding:.5rem 0;max-height:400px;overflow-y:auto;" id="alert-ticker">
+        <div style="text-align:center;padding:2rem;color:var(--text-muted);font-size:var(--font-size-xs);">Loading alerts…</div>
+      </div>
+    </div>
+
+    <!-- Centre: Network Topology SVG -->
+    <div class="card col-span-5" style="background:var(--bg-card);">
+      <div class="card-header">
+        <div class="card-title" style="font-family:var(--font-mono);">🗺 Network Topology</div>
+        <span style="font-size:var(--font-size-xs);color:var(--text-muted);">Simulated</span>
+      </div>
+      <div class="card-body" style="display:flex;justify-content:center;padding:.75rem;">
+        <svg id="topology-svg" viewBox="0 0 400 340" width="100%" style="max-height:360px;border-radius:var(--radius-md);background:var(--bg-surface);" aria-label="Network topology diagram">
+          <!-- Internet Cloud -->
+          <ellipse cx="200" cy="28" rx="52" ry="20" fill="var(--accent-blue-light)" stroke="var(--accent-blue)" stroke-width="1.5"/>
+          <text x="200" y="33" text-anchor="middle" font-size="10" fill="var(--accent-blue)" font-family="monospace">INTERNET</text>
+
+          <!-- Core Router 1 -->
+          <line x1="200" y1="48" x2="140" y2="100" stroke="var(--accent-green)" stroke-width="2"/>
+          <line x1="200" y1="48" x2="260" y2="100" stroke="var(--accent-green)" stroke-width="2"/>
+          <rect x="104" y="90" width="72" height="34" rx="6" fill="var(--accent-blue-light)" stroke="var(--accent-blue)" stroke-width="1.5"/>
+          <text x="140" y="109" text-anchor="middle" font-size="9" fill="var(--accent-blue)" font-family="monospace" font-weight="600">R1-Core</text>
+          <circle cx="168" cy="95" r="5" fill="var(--accent-green)"/>
+
+          <!-- Edge Router 2 -->
+          <rect x="224" y="90" width="72" height="34" rx="6" fill="var(--accent-blue-light)" stroke="var(--accent-blue)" stroke-width="1.5"/>
+          <text x="260" y="109" text-anchor="middle" font-size="9" fill="var(--accent-blue)" font-family="monospace" font-weight="600">R2-Edge</text>
+          <circle cx="288" cy="95" r="5" fill="var(--accent-green)"/>
+
+          <!-- SW1 -->
+          <line x1="140" y1="124" x2="100" y2="174" stroke="var(--border-strong)" stroke-width="1.5"/>
+          <line x1="140" y1="124" x2="175" y2="174" stroke="var(--border-strong)" stroke-width="1.5"/>
+          <rect x="62" y="164" width="76" height="30" rx="5" fill="var(--accent-purple-light)" stroke="var(--accent-purple)" stroke-width="1.5"/>
+          <text x="100" y="182" text-anchor="middle" font-size="9" fill="var(--accent-purple)" font-family="monospace" font-weight="600">SW-Access1</text>
+          <circle cx="134" cy="168" r="5" fill="var(--accent-green)"/>
+
+          <!-- SW2 -->
+          <line x1="260" y1="124" x2="230" y2="174" stroke="var(--border-strong)" stroke-width="1.5"/>
+          <line x1="260" y1="124" x2="300" y2="174" stroke="var(--border-strong)" stroke-width="1.5"/>
+          <rect x="152" y="164" width="76" height="30" rx="5" fill="var(--accent-purple-light)" stroke="var(--accent-purple)" stroke-width="1.5"/>
+          <text x="190" y="182" text-anchor="middle" font-size="9" fill="var(--accent-purple)" font-family="monospace" font-weight="600">SW-Core1</text>
+          <circle cx="225" cy="168" r="5" fill="var(--accent-amber)"/>
+
+          <rect x="262" y="164" width="76" height="30" rx="5" fill="var(--accent-purple-light)" stroke="var(--accent-purple)" stroke-width="1.5"/>
+          <text x="300" y="182" text-anchor="middle" font-size="9" fill="var(--accent-purple)" font-family="monospace" font-weight="600">SW-Access2</text>
+          <circle cx="335" cy="168" r="5" fill="var(--accent-green)"/>
+
+          <!-- PCs -->
+          <line x1="80" y1="194" x2="55"  y2="236" stroke="var(--border)" stroke-width="1"/>
+          <line x1="118" y1="194" x2="118" y2="236" stroke="var(--border)" stroke-width="1"/>
+          <line x1="265" y1="194" x2="240" y2="236" stroke="var(--border)" stroke-width="1"/>
+          <line x1="318" y1="194" x2="318" y2="236" stroke="var(--border)" stroke-width="1"/>
+
+          <!-- PC icons -->
+          <g id="pc1"><rect x="34" y="228" width="42" height="26" rx="4" fill="var(--bg-surface-alt)" stroke="var(--border-strong)" stroke-width="1"/><text x="55" y="245" text-anchor="middle" font-size="8" fill="var(--text-secondary)" font-family="monospace">PC-01</text><circle cx="72" cy="231" r="4" fill="var(--accent-green)"/></g>
+          <g id="pc2"><rect x="97" y="228" width="42" height="26" rx="4" fill="var(--bg-surface-alt)" stroke="var(--border-strong)" stroke-width="1"/><text x="118" y="245" text-anchor="middle" font-size="8" fill="var(--text-secondary)" font-family="monospace">PC-07</text><circle cx="135" cy="231" r="4" fill="var(--accent-red)"/></g>
+          <g id="pc3"><rect x="219" y="228" width="42" height="26" rx="4" fill="var(--bg-surface-alt)" stroke="var(--border-strong)" stroke-width="1"/><text x="240" y="245" text-anchor="middle" font-size="8" fill="var(--text-secondary)" font-family="monospace">PC-Lab1</text><circle cx="257" cy="231" r="4" fill="var(--accent-green)"/></g>
+          <g id="pc4"><rect x="297" y="228" width="42" height="26" rx="4" fill="var(--bg-surface-alt)" stroke="var(--border-strong)" stroke-width="1"/><text x="318" y="245" text-anchor="middle" font-size="8" fill="var(--text-secondary)" font-family="monospace">NMS-01</text><circle cx="335" cy="231" r="4" fill="var(--accent-green)"/></g>
+
+          <!-- Legend -->
+          <circle cx="20" cy="300" r="4" fill="var(--accent-green)"/>
+          <text x="30" y="304" font-size="8" fill="var(--text-muted)" font-family="monospace">Online</text>
+          <circle cx="80" cy="300" r="4" fill="var(--accent-red)"/>
+          <text x="90" y="304" font-size="8" fill="var(--text-muted)" font-family="monospace">Offline</text>
+          <circle cx="140" cy="300" r="4" fill="var(--accent-amber)"/>
+          <text x="150" y="304" font-size="8" fill="var(--text-muted)" font-family="monospace">Warning</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Right: Traffic Gauges -->
+    <div class="card col-span-3" style="background:var(--bg-card);">
+      <div class="card-header">
+        <div class="card-title" style="font-family:var(--font-mono);">📊 Traffic Gauges</div>
+        <span style="font-size:var(--font-size-xs);color:var(--text-muted);">Auto-refresh 3s</span>
+      </div>
+      <div class="card-body" style="display:flex;flex-direction:column;gap:1.25rem;">
+        <!-- CPU -->
+        <div>
+          <div class="flex items-center justify-between mb-1" style="font-size:var(--font-size-xs);">
+            <span style="color:var(--text-secondary);font-weight:600;">CPU Utilisation</span>
+            <span id="gauge-cpu-val" style="font-weight:700;color:var(--accent-blue);">—</span>
+          </div>
+          <div style="background:var(--bg-surface-alt);border-radius:var(--radius-pill);height:12px;overflow:hidden;">
+            <div id="gauge-cpu-bar" style="height:100%;border-radius:var(--radius-pill);transition:width .6s ease,background .4s;width:0%;background:var(--accent-blue);"></div>
+          </div>
+          <div style="font-size:var(--font-size-xs);color:var(--text-muted);margin-top:2px;">Core-Router-01</div>
+        </div>
+        <!-- Memory -->
+        <div>
+          <div class="flex items-center justify-between mb-1" style="font-size:var(--font-size-xs);">
+            <span style="color:var(--text-secondary);font-weight:600;">Memory Usage</span>
+            <span id="gauge-mem-val" style="font-weight:700;color:var(--accent-purple);">—</span>
+          </div>
+          <div style="background:var(--bg-surface-alt);border-radius:var(--radius-pill);height:12px;overflow:hidden;">
+            <div id="gauge-mem-bar" style="height:100%;border-radius:var(--radius-pill);transition:width .6s ease,background .4s;width:0%;background:var(--accent-purple);"></div>
+          </div>
+          <div style="font-size:var(--font-size-xs);color:var(--text-muted);margin-top:2px;">SW-Core-01</div>
+        </div>
+        <!-- Bandwidth -->
+        <div>
+          <div class="flex items-center justify-between mb-1" style="font-size:var(--font-size-xs);">
+            <span style="color:var(--text-secondary);font-weight:600;">Bandwidth</span>
+            <span id="gauge-bw-val" style="font-weight:700;color:var(--accent-amber);">—</span>
+          </div>
+          <div style="background:var(--bg-surface-alt);border-radius:var(--radius-pill);height:12px;overflow:hidden;">
+            <div id="gauge-bw-bar" style="height:100%;border-radius:var(--radius-pill);transition:width .6s ease,background .4s;width:0%;background:var(--accent-amber);"></div>
+          </div>
+          <div style="font-size:var(--font-size-xs);color:var(--text-muted);margin-top:2px;">Uplink — Gi0/0</div>
+        </div>
+        <!-- Packet Loss -->
+        <div>
+          <div class="flex items-center justify-between mb-1" style="font-size:var(--font-size-xs);">
+            <span style="color:var(--text-secondary);font-weight:600;">Packet Loss</span>
+            <span id="gauge-loss-val" style="font-weight:700;color:var(--accent-red);">—</span>
+          </div>
+          <div style="background:var(--bg-surface-alt);border-radius:var(--radius-pill);height:12px;overflow:hidden;">
+            <div id="gauge-loss-bar" style="height:100%;border-radius:var(--radius-pill);transition:width .6s ease,background .4s;width:0%;background:var(--accent-red);"></div>
+          </div>
+          <div style="font-size:var(--font-size-xs);color:var(--text-muted);margin-top:2px;">Network-wide avg</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shift Log -->
+  <div class="card" style="background:var(--bg-card);">
+    <div class="card-header">
+      <div class="card-title" style="font-family:var(--font-mono);">📝 Shift Log</div>
+      <button class="btn btn-ghost btn-sm" id="btn-clear-log">Clear</button>
+    </div>
+    <div class="card-body" style="padding:0;max-height:160px;overflow-y:auto;font-family:var(--font-mono);">
+      <div id="shift-log" style="font-size:var(--font-size-xs);color:var(--text-secondary);padding:.5rem 1rem;">
+        <span style="color:var(--text-muted);">No actions logged yet…</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script type="module">
+import DataModel        from '../core/data-model.js';
+import CompetencyEngine from '../core/competency-engine.js';
+import EventBus         from '../core/event-bus.js';
+
+// Mark module visited
+DataModel.Progress.markVisited(12);
+
+let alerts = [];
+let shiftLog = [];
+let gaugeFrame = 0;
+
+// Seed-stable pseudo-random gauge (uses Math.sin for deterministic variation)
+function pseudoRandom(seed, amplitude, base) {
+  return Math.round(base + amplitude * Math.abs(Math.sin(seed * 0.37 + 1.21)));
+}
+
+function updateGauges() {
+  const t = gaugeFrame++;
+  const cpu  = Math.min(100, pseudoRandom(t,       30, 42));
+  const mem  = Math.min(100, pseudoRandom(t + 7,   25, 55));
+  const bw   = Math.min(100, pseudoRandom(t + 13,  35, 30));
+  const loss = Math.min(100, pseudoRandom(t + 19,   8,  1));
+
+  setGauge('cpu',  cpu,  '%', cpu > 80 ? 'var(--accent-red)' : cpu > 60 ? 'var(--accent-amber)' : 'var(--accent-blue)');
+  setGauge('mem',  mem,  '%', mem > 80 ? 'var(--accent-red)' : 'var(--accent-purple)');
+  setGauge('bw',   bw,   '%', bw  > 80 ? 'var(--accent-red)' : 'var(--accent-amber)');
+  setGauge('loss', loss, '%', loss > 5  ? 'var(--accent-red)' : 'var(--accent-green)');
+}
+
+function setGauge(name, value, unit, color) {
+  document.getElementById(`gauge-${name}-val`).textContent = value + unit;
+  const bar = document.getElementById(`gauge-${name}-bar`);
+  bar.style.width = value + '%';
+  bar.style.background = color;
+}
+
+function renderAlerts() {
+  const ticker = document.getElementById('alert-ticker');
+  const critical = alerts.filter(a => a._status !== 'resolved');
+  document.getElementById('active-alert-count').textContent =
+    critical.filter(a => a.severity === 'critical' && !a._acknowledged).length;
+  document.getElementById('ticker-count').textContent = alerts.length + ' alerts';
+
+  ticker.innerHTML = alerts.map(a => {
+    const sevColor = a.severity === 'critical' ? 'var(--accent-red)'
+                   : a.severity === 'warning'  ? 'var(--accent-amber)' : 'var(--accent-blue)';
+    const sevBg    = a.severity === 'critical' ? 'var(--mastery-1-bg)'
+                   : a.severity === 'warning'  ? 'var(--mastery-2-bg)' : 'var(--accent-blue-light)';
+    const statusStyle = a._status === 'resolved'
+      ? 'opacity:.45;text-decoration:line-through;'
+      : a._acknowledged ? 'opacity:.7;' : '';
+
+    return `
+    <div id="alert-row-${a.id}" style="padding:.5rem .75rem;border-bottom:1px solid var(--border);${statusStyle}">
+      <div style="display:flex;align-items:center;gap:.4rem;margin-bottom:.25rem;">
+        <span style="font-size:10px;padding:1px 6px;border-radius:var(--radius-pill);background:${sevBg};color:${sevColor};font-weight:700;text-transform:uppercase;flex-shrink:0;">${a.severity}</span>
+        <span style="font-size:var(--font-size-xs);font-weight:600;color:var(--text-primary);">${a.device}</span>
+      </div>
+      <div style="font-size:var(--font-size-xs);color:var(--text-secondary);margin-bottom:.35rem;line-height:1.4;">${a.message}</div>
+      <div style="display:flex;gap:.4rem;">
+        ${a._status === 'resolved' ? '<span style="font-size:10px;color:var(--accent-green);font-weight:600;">✅ Resolved</span>' : `
+        <button class="btn btn-ghost btn-sm" style="font-size:10px;padding:1px 8px;"
+          onclick="alertAction('${a.id}','acknowledge')">Acknowledge</button>
+        <button class="btn btn-ghost btn-sm" style="font-size:10px;padding:1px 8px;color:var(--accent-green);"
+          onclick="alertAction('${a.id}','resolve')">Resolve</button>
+        <button class="btn btn-ghost btn-sm" style="font-size:10px;padding:1px 8px;color:var(--accent-amber);"
+          onclick="alertAction('${a.id}','escalate')">Escalate</button>`}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function appendLog(message) {
+  shiftLog.unshift({ ts: new Date().toLocaleTimeString(), message });
+  if (shiftLog.length > 50) shiftLog.pop();
+  const log = document.getElementById('shift-log');
+  log.innerHTML = shiftLog.map(e =>
+    `<div style="padding:.2rem 0;border-bottom:1px solid var(--border);"><span style="color:var(--text-muted);">[${e.ts}]</span> ${e.message}</div>`
+  ).join('');
+}
+
+// Global function called from onclick
+window.alertAction = function(alertId, action) {
+  const alert = alerts.find(a => a.id === alertId);
+  if (!alert) return;
+  if (action === 'acknowledge') {
+    alert._acknowledged = true;
+    appendLog(`<span style="color:var(--accent-blue);">ACK</span> ${alert.device} — ${alert.message.substring(0,60)}…`);
+    DataModel.VNOCLog.add(alertId, 'acknowledge');
+  } else if (action === 'resolve') {
+    alert._status = 'resolved';
+    appendLog(`<span style="color:var(--accent-green);">RESOLVE</span> ${alert.device} — marked resolved`);
+    DataModel.VNOCLog.add(alertId, 'resolve');
+  } else if (action === 'escalate') {
+    appendLog(`<span style="color:var(--accent-amber);">ESCALATE</span> ${alert.device} — escalated to Tier 2`);
+    DataModel.VNOCLog.add(alertId, 'escalate');
+  }
+  renderAlerts();
+};
+
+document.getElementById('btn-clear-log').addEventListener('click', () => {
+  shiftLog = [];
+  document.getElementById('shift-log').innerHTML = '<span style="color:var(--text-muted);">Log cleared.</span>';
+  DataModel.VNOCLog.clear();
+});
+
+async function init() {
+  try {
+    const res = await fetch('../data/missions.json');
+    const data = await res.json();
+    alerts = (data.vnoc_alerts || []).map(a => ({ ...a, _acknowledged: false, _status: 'active' }));
+  } catch (e) {
+    console.warn('[VNOC] Could not load missions.json', e);
+    alerts = [];
+  }
+  renderAlerts();
+  updateGauges();
+}
+
+setInterval(updateGauges, 3000);
+
+await init();
+</script>
+</div>

@@ -1,0 +1,322 @@
+<div id="view-content">
+
+<!-- Page Header -->
+<div class="page-header">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="page-title">Readiness Index</h1>
+      <p class="page-subtitle" style="font-family:var(--font-mono);font-size:var(--font-size-xs);color:var(--text-muted);">
+        RI = 0.15 × Test + 0.45 × Practical 1 + 0.30 × Practical 2 + 0.10 × Presentation
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Top Row: Gauge + Advice -->
+<div class="grid grid-cols-2 gap-4 mb-6">
+
+  <!-- Semi-circular Gauge -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Readiness Index Score</div>
+    </div>
+    <div class="card-body" style="display:flex;flex-direction:column;align-items:center;gap:1rem;">
+      <div style="position:relative;width:260px;height:140px;overflow:hidden;">
+        <svg width="260" height="140" viewBox="0 0 260 140" aria-label="Readiness Index Gauge">
+          <!-- Track arc (180°) -->
+          <path d="M 20 130 A 110 110 0 0 1 240 130" fill="none" stroke="var(--bg-surface-alt)" stroke-width="22" stroke-linecap="round"/>
+          <!-- Coloured fill arc -->
+          <path id="gauge-arc" d="M 20 130 A 110 110 0 0 1 240 130" fill="none" stroke="#EA4335" stroke-width="22" stroke-linecap="round"
+                stroke-dasharray="0 346" style="transition:stroke-dasharray 1s ease,stroke 0.5s;"/>
+        </svg>
+        <div style="position:absolute;bottom:0;left:0;width:100%;text-align:center;">
+          <div id="gauge-value" style="font-size:3rem;font-weight:800;line-height:1;color:var(--text-primary);">0</div>
+          <div id="gauge-band" style="font-size:var(--font-size-sm);font-weight:700;margin-top:4px;color:var(--text-secondary);">—</div>
+        </div>
+      </div>
+      <!-- Band scale legend -->
+      <div class="flex gap-2" style="flex-wrap:wrap;justify-content:center;">
+        <span style="font-size:10px;padding:2px 8px;border-radius:999px;background:#FDECEA;color:#EA4335;font-weight:600;">Critical &lt;40</span>
+        <span style="font-size:10px;padding:2px 8px;border-radius:999px;background:#FEF8E1;color:#9A6700;font-weight:600;">Developing 40–59</span>
+        <span style="font-size:10px;padding:2px 8px;border-radius:999px;background:#E8F0FE;color:#1A73E8;font-weight:600;">Ready 60–79</span>
+        <span style="font-size:10px;padding:2px 8px;border-radius:999px;background:#E6F4EA;color:#34A853;font-weight:600;">Confident 80–89</span>
+        <span style="font-size:10px;padding:2px 8px;border-radius:999px;background:#FEF7E0;color:#F9AB00;font-weight:600;">Exam-Ready ≥90</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Advice Banner + Top Actions -->
+  <div style="display:flex;flex-direction:column;gap:1rem;">
+    <div id="advice-banner" class="alert alert-info" style="align-items:flex-start;">
+      <div>
+        <div style="font-weight:700;margin-bottom:4px;" id="advice-title">Calculating…</div>
+        <div id="advice-text" style="font-size:var(--font-size-sm);">Complete your scores to see personalised advice.</div>
+      </div>
+    </div>
+    <div class="card" style="flex:1;">
+      <div class="card-header"><div class="card-title">🎯 Top 3 Improvement Actions</div></div>
+      <div class="card-body">
+        <ol id="improvement-list" style="padding-left:1.2rem;display:flex;flex-direction:column;gap:.5rem;color:var(--text-secondary);font-size:var(--font-size-sm);">
+          <li>No data yet — enter your scores below.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Component Breakdown Table -->
+<div class="card mb-6">
+  <div class="card-header">
+    <div>
+      <div class="card-title">Component Score Breakdown</div>
+      <div class="card-subtitle">Scores are automatically calculated from your quiz and mission performance</div>
+    </div>
+    <button class="btn btn-primary btn-sm" id="btn-update">Update Scores</button>
+  </div>
+  <div class="card-body" style="padding:0;">
+    <div class="table-wrapper" style="border:none;border-radius:0;">
+      <table class="na360-table">
+        <thead>
+          <tr>
+            <th>Component</th>
+            <th>Weight</th>
+            <th>Score (0–100)</th>
+            <th>Weighted Contribution</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:600;">Test</td>
+            <td><span class="badge badge-blue">15%</span></td>
+            <td><input type="number" id="inp-test" class="form-input" style="width:90px;padding:4px 8px;" min="0" max="100" placeholder="—"></td>
+            <td id="contrib-test" style="font-weight:600;">—</td>
+            <td id="status-test">—</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600;">Practical 1</td>
+            <td><span class="badge badge-purple">45%</span></td>
+            <td><input type="number" id="inp-p1" class="form-input" style="width:90px;padding:4px 8px;" min="0" max="100" placeholder="—"></td>
+            <td id="contrib-p1" style="font-weight:600;">—</td>
+            <td id="status-p1">—</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600;">Practical 2</td>
+            <td><span class="badge badge-purple">30%</span></td>
+            <td><input type="number" id="inp-p2" class="form-input" style="width:90px;padding:4px 8px;" min="0" max="100" placeholder="—"></td>
+            <td id="contrib-p2" style="font-weight:600;">—</td>
+            <td id="status-p2">—</td>
+          </tr>
+          <tr>
+            <td style="font-weight:600;">Presentation</td>
+            <td><span class="badge badge-gold">10%</span></td>
+            <td><input type="number" id="inp-pres" class="form-input" style="width:90px;padding:4px 8px;" min="0" max="100" placeholder="—"></td>
+            <td id="contrib-pres" style="font-weight:600;">—</td>
+            <td id="status-pres">—</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- CLO Contribution + RI Trend -->
+<div class="grid grid-cols-2 gap-4 mb-6">
+
+  <!-- CLO Contribution -->
+  <div class="card">
+    <div class="card-header"><div class="card-title">CLO Contribution Breakdown</div></div>
+    <div class="card-body" style="display:flex;flex-direction:column;gap:1rem;">
+      <div>
+        <div class="flex items-center justify-between mb-1">
+          <span style="font-size:var(--font-size-sm);font-weight:600;">CLO1 — Concepts (Test)</span>
+          <span id="clo1-val" style="font-size:var(--font-size-sm);font-weight:700;">—</span>
+        </div>
+        <div class="progress-bar-wrapper"><div class="progress-bar-fill" id="clo1-bar" style="width:0%;"></div></div>
+      </div>
+      <div>
+        <div class="flex items-center justify-between mb-1">
+          <span style="font-size:var(--font-size-sm);font-weight:600;">CLO2 — Configuration (Practical avg)</span>
+          <span id="clo2-val" style="font-size:var(--font-size-sm);font-weight:700;">—</span>
+        </div>
+        <div class="progress-bar-wrapper"><div class="progress-bar-fill" id="clo2-bar" style="width:0%;background:var(--accent-purple);"></div></div>
+      </div>
+      <div>
+        <div class="flex items-center justify-between mb-1">
+          <span style="font-size:var(--font-size-sm);font-weight:600;">CLO3 — Communication (Presentation)</span>
+          <span id="clo3-val" style="font-size:var(--font-size-sm);font-weight:700;">—</span>
+        </div>
+        <div class="progress-bar-wrapper"><div class="progress-bar-fill gold" id="clo3-bar" style="width:0%;"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RI Trend Chart -->
+  <div class="card">
+    <div class="card-header"><div class="card-title">RI Trend (Last 5 Snapshots)</div></div>
+    <div class="card-body">
+      <canvas id="ri-trend-chart" height="140"></canvas>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import DataModel from '../core/data-model.js';
+import CompetencyEngine from '../core/competency-engine.js';
+import EventBus from '../core/event-bus.js';
+
+const WEIGHTS = { test: 0.15, practical1: 0.45, practical2: 0.30, presentation: 0.10 };
+const ARC_TOTAL = 346; // circumference of the half-arc path at radius 110
+
+let trendChart = null;
+
+function getBandClass(band) {
+  if (band === 'Exam-Ready')  return 'alert-warning';
+  if (band === 'Confident')   return 'alert-success';
+  if (band === 'Ready')       return 'alert-info';
+  if (band === 'Developing')  return 'alert-warning';
+  return 'alert-danger';
+}
+
+function renderGauge(ri, bandInfo) {
+  const arc = document.getElementById('gauge-arc');
+  const val = document.getElementById('gauge-value');
+  const lbl = document.getElementById('gauge-band');
+  const filled = Math.min(ri / 100, 1) * ARC_TOTAL;
+  arc.setAttribute('stroke-dasharray', `${filled} ${ARC_TOTAL - filled}`);
+  arc.setAttribute('stroke', bandInfo.color);
+  val.textContent = ri;
+  val.style.color = bandInfo.color;
+  lbl.textContent = bandInfo.band;
+  lbl.style.color = bandInfo.color;
+}
+
+function renderAdvice(bandInfo, weakDomains) {
+  const banner = document.getElementById('advice-banner');
+  banner.className = `alert ${getBandClass(bandInfo.band)}`;
+  document.getElementById('advice-title').textContent = `Band: ${bandInfo.band}`;
+  document.getElementById('advice-text').textContent = bandInfo.advice;
+
+  const domainLabels = {
+    domain1: 'Network Admin Fundamentals',
+    domain2: 'Network Device Infrastructure',
+    domain3: 'Network Configuration',
+    domain4: 'Network Troubleshooting',
+    domain5: 'Network Monitoring & Security',
+    domain6: 'Professional Practice',
+  };
+  const actions = [
+    bandInfo.advice,
+    weakDomains[0] ? `Review ${domainLabels[weakDomains[0].id] || weakDomains[0].id} (weakest domain, ${weakDomains[0].score}%)` : null,
+    weakDomains[1] ? `Strengthen ${domainLabels[weakDomains[1].id] || weakDomains[1].id} (${weakDomains[1].score}%)` : null,
+  ].filter(Boolean);
+
+  document.getElementById('improvement-list').innerHTML =
+    actions.map(a => `<li>${a}</li>`).join('');
+}
+
+function renderTable(scores, riResult) {
+  const map = { test: 'test', p1: 'practical1', p2: 'practical2', pres: 'presentation' };
+  const statusBadge = (score) => {
+    if (score === null) return '<span class="badge badge-grey">Not Entered</span>';
+    if (score >= 60) return '<span class="badge badge-green">Pass ✓</span>';
+    return '<span class="badge badge-red">Below Pass ✗</span>';
+  };
+  [['test','test'],['p1','practical1'],['p2','practical2'],['pres','presentation']].forEach(([key, field]) => {
+    const comp = riResult.components[field];
+    document.getElementById(`contrib-${key}`).textContent = comp && comp.weighted !== null
+      ? (comp.weighted).toFixed(1) + ' pts' : '—';
+    document.getElementById(`status-${key}`).innerHTML = statusBadge(comp ? comp.raw : null);
+  });
+}
+
+function renderCLO(scores) {
+  const clo1 = scores.test !== null ? scores.test : 0;
+  const clo2 = (scores.practical1 !== null && scores.practical2 !== null)
+    ? Math.round(scores.practical1 * 0.6 + scores.practical2 * 0.4)
+    : (scores.practical1 || scores.practical2 || 0);
+  const clo3 = scores.presentation !== null ? scores.presentation : 0;
+
+  const render = (id, val) => {
+    document.getElementById(`${id}-val`).textContent = val ? val + '%' : '—';
+    document.getElementById(`${id}-bar`).style.width = val + '%';
+  };
+  render('clo1', clo1);
+  render('clo2', clo2);
+  render('clo3', clo3);
+}
+
+function renderTrendChart(history) {
+  const ctx = document.getElementById('ri-trend-chart').getContext('2d');
+  const last5 = history.slice(-5);
+  const labels = last5.map((_, i) => `Snap ${i + 1}`);
+  const data   = last5.map(h => h.ri_score);
+
+  if (trendChart) trendChart.destroy();
+  trendChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'RI Score',
+        data,
+        borderColor: '#1A73E8',
+        backgroundColor: 'rgba(26,115,232,0.08)',
+        borderWidth: 2,
+        pointBackgroundColor: '#1A73E8',
+        fill: true,
+        tension: 0.3,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { min: 0, max: 100, ticks: { stepSize: 20 } }
+      }
+    }
+  });
+}
+
+function populateInputs(scores) {
+  if (scores.test !== null)         document.getElementById('inp-test').value = scores.test;
+  if (scores.practical1 !== null)   document.getElementById('inp-p1').value   = scores.practical1;
+  if (scores.practical2 !== null)   document.getElementById('inp-p2').value   = scores.practical2;
+  if (scores.presentation !== null) document.getElementById('inp-pres').value  = scores.presentation;
+}
+
+function init() {
+  let scores = DataModel.Scores.get();
+  populateInputs(scores);
+
+  const riResult   = CompetencyEngine.calculateRI(scores);
+  const bandInfo   = riResult.band;
+  const weakDomains = DataModel.Competency.getWeakestDomains(2);
+  const history    = DataModel.ReadinessHistory.getHistory();
+
+  renderGauge(riResult.ri, bandInfo);
+  renderAdvice(bandInfo, weakDomains);
+  renderTable(scores, riResult);
+  renderCLO(scores);
+  renderTrendChart(history);
+}
+
+document.getElementById('btn-update').addEventListener('click', () => {
+  const val = (id) => {
+    const v = parseFloat(document.getElementById(id).value);
+    return isNaN(v) ? null : Math.max(0, Math.min(100, v));
+  };
+  const scores = { test: val('inp-test'), practical1: val('inp-p1'), practical2: val('inp-p2'), presentation: val('inp-pres') };
+  ['test','practical1','practical2','presentation'].forEach(k => {
+    if (scores[k] !== null) DataModel.Scores.update(k, scores[k]);
+  });
+  const riResult = CompetencyEngine.calculateRI(scores);
+  DataModel.ReadinessHistory.add(riResult.ri, riResult.components);
+  init();
+});
+
+EventBus.on('engine:recalculated', init);
+init();
+</script>
+</div>

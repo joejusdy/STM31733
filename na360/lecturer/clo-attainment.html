@@ -1,0 +1,278 @@
+<div id="view-content">
+
+<!-- Synthetic Data Banner -->
+<div class="synthetic-banner">⚠ SYNTHETIC DATA — DEMONSTRATION MODE ONLY — This data does not represent any real student</div>
+
+<!-- Page Header -->
+<div class="page-header">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="page-title">CLO/PLO Attainment Report</h1>
+      <p class="page-subtitle">STM31733 Network Administration — Session I 2025/2026 | Kolej Komuniti Papar</p>
+    </div>
+    <div class="flex gap-2">
+      <button class="btn btn-secondary btn-sm" onclick="window.print()">🖨 Print <span style="font-size:10px;opacity:.7;">(A4)</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- CLO Attainment Table -->
+<div class="card mb-6">
+  <div class="card-header">
+    <div class="card-title">CLO Attainment Table</div>
+    <div class="card-subtitle">Target: ≥ 80% of students achieve ≥ 60% on the mapped assessment</div>
+  </div>
+  <div class="card-body" style="padding:0;">
+    <div class="table-wrapper" style="border:none;border-radius:0;">
+      <table class="na360-table" id="clo-table">
+        <thead>
+          <tr>
+            <th>CLO</th>
+            <th>Description</th>
+            <th>Bloom</th>
+            <th>PLO</th>
+            <th>Assessment</th>
+            <th>Target</th>
+            <th>Achieved %</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="clo-tbody">
+          <tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text-muted);">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- CLO Attainment Chart -->
+<div class="grid grid-cols-2 gap-4 mb-6">
+  <div class="card">
+    <div class="card-header"><div class="card-title">CLO Attainment Bar Chart</div></div>
+    <div class="card-body"><canvas id="clo-chart" height="180"></canvas></div>
+  </div>
+
+  <!-- PLO Attainment Summary -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">PLO Attainment Summary</div>
+      <div class="card-subtitle">Derived from mapped CLO results</div>
+    </div>
+    <div class="card-body">
+      <div id="plo-summary" class="flex flex-col gap-3">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CQI Gap Analysis -->
+<div class="card mb-6">
+  <div class="card-header">
+    <div class="card-title">CQI Gap Analysis</div>
+    <div class="card-subtitle">Auto-generated improvement actions for CLOs that are Not Met or below 85%</div>
+  </div>
+  <div class="card-body">
+    <div id="cqi-panel">
+      <!-- Rendered by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- Bloom's Taxonomy Reference Card -->
+<div class="card mb-6">
+  <div class="card-header"><div class="card-title">Bloom's Taxonomy Reference</div></div>
+  <div class="card-body">
+    <div class="grid grid-cols-3 gap-4">
+      <div class="card" style="border-left:4px solid var(--accent-blue);">
+        <div class="card-body">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="badge badge-blue">C3 — Cognitive</span>
+          </div>
+          <div style="font-weight:600;font-size:var(--font-size-sm);">Apply</div>
+          <div style="font-size:var(--font-size-xs);color:var(--text-secondary);margin-top:4px;">
+            Students can apply network administration concepts to new situations. Action verbs: apply, use, implement, demonstrate.
+          </div>
+        </div>
+      </div>
+      <div class="card" style="border-left:4px solid var(--accent-purple);">
+        <div class="card-body">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="badge badge-purple">P3 — Psychomotor</span>
+          </div>
+          <div style="font-weight:600;font-size:var(--font-size-sm);">Precision</div>
+          <div style="font-size:var(--font-size-xs);color:var(--text-secondary);margin-top:4px;">
+            Students perform network device configuration with precision and accuracy in lab environments.
+          </div>
+        </div>
+      </div>
+      <div class="card" style="border-left:4px solid var(--accent-gold);">
+        <div class="card-body">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="badge badge-gold">A2 — Affective</span>
+          </div>
+          <div style="font-weight:600;font-size:var(--font-size-sm);">Responding</div>
+          <div style="font-size:var(--font-size-xs);color:var(--text-secondary);margin-top:4px;">
+            Students actively participate in group discussion and monitoring tasks — responsive and engaged.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+let cloChart = null;
+
+function avg(arr) {
+  return arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : 0;
+}
+
+const BLOOM_BADGE_MAP = {
+  'C3': 'badge-blue',
+  'P3': 'badge-purple',
+  'A2': 'badge-gold',
+};
+
+const ASSESSMENT_LABELS = {
+  test:         'Test (15%)',
+  practical1:   'Practical 1 (45%)',
+  practical2:   'Practical 2 (30%)',
+  presentation: 'Presentation (10%)',
+};
+
+function computeAttainment(students, fields, passMark) {
+  // % of students who scored >= passMark on the average of the given fields
+  let passed = 0;
+  students.forEach(s => {
+    const vals  = fields.map(f => s.scores[f]).filter(v => v !== null && v !== undefined);
+    const score = vals.length ? avg(vals) : 0;
+    if (score >= passMark) passed++;
+  });
+  return Math.round((passed / students.length) * 100);
+}
+
+function init(students, matrix) {
+  const cloData   = matrix.clo_attainment;
+  const ploData   = matrix.plo_attainment;
+  const targetPct = matrix.attainment_targets.class_attainment_threshold;  // 80
+  const passMark  = matrix.attainment_targets.student_pass_threshold;       // 60
+
+  // Compute attainment for each CLO
+  const attainments = cloData.map(clo => {
+    const pct = computeAttainment(students, clo.assessment_sources, passMark);
+    return { ...clo, achieved_pct: pct, met: pct >= clo.target_pct };
+  });
+
+  // Render CLO table
+  const tbody = document.getElementById('clo-tbody');
+  tbody.innerHTML = attainments.map(clo => {
+    const statusHtml = clo.met
+      ? '<span class="badge badge-green">Met ✓</span>'
+      : '<span class="badge badge-red">Not Met ✗</span>';
+    const sources = clo.assessment_sources.map(s => ASSESSMENT_LABELS[s] || s).join(', ');
+    const bloomCls = BLOOM_BADGE_MAP[clo.bloom_level] || 'badge-grey';
+    return `<tr>
+      <td style="font-weight:700;">${clo.clo_id}</td>
+      <td style="max-width:260px;font-size:var(--font-size-xs);">${clo.description}</td>
+      <td><span class="badge ${bloomCls}">${clo.bloom_level}</span></td>
+      <td><span class="badge badge-grey">${clo.plo}</span></td>
+      <td style="font-size:var(--font-size-xs);">${sources}</td>
+      <td style="font-size:var(--font-size-xs);">≥${clo.target_pct}% @ ≥${passMark}%</td>
+      <td style="font-weight:700;color:${clo.met ? 'var(--accent-green)' : 'var(--accent-red)'};">${clo.achieved_pct}%</td>
+      <td>${statusHtml}</td>
+    </tr>`;
+  }).join('');
+
+  // CLO Chart
+  const labels = attainments.map(c => c.clo_id);
+  const data   = attainments.map(c => c.achieved_pct);
+  const colors = attainments.map(c => c.met ? 'rgba(52,168,83,0.8)' : 'rgba(234,67,53,0.8)');
+
+  if (cloChart) cloChart.destroy();
+  cloChart = new Chart(document.getElementById('clo-chart').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Achieved %',
+          data,
+          backgroundColor: colors,
+          borderRadius: 6,
+        },
+        {
+          type: 'line',
+          label: 'Target (80%)',
+          data: attainments.map(() => 80),
+          borderColor: '#FBBC04',
+          borderWidth: 2,
+          borderDash: [6, 4],
+          pointRadius: 0,
+          fill: false,
+        }
+      ]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: true,
+      scales: { x: { min: 0, max: 100 } },
+      plugins: { legend: { position: 'bottom' } }
+    }
+  });
+
+  // PLO Summary
+  const ploContainer = document.getElementById('plo-summary');
+  // Build a map from CLO id to attainment result
+  const cloAttMap = {};
+  attainments.forEach(c => { cloAttMap[c.clo_id] = c; });
+
+  ploContainer.innerHTML = ploData.map(plo => {
+    const mappedCLOs = plo.mapped_clos;
+    const pctValues  = mappedCLOs.map(cid => cloAttMap[cid] ? cloAttMap[cid].achieved_pct : 0);
+    const ploAtt     = Math.round(avg(pctValues));
+    const pMet       = ploAtt >= targetPct;
+    return `
+      <div>
+        <div class="flex items-center justify-between mb-1">
+          <span style="font-weight:600;font-size:var(--font-size-sm);">${plo.plo_id} — ${plo.description}</span>
+          <span class="badge ${pMet ? 'badge-green' : 'badge-red'}">${pMet ? 'Attained ✓' : 'Not Attained ✗'}</span>
+        </div>
+        <div class="progress-bar-wrapper">
+          <div class="progress-bar-fill ${pMet ? 'green' : 'red'}" style="width:${ploAtt}%;"></div>
+        </div>
+        <div style="font-size:var(--font-size-xs);color:var(--text-muted);margin-top:2px;">${ploAtt}% — mapped from ${mappedCLOs.join(', ')}</div>
+      </div>`;
+  }).join('');
+
+  // CQI Gap Analysis
+  const notMetOrClose = attainments.filter(c => !c.met || c.achieved_pct < 85);
+  const cqiPanel = document.getElementById('cqi-panel');
+  if (notMetOrClose.length === 0) {
+    cqiPanel.innerHTML = '<div class="alert alert-success"><div><strong>All CLOs Attained</strong> — No CQI actions required at this time. Maintain current strategies.</div></div>';
+  } else {
+    cqiPanel.innerHTML = notMetOrClose.map(clo => `
+      <div class="card mb-4" style="border-left:4px solid ${clo.met ? 'var(--accent-amber)' : 'var(--accent-red)'};">
+        <div class="card-body">
+          <div class="flex items-center gap-2 mb-3">
+            <span style="font-weight:700;">${clo.clo_id}</span>
+            <span class="badge ${clo.met ? 'badge-amber' : 'badge-red'}">${clo.met ? 'Below 85% — Monitor' : 'Not Met — Action Required'}</span>
+            <span style="font-size:var(--font-size-xs);color:var(--text-muted);">Achieved: ${clo.achieved_pct}% | Target: ${clo.target_pct}%</span>
+          </div>
+          <ul style="padding-left:1.2rem;display:flex;flex-direction:column;gap:.4rem;">
+            ${clo.cqi_actions_if_not_met.map(a => `<li style="font-size:var(--font-size-sm);color:var(--text-secondary);">${a}</li>`).join('')}
+          </ul>
+        </div>
+      </div>`).join('');
+  }
+}
+
+Promise.all([
+  fetch('../data/synthetic-class.json').then(r => r.json()),
+  fetch('../data/clo-plo-matrix.json').then(r => r.json()),
+]).then(([classData, matrix]) => {
+  init(classData.students, matrix);
+}).catch(e => console.error('[CLO Attainment] Failed to load data:', e));
+</script>
+</div>

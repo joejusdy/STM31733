@@ -1,0 +1,257 @@
+<div id="view-content">
+
+<div class="page-header">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="page-title">Competency Radar</h1>
+      <p class="page-subtitle">Your skill profile across 6 network administration domains — STM31733</p>
+    </div>
+    <button class="btn btn-secondary btn-sm" id="btn-export-png">
+      ⬇ Export as PNG
+    </button>
+  </div>
+</div>
+
+<!-- Radar Chart Card -->
+<div class="grid grid-cols-12 gap-4 mb-6">
+  <div class="card col-span-8">
+    <div class="card-header">
+      <div class="card-title">Domain Competency Radar</div>
+      <div style="display:flex;align-items:center;gap:1rem;font-size:var(--font-size-xs);color:var(--text-muted);">
+        <span style="display:inline-flex;align-items:center;gap:4px;">
+          <span style="width:10px;height:3px;background:var(--accent-blue);border-radius:2px;display:inline-block;"></span> You
+        </span>
+        <span style="display:inline-flex;align-items:center;gap:4px;">
+          <span style="width:10px;height:3px;background:var(--accent-green);border-radius:2px;display:inline-block;"></span> Target
+        </span>
+        <span style="display:inline-flex;align-items:center;gap:4px;">
+          <span style="width:10px;height:3px;background:var(--accent-amber);border-radius:2px;display:inline-block;"></span> Class Avg
+        </span>
+      </div>
+    </div>
+    <div class="card-body" style="display:flex;justify-content:center;padding:1.5rem;">
+      <canvas id="radar-chart" width="460" height="400" aria-label="Competency radar chart"></canvas>
+    </div>
+  </div>
+
+  <div class="card col-span-4">
+    <div class="card-header">
+      <div class="card-title">Summary</div>
+    </div>
+    <div class="card-body" style="display:flex;flex-direction:column;gap:.75rem;">
+      <div>
+        <div style="font-size:var(--font-size-xs);color:var(--text-muted);margin-bottom:2px;">Overall Score</div>
+        <div style="font-size:var(--font-size-3xl);font-weight:700;color:var(--accent-blue);" id="radar-overall">0%</div>
+      </div>
+      <div>
+        <div style="font-size:var(--font-size-xs);color:var(--text-muted);margin-bottom:2px;">Mastery Level</div>
+        <span class="badge" id="radar-mastery-badge">Not Started</span>
+      </div>
+      <hr style="border:none;border-top:1px solid var(--border);">
+      <div>
+        <div style="font-size:var(--font-size-xs);font-weight:600;color:var(--text-secondary);margin-bottom:.5rem;">HISTORY (last 4 sessions)</div>
+        <div id="sparkline-values" style="font-size:var(--font-size-xs);color:var(--text-muted);font-family:var(--font-mono);line-height:2;">
+          No history yet
+        </div>
+      </div>
+      <hr style="border:none;border-top:1px solid var(--border);">
+      <div>
+        <div style="font-size:var(--font-size-xs);color:var(--text-muted);">Strongest domain</div>
+        <div style="font-size:var(--font-size-sm);font-weight:600;color:var(--accent-green);" id="radar-strongest">—</div>
+      </div>
+      <div>
+        <div style="font-size:var(--font-size-xs);color:var(--text-muted);">Weakest domain</div>
+        <div style="font-size:var(--font-size-sm);font-weight:600;color:var(--accent-red);" id="radar-weakest">—</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Domain Breakdown Cards -->
+<div style="margin-bottom:.5rem;font-size:var(--font-size-xs);font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-secondary);">
+  Domain Breakdown
+</div>
+<div class="grid grid-cols-3 gap-4 mb-6" id="domain-cards"></div>
+
+<script type="module">
+import DataModel        from '../core/data-model.js';
+import CompetencyEngine from '../core/competency-engine.js';
+import EventBus         from '../core/event-bus.js';
+
+const DOMAIN_LABELS = [
+  'Network Administration Fundamentals',
+  'Network Device Infrastructure',
+  'Network Configuration',
+  'Network Troubleshooting',
+  'Network Monitoring & Security',
+  'Professional Practice & Communication',
+];
+const DOMAIN_KEYS = ['domain1','domain2','domain3','domain4','domain5','domain6'];
+const DOMAIN_CLOS = ['CLO1','CLO1','CLO2','CLO2','CLO2','CLO3'];
+
+// Synthetic class averages per domain (illustrative benchmarks)
+const CLASS_AVG = [68, 62, 71, 58, 65, 74];
+
+const MASTERY_COLOURS = {
+  0: { bg: 'var(--mastery-0-bg)', color: 'var(--mastery-0-color)', label: 'Not Started' },
+  1: { bg: 'var(--mastery-1-bg)', color: 'var(--mastery-1-color)', label: 'Novice' },
+  2: { bg: 'var(--mastery-2-bg)', color: 'var(--mastery-2-color)', label: 'Developing' },
+  3: { bg: 'var(--mastery-3-bg)', color: 'var(--mastery-3-color)', label: 'Competent' },
+  4: { bg: 'var(--mastery-4-bg)', color: 'var(--mastery-4-color)', label: 'Proficient' },
+  5: { bg: 'var(--mastery-5-bg)', color: 'var(--mastery-5-color)', label: 'Expert' },
+};
+
+let chartInstance = null;
+
+function init() {
+  const competency = DataModel.Competency.get();
+  const missionCount = DataModel.Missions.getCompletedCount();
+  const scores = DOMAIN_KEYS.map(k => competency[k] ? competency[k].score : 0);
+  const overall = DataModel.Competency.getOverallScore();
+  const masteryInfo = CompetencyEngine.getMasteryLevel(overall, missionCount > 0);
+
+  // Summary panel
+  document.getElementById('radar-overall').textContent = overall + '%';
+  const mb = document.getElementById('radar-mastery-badge');
+  const mc = MASTERY_COLOURS[masteryInfo.level] || MASTERY_COLOURS[0];
+  mb.textContent = masteryInfo.label;
+  mb.style.background = mc.bg;
+  mb.style.color = mc.color;
+
+  // Strongest / weakest
+  let maxIdx = 0, minIdx = 0;
+  scores.forEach((s, i) => {
+    if (s > scores[maxIdx]) maxIdx = i;
+    if (s < scores[minIdx]) minIdx = i;
+  });
+  document.getElementById('radar-strongest').textContent = DOMAIN_LABELS[maxIdx].split(' ').slice(0,3).join(' ') + '…';
+  document.getElementById('radar-weakest').textContent   = DOMAIN_LABELS[minIdx].split(' ').slice(0,3).join(' ') + '…';
+
+  // History sparkline
+  const hist = competency['domain1'] && competency['domain1'].history ? competency['domain1'].history : [];
+  const last4 = hist.slice(-4);
+  const sparkEl = document.getElementById('sparkline-values');
+  if (last4.length) {
+    sparkEl.innerHTML = last4.map((h, i) =>
+      `<span>Session ${hist.length - last4.length + i + 1}: <strong style="color:var(--accent-blue);">${h.score}%</strong></span><br>`
+    ).join('');
+  }
+
+  // Radar chart
+  const ctx = document.getElementById('radar-chart').getContext('2d');
+  if (chartInstance) chartInstance.destroy();
+  chartInstance = new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels: DOMAIN_LABELS.map(l => {
+        const words = l.split(' ');
+        const half = Math.ceil(words.length / 2);
+        return [words.slice(0, half).join(' '), words.slice(half).join(' ')];
+      }),
+      datasets: [
+        {
+          label: 'You',
+          data: scores,
+          borderColor: 'rgba(26,115,232,0.9)',
+          backgroundColor: 'rgba(26,115,232,0.15)',
+          borderWidth: 2,
+          pointBackgroundColor: 'rgba(26,115,232,1)',
+          pointRadius: 4,
+          fill: true,
+        },
+        {
+          label: 'Target (100)',
+          data: [100, 100, 100, 100, 100, 100],
+          borderColor: 'rgba(52,168,83,0.6)',
+          backgroundColor: 'transparent',
+          borderWidth: 2,
+          borderDash: [6, 4],
+          pointRadius: 0,
+          fill: false,
+        },
+        {
+          label: 'Class Average',
+          data: CLASS_AVG,
+          borderColor: 'rgba(251,188,4,0.8)',
+          backgroundColor: 'rgba(251,188,4,0.08)',
+          borderWidth: 2,
+          borderDash: [4, 3],
+          pointRadius: 3,
+          pointBackgroundColor: 'rgba(251,188,4,1)',
+          fill: true,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      scales: {
+        r: {
+          min: 0, max: 100,
+          ticks: { stepSize: 20, font: { size: 10 }, color: '#9AA0A6' },
+          grid: { color: 'rgba(0,0,0,0.08)' },
+          angleLines: { color: 'rgba(0,0,0,0.08)' },
+          pointLabels: { font: { size: 11, weight: '500' }, color: '#5F6368' },
+        },
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.r}%`,
+          },
+        },
+      },
+    },
+  });
+
+  // Domain breakdown cards
+  const container = document.getElementById('domain-cards');
+  container.innerHTML = DOMAIN_KEYS.map((k, i) => {
+    const score = scores[i];
+    const ml = CompetencyEngine.getMasteryLevel(score, missionCount > 0);
+    const mc2 = MASTERY_COLOURS[ml.level] || MASTERY_COLOURS[0];
+    return `
+    <div class="card">
+      <div class="card-body">
+        <div class="flex items-center justify-between mb-2">
+          <div style="font-size:var(--font-size-xs);font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-secondary);">
+            Domain ${i + 1}
+          </div>
+          <span style="font-size:var(--font-size-xs);padding:2px 8px;border-radius:var(--radius-pill);background:${mc2.bg};color:${mc2.color};font-weight:600;">
+            ${ml.label}
+          </span>
+        </div>
+        <div style="font-size:var(--font-size-sm);font-weight:600;color:var(--text-primary);margin-bottom:.5rem;line-height:1.4;">
+          ${DOMAIN_LABELS[i]}
+        </div>
+        <div class="flex items-center justify-between mb-1">
+          <span style="font-size:var(--font-size-2xl);font-weight:700;color:${mc2.color};">${score}%</span>
+          <span class="badge badge-blue" style="font-size:var(--font-size-xs);">${DOMAIN_CLOS[i]}</span>
+        </div>
+        <div style="background:var(--bg-surface-alt);border-radius:var(--radius-pill);height:6px;overflow:hidden;">
+          <div style="width:${score}%;height:100%;background:${mc2.color};border-radius:var(--radius-pill);transition:width .4s ease;"></div>
+        </div>
+        <div style="font-size:var(--font-size-xs);color:var(--text-muted);margin-top:.4rem;">
+          Class avg: ${CLASS_AVG[i]}%
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// Export PNG
+document.getElementById('btn-export-png').addEventListener('click', () => {
+  const canvas = document.getElementById('radar-chart');
+  const link = document.createElement('a');
+  link.download = 'competency-radar.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+});
+
+EventBus.on('engine:recalculated', init);
+EventBus.on('competency:updated', init);
+
+init();
+</script>
+</div>

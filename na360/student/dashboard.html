@@ -1,0 +1,374 @@
+<div id="view-content">
+<div class="page-header">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="page-title" id="dashboard-welcome">Welcome back! 👋</h1>
+      <p class="page-subtitle">STM31733 Network Administration — Kolej Komuniti Papar</p>
+    </div>
+    <div class="flex gap-2">
+      <button class="btn btn-secondary btn-sm" id="btn-reset-tour" title="Restart intro tour">
+        <i class="ph ph-info" aria-hidden="true"></i> Tour
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Stat Cards -->
+<div class="grid grid-cols-4 gap-4 mb-6" id="stat-cards">
+  <div class="stat-card">
+    <div class="stat-card-icon" style="background:var(--accent-blue-light);color:var(--accent-blue);">
+      <i class="ph ph-calendar" aria-hidden="true"></i>
+    </div>
+    <div class="stat-card-label">Current Week</div>
+    <div class="stat-card-value" id="stat-current-week">—</div>
+    <div class="stat-card-delta" id="stat-week-pct" style="color:var(--text-muted);">of 14 weeks</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon" style="background:var(--accent-purple-light);color:var(--accent-purple);">
+      <i class="ph ph-chart-polar" aria-hidden="true"></i>
+    </div>
+    <div class="stat-card-label">Competency Score</div>
+    <div class="stat-card-value" id="stat-competency">0%</div>
+    <div class="stat-card-delta" id="stat-competency-level" style="color:var(--text-muted);">Not Started</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon" style="background:var(--accent-amber-light);color:var(--accent-amber);">
+      <i class="ph ph-star" aria-hidden="true"></i>
+    </div>
+    <div class="stat-card-label">Mastery Level</div>
+    <div class="stat-card-value" id="stat-mastery">0</div>
+    <div class="stat-card-delta" id="stat-mastery-label" style="color:var(--text-muted);">Not Started</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-card-icon" style="background:var(--accent-green-light);color:var(--accent-green);">
+      <i class="ph ph-check-circle" aria-hidden="true"></i>
+    </div>
+    <div class="stat-card-label">Readiness Index</div>
+    <div class="stat-card-value" id="stat-ri">0%</div>
+    <div class="stat-card-delta" id="stat-ri-band" style="color:var(--text-muted);">No data yet</div>
+  </div>
+</div>
+
+<!-- Progress + Activity Row -->
+<div class="grid grid-cols-12 gap-4 mb-6">
+
+  <!-- Week Progress Timeline -->
+  <div class="card col-span-8">
+    <div class="card-header">
+      <div>
+        <div class="card-title">14-Week Progress</div>
+        <div class="card-subtitle" id="progress-subtitle">0 of 14 weeks completed</div>
+      </div>
+      <div class="flex items-center gap-3" style="font-size:var(--font-size-xs);color:var(--text-muted);">
+        <span style="display:inline-flex;align-items:center;gap:4px;">
+          <span style="width:10px;height:10px;border-radius:50%;background:var(--accent-green);display:inline-block;"></span> Done
+        </span>
+        <span style="display:inline-flex;align-items:center;gap:4px;">
+          <span style="width:10px;height:10px;border-radius:50%;background:var(--accent-blue);display:inline-block;"></span> Current
+        </span>
+        <span style="display:inline-flex;align-items:center;gap:4px;">
+          <span style="width:10px;height:10px;border-radius:50%;background:var(--bg-surface-alt);display:inline-block;"></span> Pending
+        </span>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="week-timeline" id="week-timeline"></div>
+      <div class="progress-bar-wrapper mt-4">
+        <div class="progress-bar-fill green" id="progress-bar" style="width:0%;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Course Completion Ring -->
+  <div class="card col-span-4">
+    <div class="card-header">
+      <div class="card-title">Course Completion</div>
+    </div>
+    <div class="card-body" style="display:flex;flex-direction:column;align-items:center;gap:1rem;">
+      <div class="ring-progress">
+        <svg width="140" height="140" viewBox="0 0 140 140" aria-hidden="true">
+          <circle class="ring-track" cx="70" cy="70" r="56" stroke-width="12"></circle>
+          <circle class="ring-fill" id="ring-fill" cx="70" cy="70" r="56" stroke-width="12"
+            stroke-dasharray="351.86" stroke-dashoffset="351.86"></circle>
+        </svg>
+        <div class="ring-label">
+          <div class="ring-value" id="ring-pct">0%</div>
+          <div class="ring-unit">complete</div>
+        </div>
+      </div>
+      <div style="text-align:center;">
+        <div style="font-size:var(--font-size-sm);font-weight:600;color:var(--text-primary);">
+          <span id="ring-weeks-done">0</span> / 14 Weeks
+        </div>
+        <div style="font-size:var(--font-size-xs);color:var(--text-muted);margin-top:2px;">
+          <span id="ring-labs-done">0</span> labs completed
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Recent Activity + Quick Launch -->
+<div class="grid grid-cols-12 gap-4 mb-6">
+
+  <!-- Recent Activity -->
+  <div class="card col-span-4">
+    <div class="card-header">
+      <div class="card-title">Recent Activity</div>
+      <span style="font-size:var(--font-size-xs);color:var(--text-muted);" id="last-active">—</span>
+    </div>
+    <div class="card-body">
+      <div class="activity-feed" id="activity-feed">
+        <div class="chart-empty" style="padding:2rem 0;">
+          <div class="chart-empty-icon">📋</div>
+          <div>No activity yet — start a quiz or mission!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Launch Modules -->
+  <div class="card col-span-8">
+    <div class="card-header">
+      <div class="card-title">Quick Launch</div>
+      <span style="font-size:var(--font-size-xs);color:var(--text-muted);">10 Modules</span>
+    </div>
+    <div class="card-body">
+      <div class="grid grid-cols-4 gap-3" id="quick-launch-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- CLO Progress Cards -->
+<div class="grid grid-cols-3 gap-4">
+  <div class="card">
+    <div class="card-body">
+      <div class="flex items-center justify-between mb-3">
+        <div>
+          <div style="font-size:var(--font-size-xs);font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-secondary);">CLO 1</div>
+          <div style="font-size:var(--font-size-sm);color:var(--text-primary);font-weight:600;margin-top:2px;">Network Admin Concepts</div>
+        </div>
+        <span class="badge badge-blue">C3</span>
+      </div>
+      <div class="flex items-center justify-between mb-2">
+        <span style="font-size:var(--font-size-xs);color:var(--text-muted);">Test (15%)</span>
+        <span style="font-size:var(--font-size-sm);font-weight:700;color:var(--text-primary);" id="clo1-score">—</span>
+      </div>
+      <div class="progress-bar-wrapper">
+        <div class="progress-bar-fill blue" id="clo1-bar" style="width:0%;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="flex items-center justify-between mb-3">
+        <div>
+          <div style="font-size:var(--font-size-xs);font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-secondary);">CLO 2</div>
+          <div style="font-size:var(--font-size-sm);color:var(--text-primary);font-weight:600;margin-top:2px;">Network Configuration</div>
+        </div>
+        <span class="badge badge-purple">P3</span>
+      </div>
+      <div class="flex items-center justify-between mb-2">
+        <span style="font-size:var(--font-size-xs);color:var(--text-muted);">Practical (75%)</span>
+        <span style="font-size:var(--font-size-sm);font-weight:700;color:var(--text-primary);" id="clo2-score">—</span>
+      </div>
+      <div class="progress-bar-wrapper">
+        <div class="progress-bar-fill" id="clo2-bar" style="width:0%;background:var(--accent-purple);"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="flex items-center justify-between mb-3">
+        <div>
+          <div style="font-size:var(--font-size-xs);font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text-secondary);">CLO 3</div>
+          <div style="font-size:var(--font-size-sm);color:var(--text-primary);font-weight:600;margin-top:2px;">Network Monitoring Discussion</div>
+        </div>
+        <span class="badge badge-gold">A2</span>
+      </div>
+      <div class="flex items-center justify-between mb-2">
+        <span style="font-size:var(--font-size-xs);color:var(--text-muted);">Presentation (10%)</span>
+        <span style="font-size:var(--font-size-sm);font-weight:700;color:var(--text-primary);" id="clo3-score">—</span>
+      </div>
+      <div class="progress-bar-wrapper">
+        <div class="progress-bar-fill gold" id="clo3-bar" style="width:0%;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import DataModel       from '../core/data-model.js';
+import CompetencyEngine from '../core/competency-engine.js';
+import EventBus        from '../core/event-bus.js';
+
+const MODULES = [
+  { label: 'Competency Radar',  icon: '🎯', route: '/student/radar',           color: 'var(--accent-purple-light)', iconColor: 'var(--accent-purple)' },
+  { label: 'Skill Tree',        icon: '🌳', route: '/student/skill-tree',       color: 'var(--accent-green-light)',  iconColor: 'var(--accent-green)' },
+  { label: 'Skill Mastery',     icon: '⭐', route: '/student/mastery',          color: 'var(--accent-amber-light)',  iconColor: 'var(--accent-amber)' },
+  { label: 'Cisco Analyzer',    icon: '🖥', route: '/student/cisco-analyzer',   color: 'var(--accent-blue-light)',   iconColor: 'var(--accent-blue)' },
+  { label: 'Virtual NOC',       icon: '📡', route: '/student/vnoc',             color: 'var(--accent-blue-light)',   iconColor: 'var(--accent-blue)' },
+  { label: 'Missions',          icon: '⚡', route: '/student/missions',         color: 'var(--accent-red-light)',    iconColor: 'var(--accent-red)' },
+  { label: 'Readiness Index',   icon: '✅', route: '/student/readiness',        color: 'var(--accent-green-light)',  iconColor: 'var(--accent-green)' },
+  { label: 'Recommendations',   icon: '💡', route: '/student/recommendations',  color: 'var(--accent-gold-light)',   iconColor: 'var(--accent-gold)' },
+  { label: 'Skill Passport',    icon: '🏅', route: '/student/passport',         color: 'var(--accent-gold-light)',   iconColor: 'var(--accent-gold)' },
+];
+
+const WEEK_TITLES = [
+  '', 'Intro to Network Admin', 'NOC & Best Practices', 'VLAN Concepts',
+  'Routing & Servers', 'Initial Config', 'VLAN Config', 'Inter-VLAN Routing',
+  'Static & RIPv2', 'DHCP', 'DNS Config', 'Troubleshooting',
+  'Monitoring Protocols', 'Monitoring Tools', 'Group Discussion & FA'
+];
+
+function init() {
+  const profile  = DataModel.Profile.get();
+  const progress = DataModel.Progress.get();
+  const scores   = DataModel.Scores.get();
+  const competency = DataModel.Competency.get();
+  const missions = DataModel.Missions.get();
+
+  // Welcome
+  const name = profile ? profile.name.split(' ')[0] : 'Student';
+  document.getElementById('dashboard-welcome').textContent = `Welcome back, ${name}! 👋`;
+
+  // Competency
+  const overall = DataModel.Competency.getOverallScore();
+  const masteryInfo = CompetencyEngine.getMasteryLevel(overall, DataModel.Missions.getCompletedCount() > 0);
+  document.getElementById('stat-competency').textContent = overall + '%';
+  document.getElementById('stat-competency-level').textContent = masteryInfo.label;
+  document.getElementById('stat-competency-level').style.color = masteryInfo.level >= 3 ? 'var(--accent-green)' : masteryInfo.level >= 2 ? '#9A6700' : 'var(--accent-red)';
+
+  document.getElementById('stat-mastery').textContent = masteryInfo.level;
+  document.getElementById('stat-mastery-label').textContent = masteryInfo.label;
+
+  // Readiness Index
+  const latestRI = DataModel.ReadinessHistory.getLast();
+  if (latestRI) {
+    document.getElementById('stat-ri').textContent = latestRI.ri_score + '%';
+    const band = CompetencyEngine.getReadinessBand(latestRI.ri_score);
+    const riDelta = document.getElementById('stat-ri-band');
+    riDelta.textContent = band.band;
+    riDelta.style.color = band.color;
+  }
+
+  // Week progress
+  const completedCount = DataModel.Progress.getCompletedCount();
+  const visitedCount   = DataModel.Progress.getVisitedCount();
+  const pct = DataModel.Progress.getCompletionPct();
+  const currentWeek = Math.min(visitedCount + 1, 14);
+
+  document.getElementById('stat-current-week').textContent = 'Week ' + currentWeek;
+  document.getElementById('progress-subtitle').textContent = `${completedCount} of 14 weeks completed`;
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('ring-pct').textContent = pct + '%';
+  document.getElementById('ring-weeks-done').textContent = completedCount;
+  const labsDone = Object.values(progress).filter(w => w.lab_completed).length;
+  document.getElementById('ring-labs-done').textContent = labsDone;
+
+  // Ring animation
+  const circumference = 351.86;
+  const offset = circumference - (pct / 100) * circumference;
+  document.getElementById('ring-fill').style.strokeDashoffset = offset;
+
+  // Week timeline
+  const tl = document.getElementById('week-timeline');
+  let tlHtml = '';
+  for (let w = 1; w <= 14; w++) {
+    const wd = progress[`week${w}`];
+    let cls = 'not-started';
+    if (wd && wd.completed) cls = 'completed';
+    else if (wd && wd.visited) cls = 'in-progress';
+    else if (w === currentWeek) cls = 'current';
+    tlHtml += `
+      <div class="week-tile" title="Week ${w}: ${WEEK_TITLES[w]}">
+        <div class="week-tile-dot ${cls}">${w}</div>
+        <div class="week-tile-label">W${w}</div>
+      </div>`;
+  }
+  tl.innerHTML = tlHtml;
+
+  // Quick launch
+  const grid = document.getElementById('quick-launch-grid');
+  grid.innerHTML = MODULES.map(m => `
+    <div class="module-card" onclick="navigate('${m.route}')" role="button" tabindex="0" aria-label="Open ${m.label}"
+         onkeydown="if(event.key==='Enter')navigate('${m.route}')">
+      <div class="module-card-icon" style="background:${m.color};color:${m.iconColor};">${m.icon}</div>
+      <div class="module-card-title">${m.label}</div>
+    </div>`).join('');
+
+  // Activity feed
+  buildActivityFeed(progress, missions);
+
+  // CLO scores
+  const cloAttainment = CompetencyEngine.calculateCLOAttainment();
+  renderCLO('clo1', cloAttainment.CLO1);
+  renderCLO('clo2', cloAttainment.CLO2);
+  renderCLO('clo3', cloAttainment.CLO3);
+
+  // Last active
+  const allTimestamps = Object.values(progress).flatMap(w => [w.visited_at, w.completed_at]).filter(Boolean);
+  if (allTimestamps.length) {
+    const latest = new Date(allTimestamps.sort().reverse()[0]);
+    document.getElementById('last-active').textContent = latest.toLocaleDateString();
+  }
+}
+
+function renderCLO(id, score) {
+  const scoreEl = document.getElementById(`${id}-score`);
+  const barEl   = document.getElementById(`${id}-bar`);
+  if (score > 0) {
+    scoreEl.textContent = score + '%';
+    barEl.style.width = score + '%';
+  } else {
+    scoreEl.textContent = '—';
+  }
+}
+
+function buildActivityFeed(progress, missions) {
+  const events = [];
+
+  // Collect week visits
+  Object.entries(progress).forEach(([key, w]) => {
+    if (w.visited_at) events.push({ text: `Visited ${key.replace('week', 'Week ')}`, ts: w.visited_at, color: 'var(--accent-blue)' });
+    if (w.quiz_score !== null) events.push({ text: `Quiz ${key.replace('week', 'W')} scored ${w.quiz_score}%`, ts: w.visited_at, color: 'var(--accent-green)' });
+  });
+
+  // Collect missions
+  Object.entries(missions).forEach(([mId, m]) => {
+    if (m.history && m.history.length) {
+      m.history.forEach(h => events.push({ text: `Mission ${mId}: ${h.score}%`, ts: h.timestamp, color: 'var(--accent-amber)' }));
+    }
+  });
+
+  events.sort((a, b) => new Date(b.ts) - new Date(a.ts));
+  const recent = events.slice(0, 5);
+
+  const feed = document.getElementById('activity-feed');
+  if (recent.length === 0) return;
+  feed.innerHTML = recent.map(e => `
+    <div class="activity-item">
+      <div class="activity-dot" style="background:${e.color};"></div>
+      <div class="activity-content">
+        <div class="activity-text">${e.text}</div>
+        <div class="activity-time">${e.ts ? new Date(e.ts).toLocaleString() : ''}</div>
+      </div>
+    </div>`).join('');
+}
+
+// Navigate helper (parent Router may not be in this scope)
+function navigate(route) {
+  window.location.hash = route;
+}
+
+// Listen for updates
+EventBus.on('engine:recalculated', init);
+
+init();
+</script>
+</div>

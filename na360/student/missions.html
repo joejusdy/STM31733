@@ -1,0 +1,396 @@
+<div id="view-content">
+
+<!-- VIEW A: Mission Board -->
+<div id="view-board">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Troubleshooting Missions</h1>
+      <p class="page-subtitle">Applied network fault diagnosis — CLO2 Practical Assessment preparation</p>
+    </div>
+  </div>
+
+  <!-- Category Tabs -->
+  <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.25rem;" id="cat-tabs">
+    <button class="btn btn-primary btn-sm cat-tab active-tab" data-cat="">All</button>
+    <button class="btn btn-ghost btn-sm cat-tab" data-cat="CAT1">Basic Connectivity</button>
+    <button class="btn btn-ghost btn-sm cat-tab" data-cat="CAT2">VLAN / Trunking</button>
+    <button class="btn btn-ghost btn-sm cat-tab" data-cat="CAT3">Routing</button>
+    <button class="btn btn-ghost btn-sm cat-tab" data-cat="CAT4">DHCP / DNS</button>
+    <button class="btn btn-ghost btn-sm cat-tab" data-cat="CAT5">Security</button>
+    <button class="btn btn-ghost btn-sm cat-tab" data-cat="CAT6">Monitoring</button>
+  </div>
+
+  <!-- Mission Grid -->
+  <div class="grid grid-cols-3 gap-4" id="mission-grid">
+    <div style="padding:2rem;text-align:center;color:var(--text-muted);">Loading missions…</div>
+  </div>
+</div>
+
+<!-- VIEW B: Active Mission -->
+<div id="view-active" style="display:none;">
+  <div class="page-header">
+    <div class="flex items-center justify-between">
+      <div>
+        <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.25rem;">
+          <button class="btn btn-ghost btn-sm" id="btn-back-board">← Back</button>
+          <span class="badge" id="active-cat-badge"></span>
+        </div>
+        <h1 class="page-title" id="active-title"></h1>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-size:var(--font-size-xs);color:var(--text-muted);">Score</div>
+        <div style="font-size:var(--font-size-2xl);font-weight:700;color:var(--accent-blue);" id="active-score-display">—</div>
+        <div style="font-size:var(--font-size-xs);color:var(--text-muted);">Timer: <span id="active-timer">0s</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-12 gap-4">
+    <div class="card col-span-8">
+      <div class="card-header">
+        <div class="card-title">Scenario Brief</div>
+        <span class="badge badge-blue">CLO2</span>
+      </div>
+      <div class="card-body">
+        <div id="active-brief" style="color:var(--text-secondary);line-height:1.7;margin-bottom:1.25rem;"></div>
+        <div style="background:var(--accent-amber-light);border-left:3px solid var(--accent-amber);padding:.6rem .75rem;border-radius:0 var(--radius-sm) var(--radius-sm) 0;font-size:var(--font-size-xs);color:#9A6700;margin-bottom:1.25rem;">
+          🔧 <strong>Fault:</strong> <span id="active-fault"></span>
+        </div>
+        <div id="steps-list" style="display:flex;flex-direction:column;gap:.75rem;"></div>
+        <div style="margin-top:1.5rem;">
+          <button class="btn btn-primary" id="btn-complete-mission">✔ Complete Mission</button>
+        </div>
+      </div>
+    </div>
+    <div class="card col-span-4">
+      <div class="card-header"><div class="card-title">Mission Info</div></div>
+      <div class="card-body" style="display:flex;flex-direction:column;gap:.75rem;">
+        <div>
+          <div style="font-size:var(--font-size-xs);color:var(--text-muted);">Difficulty</div>
+          <div id="active-diff" style="color:var(--text-primary);font-size:var(--font-size-sm);"></div>
+        </div>
+        <div>
+          <div style="font-size:var(--font-size-xs);color:var(--text-muted);">Max Points</div>
+          <div id="active-pts" style="font-size:var(--font-size-xl);font-weight:700;color:var(--accent-gold);"></div>
+        </div>
+        <div>
+          <div style="font-size:var(--font-size-xs);color:var(--text-muted);">Hints Used</div>
+          <div id="active-hints" style="font-size:var(--font-size-lg);font-weight:600;color:var(--accent-amber);">0</div>
+        </div>
+        <div style="background:var(--bg-surface);border-radius:var(--radius-md);padding:.6rem;">
+          <div style="font-size:var(--font-size-xs);color:var(--text-muted);margin-bottom:.25rem;">Topology</div>
+          <div id="active-topo" style="font-size:var(--font-size-xs);font-family:var(--font-mono);color:var(--text-secondary);"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- VIEW C: Debrief -->
+<div id="view-debrief" style="display:none;">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">Mission Complete 🎉</h1>
+      <p class="page-subtitle" id="debrief-title"></p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-12 gap-4">
+    <div class="card col-span-8">
+      <div class="card-header">
+        <div class="card-title">Debrief</div>
+        <span class="badge" id="debrief-clo-badge"></span>
+      </div>
+      <div class="card-body">
+        <div id="debrief-text" style="color:var(--text-secondary);line-height:1.7;margin-bottom:1.25rem;"></div>
+        <div>
+          <div style="font-size:var(--font-size-xs);font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-secondary);margin-bottom:.5rem;">
+            Commands Used
+          </div>
+          <div id="debrief-commands" style="display:flex;flex-wrap:wrap;gap:.4rem;"></div>
+        </div>
+        <div style="margin-top:1.5rem;">
+          <button class="btn btn-primary" id="btn-back-from-debrief">← Back to Missions</button>
+        </div>
+      </div>
+    </div>
+    <div class="card col-span-4">
+      <div class="card-header"><div class="card-title">Results</div></div>
+      <div class="card-body" style="display:flex;flex-direction:column;gap:1rem;align-items:center;">
+        <div style="text-align:center;">
+          <div style="font-size:4rem;font-weight:800;color:var(--accent-blue);" id="debrief-score"></div>
+          <div style="font-size:var(--font-size-sm);color:var(--text-muted);">points</div>
+        </div>
+        <div class="grid grid-cols-2 gap-2" style="width:100%;">
+          <div style="background:var(--bg-surface);border-radius:var(--radius-md);padding:.6rem;text-align:center;">
+            <div style="font-size:var(--font-size-xs);color:var(--text-muted);">Time</div>
+            <div style="font-weight:700;color:var(--text-primary);" id="debrief-time"></div>
+          </div>
+          <div style="background:var(--bg-surface);border-radius:var(--radius-md);padding:.6rem;text-align:center;">
+            <div style="font-size:var(--font-size-xs);color:var(--text-muted);">Hints</div>
+            <div style="font-weight:700;color:var(--accent-amber);" id="debrief-hints"></div>
+          </div>
+        </div>
+        <span class="badge badge-blue" id="debrief-domain-badge"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.diff-dot { display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--accent-amber);margin-right:2px; }
+</style>
+
+<script type="module">
+import DataModel        from '../core/data-model.js';
+import CompetencyEngine from '../core/competency-engine.js';
+import EventBus         from '../core/event-bus.js';
+
+const CAT_COLORS = {
+  CAT1:'var(--accent-red)',   CAT2:'var(--accent-purple)',
+  CAT3:'var(--accent-blue)',  CAT4:'var(--accent-green)',
+  CAT5:'var(--accent-amber)', CAT6:'var(--accent-gold)',
+};
+const CAT_BG = {
+  CAT1:'var(--mastery-1-bg)', CAT2:'var(--accent-purple-light)',
+  CAT3:'var(--accent-blue-light)', CAT4:'var(--accent-green-light)',
+  CAT5:'var(--mastery-2-bg)', CAT6:'var(--accent-gold-light)',
+};
+const DOMAIN_LABELS = {
+  domain1:'Admin Fundamentals', domain2:'Device Infrastructure',
+  domain3:'Configuration',      domain4:'Troubleshooting',
+  domain5:'Monitoring & Security', domain6:'Professional Practice',
+};
+
+let allMissions = [], allCategories = [];
+let currentMission = null;
+let activeMissionState = { score: 0, hintsUsed: 0, startTime: 0, timerInterval: null, stepAnswers: {} };
+let currentFilter = '';
+
+function showView(name) {
+  document.getElementById('view-board').style.display   = name === 'board'   ? '' : 'none';
+  document.getElementById('view-active').style.display  = name === 'active'  ? '' : 'none';
+  document.getElementById('view-debrief').style.display = name === 'debrief' ? '' : 'none';
+}
+
+async function init() {
+  try {
+    const res = await fetch('../data/missions.json');
+    const data = await res.json();
+    allMissions   = data.missions   || [];
+    allCategories = data.categories || [];
+  } catch (e) {
+    console.warn('[Missions] Could not load missions.json', e);
+  }
+  renderBoard();
+}
+
+function isUnlocked(mission) {
+  const mData = DataModel.Missions.get();
+  const catMissions = allMissions.filter(m => m.category === mission.category);
+  const idx = catMissions.findIndex(m => m.id === mission.id);
+  if (idx === 0) return true;
+  const prev = catMissions[idx - 1];
+  return mData[prev.id] && mData[prev.id].completed;
+}
+
+function renderBoard() {
+  const mData = DataModel.Missions.get();
+  const filtered = currentFilter
+    ? allMissions.filter(m => m.category === currentFilter)
+    : allMissions;
+
+  const grid = document.getElementById('mission-grid');
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div style="padding:2rem;text-align:center;color:var(--text-muted);">No missions in this category.</div>';
+    return;
+  }
+
+  grid.innerHTML = filtered.map(m => {
+    const unlocked  = isUnlocked(m);
+    const completed = mData[m.id] && mData[m.id].completed;
+    const bestScore = mData[m.id] ? mData[m.id].best_score : 0;
+    const diff = '●'.repeat(m.difficulty) + '○'.repeat(3 - m.difficulty);
+    const catColor = CAT_COLORS[m.category] || 'var(--accent-blue)';
+    const catBg    = CAT_BG[m.category]    || 'var(--accent-blue-light)';
+    const statusBadge = completed
+      ? `<span style="font-size:10px;padding:1px 7px;border-radius:var(--radius-pill);background:var(--accent-green-light);color:var(--accent-green);font-weight:600;">✔ Completed</span>`
+      : unlocked
+      ? `<span style="font-size:10px;padding:1px 7px;border-radius:var(--radius-pill);background:var(--accent-blue-light);color:var(--accent-blue);font-weight:600;">Available</span>`
+      : `<span style="font-size:10px;padding:1px 7px;border-radius:var(--radius-pill);background:var(--bg-surface-alt);color:var(--text-muted);font-weight:600;">🔒 Locked</span>`;
+
+    return `
+    <div class="card" style="opacity:${unlocked ? 1 : .6};">
+      <div class="card-body">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem;">
+          <span style="font-size:10px;padding:1px 7px;border-radius:var(--radius-pill);background:${catBg};color:${catColor};font-weight:700;">
+            ${allCategories.find(c => c.id === m.category)?.label || m.category}
+          </span>
+          ${statusBadge}
+        </div>
+        <div style="font-size:var(--font-size-sm);font-weight:600;color:var(--text-primary);margin-bottom:.4rem;line-height:1.4;">${m.title}</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;">
+          <span style="font-size:var(--font-size-xs);color:var(--accent-amber);">${diff}</span>
+          <span style="font-size:var(--font-size-xs);font-weight:700;color:var(--accent-gold);">${m.points} pts</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;">
+          <span style="font-size:10px;padding:1px 6px;border-radius:var(--radius-pill);background:var(--accent-blue-light);color:var(--accent-blue);font-weight:600;">${m.clo}</span>
+          ${completed ? `<span style="font-size:var(--font-size-xs);color:var(--accent-green);font-weight:600;">Best: ${bestScore}%</span>` : ''}
+        </div>
+        <button class="btn ${unlocked ? 'btn-primary' : 'btn-ghost'} btn-sm" style="width:100%;"
+          onclick="startMission('${m.id}')" ${unlocked ? '' : 'disabled'}>
+          ${completed ? '↺ Retry' : 'Start Mission'}
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+window.startMission = function(missionId) {
+  currentMission = allMissions.find(m => m.id === missionId);
+  if (!currentMission) return;
+
+  const cat = allCategories.find(c => c.id === currentMission.category);
+  const catColor = CAT_COLORS[currentMission.category] || 'var(--accent-blue)';
+  const catBg    = CAT_BG[currentMission.category]    || 'var(--accent-blue-light)';
+
+  activeMissionState = {
+    score: currentMission.points,
+    hintsUsed: 0,
+    startTime: Date.now(),
+    timerInterval: null,
+    stepAnswers: {},
+  };
+
+  document.getElementById('active-title').textContent = currentMission.title;
+  document.getElementById('active-brief').textContent = currentMission.brief;
+  document.getElementById('active-fault').textContent = currentMission.fault;
+  document.getElementById('active-pts').textContent   = currentMission.points + ' pts';
+  document.getElementById('active-topo').textContent  = currentMission.topology || '—';
+  document.getElementById('active-hints').textContent = '0';
+  document.getElementById('active-score-display').textContent = currentMission.points;
+
+  const diff = '●'.repeat(currentMission.difficulty) + '○'.repeat(3 - currentMission.difficulty);
+  document.getElementById('active-diff').textContent = diff;
+
+  const badge = document.getElementById('active-cat-badge');
+  badge.textContent = cat ? cat.label : currentMission.category;
+  badge.style.background = catBg; badge.style.color = catColor;
+
+  // Steps
+  const stepsList = document.getElementById('steps-list');
+  stepsList.innerHTML = currentMission.steps.map((step, i) => `
+    <div id="step-${step.id}" style="border:1px solid var(--border);border-radius:var(--radius-md);padding:.75rem;background:var(--bg-card);">
+      <div style="display:flex;align-items:flex-start;gap:.5rem;margin-bottom:.5rem;">
+        <div style="min-width:22px;height:22px;border-radius:50%;background:var(--accent-blue-light);color:var(--accent-blue);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">${i+1}</div>
+        <div style="font-size:var(--font-size-sm);color:var(--text-primary);font-weight:500;">${step.instruction}</div>
+      </div>
+      <div style="display:flex;gap:.5rem;align-items:center;">
+        <input type="text" id="step-input-${step.id}" placeholder="Your answer…"
+          style="flex:1;padding:.35rem .6rem;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:var(--font-size-xs);background:var(--bg-surface);color:var(--text-primary);"
+          oninput="stepInputChange('${step.id}')">
+        <button class="btn btn-ghost btn-sm" onclick="showHint('${step.id}','${step.hint}',${step.hint_penalty})" style="font-size:11px;white-space:nowrap;">
+          💡 Hint (−${step.hint_penalty}pts)
+        </button>
+      </div>
+      <div id="hint-${step.id}" style="display:none;margin-top:.4rem;font-size:var(--font-size-xs);color:#9A6700;background:var(--accent-amber-light);padding:.35rem .6rem;border-radius:var(--radius-sm);">
+        <strong>Hint:</strong> ${step.hint}
+      </div>
+    </div>`).join('');
+
+  // Timer
+  if (activeMissionState.timerInterval) clearInterval(activeMissionState.timerInterval);
+  activeMissionState.timerInterval = setInterval(() => {
+    const elapsed = Math.floor((Date.now() - activeMissionState.startTime) / 1000);
+    document.getElementById('active-timer').textContent = elapsed + 's';
+  }, 1000);
+
+  showView('active');
+};
+
+window.stepInputChange = function(stepId) {
+  const val = document.getElementById('step-input-' + stepId).value.trim();
+  activeMissionState.stepAnswers[stepId] = val;
+};
+
+window.showHint = function(stepId, hintText, penalty) {
+  const hintEl = document.getElementById('hint-' + stepId);
+  if (hintEl.style.display !== 'none') return; // already shown
+  hintEl.style.display = 'block';
+  activeMissionState.score = Math.max(0, activeMissionState.score - penalty);
+  activeMissionState.hintsUsed++;
+  document.getElementById('active-hints').textContent = activeMissionState.hintsUsed;
+  document.getElementById('active-score-display').textContent = activeMissionState.score;
+};
+
+document.getElementById('btn-complete-mission').addEventListener('click', () => {
+  if (!currentMission) return;
+  const allAnswered = currentMission.steps.every(s =>
+    activeMissionState.stepAnswers[s.id] && activeMissionState.stepAnswers[s.id].length > 0
+  );
+  if (!allAnswered) {
+    alert('Please answer all steps before completing the mission.');
+    return;
+  }
+  completeMission();
+});
+
+function completeMission() {
+  if (activeMissionState.timerInterval) clearInterval(activeMissionState.timerInterval);
+  const timeSeconds = Math.floor((Date.now() - activeMissionState.startTime) / 1000);
+  const finalScore  = activeMissionState.score;
+  const hintsUsed   = activeMissionState.hintsUsed;
+
+  DataModel.Missions.saveMissionResult(currentMission.id, finalScore, hintsUsed, timeSeconds);
+  CompetencyEngine.recalculateAll();
+
+  // Debrief
+  document.getElementById('debrief-title').textContent   = currentMission.title;
+  document.getElementById('debrief-text').textContent    = currentMission.debrief;
+  document.getElementById('debrief-score').textContent   = finalScore;
+  document.getElementById('debrief-time').textContent    = timeSeconds + 's';
+  document.getElementById('debrief-hints').textContent   = hintsUsed + ' used';
+
+  const cloBadge = document.getElementById('debrief-clo-badge');
+  cloBadge.textContent = currentMission.clo;
+  cloBadge.className = 'badge badge-blue';
+
+  const domBadge = document.getElementById('debrief-domain-badge');
+  domBadge.textContent = DOMAIN_LABELS[currentMission.domain] || currentMission.domain;
+
+  document.getElementById('debrief-commands').innerHTML = (currentMission.commands_used || [])
+    .map(cmd => `<code style="font-size:var(--font-size-xs);padding:2px 8px;background:var(--bg-surface-alt);border-radius:var(--radius-sm);font-family:var(--font-mono);color:var(--accent-purple);">${cmd}</code>`)
+    .join('');
+
+  showView('debrief');
+}
+
+document.getElementById('btn-back-board').addEventListener('click', () => {
+  if (activeMissionState.timerInterval) clearInterval(activeMissionState.timerInterval);
+  showView('board');
+});
+
+document.getElementById('btn-back-from-debrief').addEventListener('click', () => {
+  renderBoard();
+  showView('board');
+});
+
+// Category tabs
+document.querySelectorAll('.cat-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.cat-tab').forEach(b => {
+      b.classList.remove('btn-primary','active-tab');
+      b.classList.add('btn-ghost');
+    });
+    btn.classList.remove('btn-ghost');
+    btn.classList.add('btn-primary','active-tab');
+    currentFilter = btn.dataset.cat;
+    renderBoard();
+  });
+});
+
+EventBus.on('missions:completed', renderBoard);
+
+await init();
+</script>
+</div>

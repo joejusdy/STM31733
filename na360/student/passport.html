@@ -1,0 +1,175 @@
+<div id="view-content">
+
+<!-- Page Header -->
+<div class="page-header">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="page-title">🏅 Digital Skill Passport</h1>
+      <p class="page-subtitle">STM31733 Network Administration — Kolej Komuniti Papar</p>
+    </div>
+    <div class="flex gap-2">
+      <button class="btn btn-secondary btn-sm" onclick="window.print()">🖨 Print Passport</button>
+      <button class="btn btn-primary btn-sm" id="btn-share">🔗 Share Link</button>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION A: Passport Card -->
+<div class="passport-card mb-6" id="passport-card-print">
+  <div class="flex items-center justify-between mb-4">
+    <div>
+      <div style="font-size:var(--font-size-xs);text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,0.6);margin-bottom:4px;">
+        Digital Network Skill Passport
+      </div>
+      <div style="font-size:var(--font-size-xl);font-weight:800;color:#fff;">Kolej Komuniti Papar</div>
+      <div style="font-size:var(--font-size-sm);color:rgba(255,255,255,0.75);margin-top:2px;">STM31733 Network Administration</div>
+    </div>
+    <div style="text-align:right;">
+      <div style="font-size:var(--font-size-xs);color:rgba(255,255,255,0.5);">Issued</div>
+      <div style="font-size:var(--font-size-sm);color:rgba(255,255,255,0.85);" id="issue-date">—</div>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-4 mb-4" style="border-top:1px solid rgba(255,255,255,0.15);padding-top:1rem;">
+    <div style="width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:1.5rem;">👤</div>
+    <div>
+      <div style="font-size:var(--font-size-lg);font-weight:700;color:#fff;" id="passport-name">Student</div>
+      <div style="font-size:var(--font-size-xs);color:rgba(255,255,255,0.65);">Semester 3, Year 2 · Session I 2025/2026</div>
+    </div>
+  </div>
+
+  <!-- Badge Grid -->
+  <div style="font-size:var(--font-size-xs);text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,0.5);margin-bottom:.75rem;">
+    Earned Competency Badges
+  </div>
+  <div class="badge-grid" id="passport-badge-grid" style="grid-template-columns:repeat(5,1fr);">
+    <!-- Rendered by JS -->
+  </div>
+
+  <!-- Overall Mastery Level -->
+  <div style="margin-top:1.5rem;border-top:1px solid rgba(255,255,255,0.15);padding-top:1rem;display:flex;align-items:center;justify-content:space-between;">
+    <span style="font-size:var(--font-size-xs);color:rgba(255,255,255,0.5);">Overall Mastery Level</span>
+    <span id="overall-mastery-badge" style="font-size:var(--font-size-xs);padding:3px 12px;border-radius:999px;background:rgba(255,255,255,0.15);color:#fff;font-weight:700;">
+      —
+    </span>
+  </div>
+</div>
+
+<!-- SECTION B: Achievement Timeline -->
+<div class="card mb-4">
+  <div class="card-header">
+    <div class="card-title">Achievement Timeline</div>
+  </div>
+  <div class="card-body">
+    <div class="activity-feed" id="achievement-timeline">
+      <div style="text-align:center;padding:2rem 0;color:var(--text-muted);font-size:var(--font-size-sm);">
+        No achievements yet — complete quizzes and missions to earn badges!
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import DataModel from '../core/data-model.js';
+import CompetencyEngine from '../core/competency-engine.js';
+import EventBus from '../core/event-bus.js';
+
+const BADGE_DEFS = [
+  { id: 'badge-d1',              label: 'Network Admin Fundamentals',   icon: '🌐', color: '#1A73E8' },
+  { id: 'badge-d2',              label: 'Infrastructure Specialist',     icon: '🖧',  color: '#7C5CD8' },
+  { id: 'badge-d3',              label: 'Network Config Expert',         icon: '⚙️', color: '#34A853' },
+  { id: 'badge-d4',              label: 'Troubleshooter Pro',            icon: '🔧', color: '#EA4335' },
+  { id: 'badge-d5',              label: 'Monitoring & Security Analyst', icon: '🛡️', color: '#1A73E8' },
+  { id: 'badge-d6',              label: 'Professional Communicator',     icon: '🎤', color: '#F9AB00' },
+  { id: 'badge-mission-commander', label: 'Mission Commander',           icon: '⚡', color: '#EA4335' },
+  { id: 'badge-cisco-analyst',   label: 'Cisco Config Analyst',          icon: '🖥️', color: '#1A73E8' },
+  { id: 'badge-completer',       label: 'Course Completer',              icon: '🎓', color: '#34A853' },
+  { id: 'badge-graduate',        label: 'NetAdmin 360 Graduate',         icon: '🏆', color: '#F9AB00' },
+];
+
+function init() {
+  const profile  = DataModel.Profile.get();
+  const passport = DataModel.Passport.get();
+  const earnedIds = new Set(passport.badges.map(b => b.id));
+  const competency = DataModel.Competency.get();
+  const missions   = DataModel.Missions.get();
+  const progress   = DataModel.Progress.get();
+  const overall    = DataModel.Competency.getOverallScore();
+  const masteryInfo = CompetencyEngine.getMasteryLevel(overall, DataModel.Missions.getCompletedCount() > 0);
+
+  // Trigger badge check
+  const domainScores = {};
+  ['domain1','domain2','domain3','domain4','domain5','domain6'].forEach(d => {
+    domainScores[d] = competency[d] ? competency[d].score : 0;
+  });
+  CompetencyEngine.checkAndAwardBadges(domainScores, missions, progress);
+
+  // Refresh after badge awards
+  const freshPassport = DataModel.Passport.get();
+  const freshEarned   = new Set(freshPassport.badges.map(b => b.id));
+
+  // Header
+  document.getElementById('passport-name').textContent = profile ? profile.name : 'Student';
+  document.getElementById('issue-date').textContent = new Date().toLocaleDateString('en-MY', { year:'numeric',month:'long',day:'numeric' });
+
+  // Badge grid
+  const grid = document.getElementById('passport-badge-grid');
+  grid.innerHTML = BADGE_DEFS.map(def => {
+    const earned = freshEarned.has(def.id);
+    return `
+      <div class="achievement-badge" title="${def.label}${earned ? ' — Earned!' : ' — Not yet earned'}">
+        <div class="badge-icon-wrap ${earned ? 'earned' : 'unearned'}" style="${earned ? `background:${def.color}20;` : ''}">
+          <span style="font-size:1.6rem;">${def.icon}</span>
+        </div>
+        <div class="badge-name" style="color:${earned ? '#fff' : 'rgba(255,255,255,0.3)'};">${def.label}</div>
+      </div>`;
+  }).join('');
+
+  // Mastery level badge
+  const masteryColors = ['#9E9E9E','#EA4335','#FBBC04','#1A73E8','#34A853','#F9AB00'];
+  const mvBadge = document.getElementById('overall-mastery-badge');
+  mvBadge.textContent = `Level ${masteryInfo.level} — ${masteryInfo.label}`;
+  mvBadge.style.background = masteryColors[masteryInfo.level] || '#888';
+  mvBadge.style.color = '#fff';
+
+  // Achievement timeline
+  const achievements = freshPassport.achievements || [];
+  const timeline = document.getElementById('achievement-timeline');
+  if (achievements.length === 0) {
+    timeline.innerHTML = `<div style="text-align:center;padding:2rem 0;color:var(--text-muted);font-size:var(--font-size-sm);">
+      No achievements yet — complete quizzes and missions to earn badges!
+    </div>`;
+  } else {
+    const sorted = [...achievements].reverse();
+    timeline.innerHTML = sorted.map(a => `
+      <div class="activity-item">
+        <div class="activity-dot" style="background:var(--accent-gold);"></div>
+        <div class="activity-content">
+          <div class="activity-text">${a.text}</div>
+          <div class="activity-time">${a.timestamp ? new Date(a.timestamp).toLocaleString() : ''}</div>
+        </div>
+      </div>`).join('');
+  }
+}
+
+// Share button: encode badge IDs to btoa URL hash
+document.getElementById('btn-share').addEventListener('click', () => {
+  const passport = DataModel.Passport.get();
+  const earnedIds = passport.badges.map(b => b.id);
+  const encoded  = btoa(JSON.stringify(earnedIds));
+  const shareUrl = `${location.origin}${location.pathname}#passport=${encoded}`;
+  navigator.clipboard.writeText(shareUrl).then(() => {
+    const btn = document.getElementById('btn-share');
+    const orig = btn.textContent;
+    btn.textContent = '✓ Link Copied!';
+    setTimeout(() => { btn.textContent = orig; }, 2000);
+  }).catch(() => {
+    alert('Share URL: ' + shareUrl);
+  });
+});
+
+EventBus.on('passport:badge_earned', init);
+EventBus.on('engine:recalculated', init);
+init();
+</script>
+</div>

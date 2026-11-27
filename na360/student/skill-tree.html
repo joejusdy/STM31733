@@ -1,0 +1,326 @@
+<div id="view-content">
+<div class="page-header">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="page-title">Network Skill Tree</h1>
+      <p class="page-subtitle">Explore your skill progression across all 4 course units — click any node to view details</p>
+    </div>
+    <div class="flex gap-2">
+      <select class="form-select" id="domain-filter" style="width:200px;" aria-label="Filter by domain">
+        <option value="all">All Domains</option>
+        <option value="domain1">Network Admin Fundamentals</option>
+        <option value="domain2">Network Device Infrastructure</option>
+        <option value="domain3">Network Configuration</option>
+        <option value="domain4">Network Troubleshooting</option>
+        <option value="domain5">Network Monitoring &amp; Security</option>
+        <option value="domain6">Professional Practice</option>
+      </select>
+      <button class="btn btn-secondary btn-sm" id="btn-reset-zoom" title="Reset zoom">
+        <i class="ph ph-arrows-out" aria-hidden="true"></i> Reset Zoom
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Legend -->
+<div class="card mb-4">
+  <div class="card-body" style="padding:.75rem 1.25rem;">
+    <div class="flex items-center gap-6" style="flex-wrap:wrap;">
+      <span style="font-size:var(--font-size-xs);font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.05em;">Mastery Level:</span>
+      <span class="mastery-badge mastery-0">Not Started</span>
+      <span class="mastery-badge mastery-1">Novice</span>
+      <span class="mastery-badge mastery-2">Developing</span>
+      <span class="mastery-badge mastery-3">Competent</span>
+      <span class="mastery-badge mastery-4">Proficient</span>
+      <span class="mastery-badge mastery-5">Expert</span>
+      <span style="font-size:var(--font-size-xs);color:var(--text-muted);margin-left:auto;">
+        <i class="ph ph-arrows-out-cardinal" aria-hidden="true"></i> Drag nodes · Scroll to zoom
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- Skill Tree + Detail Panel -->
+<div class="grid grid-cols-12 gap-4">
+
+  <!-- D3.js Skill Tree -->
+  <div class="card col-span-8" style="overflow:hidden;">
+    <div id="skill-tree-container" style="position:relative;">
+      <svg id="skill-tree-svg" class="skill-tree-svg" style="width:100%;height:560px;" aria-label="Interactive skill tree diagram" role="img">
+        <defs>
+          <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="var(--border)"></path>
+          </marker>
+        </defs>
+        <g id="skill-tree-g"></g>
+      </svg>
+      <div id="skill-tooltip" class="d3-tooltip" style="display:none;" role="tooltip"></div>
+    </div>
+  </div>
+
+  <!-- Skill Detail Panel -->
+  <div class="card col-span-4" id="skill-detail-panel">
+    <div class="card-header">
+      <div class="card-title">Skill Details</div>
+    </div>
+    <div class="card-body" id="skill-detail-body">
+      <div class="chart-empty" style="padding:2rem 0;">
+        <div class="chart-empty-icon">🌳</div>
+        <div>Click any node in the skill tree to view details</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Stats Row -->
+<div class="grid grid-cols-4 gap-4 mt-4">
+  <div class="stat-card">
+    <div class="stat-card-label">Total Skills</div>
+    <div class="stat-card-value" id="stat-total">35</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card-label">Competent or Above</div>
+    <div class="stat-card-value" id="stat-competent" style="color:var(--accent-blue);">0</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card-label">Proficient / Expert</div>
+    <div class="stat-card-value" id="stat-proficient" style="color:var(--accent-green);">0</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card-label">Not Started</div>
+    <div class="stat-card-value" id="stat-notstarted" style="color:var(--text-muted);">0</div>
+  </div>
+</div>
+
+<script type="module">
+import DataModel        from '../core/data-model.js';
+import CompetencyEngine from '../core/competency-engine.js';
+import EventBus         from '../core/event-bus.js';
+
+const MASTERY_COLORS = ['#9E9E9E','#EA4335','#FBBC04','#1A73E8','#34A853','#F9AB00'];
+
+const DOMAIN_COLORS = {
+  domain1: '#1A73E8',
+  domain2: '#7C5CD8',
+  domain3: '#34A853',
+  domain4: '#EA4335',
+  domain5: '#FBBC04',
+  domain6: '#F9AB00',
+};
+
+let allNodes = [];
+let simulation;
+let svgG;
+let zoomBehavior;
+let currentFilter = 'all';
+
+async function init() {
+  const data = await fetch('../data/skill-tree.json').then(r => r.json());
+  allNodes = data.nodes;
+
+  const competency = DataModel.Competency.get();
+  const missionCount = DataModel.Missions.getCompletedCount();
+
+  // Map mastery levels to nodes
+  allNodes.forEach(n => {
+    const domainData = competency[n.domain];
+    const score = domainData ? domainData.score : 0;
+    const masteryInfo = CompetencyEngine.getMasteryLevel(score, missionCount > 0);
+    n._score = score;
+    n._mastery = masteryInfo.level;
+    n._masteryLabel = masteryInfo.label;
+  });
+
+  renderTree(allNodes);
+  updateStats(allNodes);
+
+  document.getElementById('domain-filter').addEventListener('change', e => {
+    currentFilter = e.target.value;
+    const filtered = currentFilter === 'all'
+      ? allNodes
+      : allNodes.filter(n => n.domain === currentFilter);
+    renderTree(filtered);
+    updateStats(filtered);
+  });
+
+  document.getElementById('btn-reset-zoom').addEventListener('click', () => {
+    if (zoomBehavior) {
+      d3.select('#skill-tree-svg').transition().duration(400)
+        .call(zoomBehavior.transform, d3.zoomIdentity);
+    }
+  });
+}
+
+function renderTree(nodes) {
+  const svg = d3.select('#skill-tree-svg');
+  const container = document.getElementById('skill-tree-container');
+  const W = container.offsetWidth || 600;
+  const H = 560;
+
+  svg.attr('viewBox', `0 0 ${W} ${H}`);
+
+  // Build edge list from prerequisites
+  const nodeIds = new Set(nodes.map(n => n.id));
+  const links = [];
+  nodes.forEach(n => {
+    (n.prerequisites || []).forEach(preId => {
+      if (nodeIds.has(preId)) {
+        links.push({ source: preId, target: n.id });
+      }
+    });
+  });
+
+  // Clear previous
+  const g = d3.select('#skill-tree-g');
+  g.selectAll('*').remove();
+
+  // Zoom
+  zoomBehavior = d3.zoom().scaleExtent([0.3, 2.5]).on('zoom', e => {
+    g.attr('transform', e.transform);
+  });
+  svg.call(zoomBehavior);
+
+  // Simulation
+  simulation = d3.forceSimulation(nodes)
+    .force('link',   d3.forceLink(links).id(d => d.id).distance(90).strength(0.8))
+    .force('charge', d3.forceManyBody().strength(-200))
+    .force('center', d3.forceCenter(W / 2, H / 2))
+    .force('collide', d3.forceCollide(36));
+
+  // Draw edges
+  const link = g.append('g').selectAll('line')
+    .data(links).enter().append('line')
+    .attr('class', 'skill-edge')
+    .attr('stroke', 'var(--border)')
+    .attr('stroke-width', 1.5)
+    .attr('opacity', 0.5);
+
+  // Draw nodes
+  const node = g.append('g').selectAll('.skill-node')
+    .data(nodes).enter()
+    .append('g')
+    .attr('class', d => `skill-node${d._mastery >= 3 ? ' unlocked' : ''}`)
+    .call(d3.drag()
+      .on('start', (e, d) => { if (!e.active) simulation.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; })
+      .on('drag',  (e, d) => { d.fx = e.x; d.fy = e.y; })
+      .on('end',   (e, d) => { if (!e.active) simulation.alphaTarget(0); d.fx = null; d.fy = null; })
+    )
+    .on('click', (e, d) => showDetail(d))
+    .on('mouseenter', (e, d) => showTooltip(e, d))
+    .on('mouseleave', hideTooltip);
+
+  node.append('circle')
+    .attr('r', d => d._mastery >= 4 ? 18 : 14)
+    .attr('fill', d => MASTERY_COLORS[d._mastery] || MASTERY_COLORS[0])
+    .attr('stroke', d => DOMAIN_COLORS[d.domain] || '#ccc')
+    .attr('stroke-width', 2)
+    .style('cursor', 'pointer');
+
+  node.append('text')
+    .attr('dy', 28)
+    .attr('text-anchor', 'middle')
+    .style('font-size', '10px')
+    .style('fill', 'var(--text-secondary)')
+    .style('pointer-events', 'none')
+    .text(d => d.label.length > 18 ? d.label.substring(0, 16) + '…' : d.label);
+
+  // Tick
+  simulation.on('tick', () => {
+    link
+      .attr('x1', d => d.source.x).attr('y1', d => d.source.y)
+      .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
+    node.attr('transform', d => `translate(${d.x},${d.y})`);
+  });
+}
+
+function showDetail(d) {
+  const body = document.getElementById('skill-detail-body');
+  const masteryColors = MASTERY_COLORS;
+  const masteryLabels = ['Not Started','Novice','Developing','Competent','Proficient','Expert'];
+  const domainLabels = {
+    domain1:'Network Admin Fundamentals', domain2:'Network Device Infrastructure',
+    domain3:'Network Configuration', domain4:'Network Troubleshooting',
+    domain5:'Network Monitoring & Security', domain6:'Professional Practice'
+  };
+
+  body.innerHTML = `
+    <div class="mb-4">
+      <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem;">
+        <div style="width:40px;height:40px;border-radius:50%;background:${masteryColors[d._mastery]};display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.1rem;">${d._mastery}</div>
+        <div>
+          <div style="font-weight:700;font-size:1rem;color:var(--text-primary);">${d.label}</div>
+          <div style="font-size:.75rem;color:var(--text-muted);">${domainLabels[d.domain] || d.domain}</div>
+        </div>
+      </div>
+      <span class="mastery-badge mastery-${d._mastery}" style="margin-bottom:.5rem;display:inline-block;">${masteryLabels[d._mastery]}</span>
+    </div>
+
+    <div class="mb-3">
+      <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:.5rem;">${d.description}</div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:1rem;font-size:.75rem;">
+      <div><span style="color:var(--text-muted);">Unit:</span> <strong>${d.unit}</strong></div>
+      <div><span style="color:var(--text-muted);">Week:</span> <strong>Week ${d.week}</strong></div>
+      <div><span style="color:var(--text-muted);">CLO:</span> <span class="badge badge-blue">${d.clo}</span></div>
+      <div><span style="color:var(--text-muted);">Bloom:</span> <span class="badge badge-purple">${d.bloom}</span></div>
+    </div>
+
+    <div class="mb-3">
+      <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:.4rem;">Domain Score</div>
+      <div style="display:flex;align-items:center;gap:.5rem;">
+        <div class="progress-bar-wrapper" style="flex:1;">
+          <div class="progress-bar-fill" style="width:${d._score}%;background:${masteryColors[d._mastery]};"></div>
+        </div>
+        <span style="font-size:.875rem;font-weight:700;color:var(--text-primary);min-width:36px;text-align:right;">${d._score}%</span>
+      </div>
+    </div>
+
+    ${d.prerequisites && d.prerequisites.length ? `
+    <div>
+      <div style="font-size:.75rem;color:var(--text-muted);margin-bottom:.4rem;">Prerequisites</div>
+      <div style="display:flex;flex-wrap:wrap;gap:.35rem;">
+        ${d.prerequisites.map(p => `<span class="badge badge-grey">${p.replace(/-/g,' ')}</span>`).join('')}
+      </div>
+    </div>` : ''}
+
+    <div class="mt-4">
+      <a href="../week${d.week}/index.html" target="_blank" class="btn btn-outline btn-sm w-full" style="text-align:center;">
+        📖 Open Week ${d.week} Content
+      </a>
+    </div>
+  `;
+
+  // Highlight selected node
+  d3.selectAll('.skill-node').classed('selected', n => n.id === d.id);
+}
+
+function showTooltip(e, d) {
+  const tt = document.getElementById('skill-tooltip');
+  tt.style.display = 'block';
+  tt.style.left = (e.offsetX + 15) + 'px';
+  tt.style.top  = (e.offsetY - 10) + 'px';
+  tt.textContent = `${d.label} — ${d._masteryLabel || 'Not Started'} (${d._score}%)`;
+}
+
+function hideTooltip() {
+  document.getElementById('skill-tooltip').style.display = 'none';
+}
+
+function updateStats(nodes) {
+  const counts = { notstarted: 0, competent: 0, proficient: 0 };
+  nodes.forEach(n => {
+    if (n._mastery === 0) counts.notstarted++;
+    if (n._mastery >= 3) counts.competent++;
+    if (n._mastery >= 4) counts.proficient++;
+  });
+  document.getElementById('stat-total').textContent = nodes.length;
+  document.getElementById('stat-competent').textContent = counts.competent;
+  document.getElementById('stat-proficient').textContent = counts.proficient;
+  document.getElementById('stat-notstarted').textContent = counts.notstarted;
+}
+
+EventBus.on('engine:recalculated', init);
+init();
+</script>
+</div>

@@ -1,0 +1,67 @@
+{
+  "_meta": {
+    "description": "Cisco IOS configuration analysis rules for STM31733 Network Administration",
+    "version": "1.0",
+    "total_rules": 35
+  },
+  "categories": [
+    { "id": "C1", "label": "Initial Device Configuration", "unit": "3.1", "clo": "CLO2", "max_score": 20 },
+    { "id": "C2", "label": "VLAN and Trunk Configuration",  "unit": "3.2", "clo": "CLO2", "max_score": 20 },
+    { "id": "C3", "label": "Routing Configuration",         "unit": "3.3", "clo": "CLO2", "max_score": 20 },
+    { "id": "C4", "label": "DHCP Configuration",            "unit": "3.4", "clo": "CLO2", "max_score": 15 },
+    { "id": "C5", "label": "DNS Configuration",             "unit": "3.5", "clo": "CLO2", "max_score": 10 },
+    { "id": "C6", "label": "Security Hardening",            "unit": "3.1", "clo": "CLO2", "max_score": 10 },
+    { "id": "C7", "label": "Monitoring Readiness",          "unit": "4.2", "clo": "CLO2", "max_score": 5 }
+  ],
+  "rules": [
+    { "id": "R001", "category": "C1", "severity": "error",   "pattern": "hostname\\s+\\S+",          "pattern_type": "must_contain", "clo": "CLO2", "unit": "3.1", "message": "Hostname not configured — device is using default name", "suggestion": "Set a meaningful hostname: hostname [name]", "points": 3 },
+    { "id": "R002", "category": "C1", "severity": "error",   "pattern": "enable secret",              "pattern_type": "must_contain", "clo": "CLO2", "unit": "3.1", "message": "enable secret not found — privileged access is unsecured", "suggestion": "Use 'enable secret [password]' instead of 'enable password'", "points": 4 },
+    { "id": "R003", "category": "C1", "severity": "warning", "pattern": "enable password",            "pattern_type": "must_not_contain", "clo": "CLO2", "unit": "3.1", "message": "enable password used — weakly protected (use enable secret)", "suggestion": "Replace with 'enable secret' which uses MD5 hashing", "points": 2 },
+    { "id": "R004", "category": "C1", "severity": "error",   "pattern": "service password-encryption","pattern_type": "must_contain", "clo": "CLO2", "unit": "3.1", "message": "service password-encryption not enabled — passwords visible in plaintext", "suggestion": "Add 'service password-encryption' in global configuration", "points": 3 },
+    { "id": "R005", "category": "C1", "severity": "warning", "pattern": "banner motd",               "pattern_type": "must_contain", "clo": "CLO2", "unit": "3.1", "message": "Login banner (MOTD) not configured", "suggestion": "Add a warning banner: banner motd # Authorised users only #", "points": 2 },
+    { "id": "R006", "category": "C1", "severity": "error",   "pattern": "line con 0",                "pattern_type": "must_contain", "clo": "CLO2", "unit": "3.1", "message": "Console line not configured — no console authentication", "suggestion": "Configure: line con 0 → login local or password + login", "points": 3 },
+    { "id": "R007", "category": "C1", "severity": "error",   "pattern": "line vty",                  "pattern_type": "must_contain", "clo": "CLO2", "unit": "3.1", "message": "VTY lines not configured — remote access unsecured", "suggestion": "Configure VTY lines with authentication: line vty 0 4 → login local", "points": 3 },
+    { "id": "R008", "category": "C2", "severity": "info",    "pattern": "vlan\\s+\\d+",              "pattern_type": "must_contain", "clo": "CLO2", "unit": "3.2", "message": "No VLAN definitions found in configuration", "suggestion": "Create VLANs: vlan [id] → name [name]", "points": 4 },
+    { "id": "R009", "category": "C2", "severity": "info",    "pattern": "switchport mode trunk",      "pattern_type": "must_contain", "clo": "CLO2", "unit": "3.2", "message": "No trunk ports configured", "suggestion": "Configure trunk ports on interswitch links: switchport mode trunk", "points": 4 },
+    { "id": "R010", "category": "C2", "severity": "info",    "pattern": "switchport mode access",     "pattern_type": "must_contain", "clo": "CLO2", "unit": "3.2", "message": "No access ports assigned to VLANs", "suggestion": "Assign ports: switchport mode access → switchport access vlan [id]", "points": 4 },
+    { "id": "R011", "category": "C2", "severity": "info",    "pattern": "interface vlan",             "pattern_type": "must_contain", "clo": "CLO2", "unit": "3.2", "message": "No VLAN interface (SVI) configured for management", "suggestion": "Create management SVI: interface Vlan[id] → ip address [ip] [mask]", "points": 4 },
+    { "id": "R012", "category": "C2", "severity": "info",    "pattern": "encapsulation dot1q",        "pattern_type": "may_contain", "clo": "CLO2", "unit": "3.2", "message": "Inter-VLAN routing subinterfaces may be needed", "suggestion": "For router-on-a-stick: interface Fa0/0.[vlan] → encapsulation dot1q [id]", "points": 4 },
+    { "id": "R013", "category": "C3", "severity": "info",    "pattern": "ip route",                   "pattern_type": "may_contain", "clo": "CLO2", "unit": "3.3", "message": "No static routes configured", "suggestion": "Add static route: ip route [network] [mask] [next-hop]", "points": 5 },
+    { "id": "R014", "category": "C3", "severity": "info",    "pattern": "router rip",                 "pattern_type": "may_contain", "clo": "CLO2", "unit": "3.3", "message": "RIP not configured on this device", "suggestion": "Enable RIPv2: router rip → version 2 → network [network]", "points": 5 },
+    { "id": "R015", "category": "C3", "severity": "warning", "pattern": "version 2",                  "pattern_type": "rip_context", "clo": "CLO2", "unit": "3.3", "message": "RIP is configured but version 2 not explicitly set", "suggestion": "Under router rip, add: version 2", "points": 4 },
+    { "id": "R016", "category": "C3", "severity": "warning", "pattern": "no auto-summary",            "pattern_type": "rip_context", "clo": "CLO2", "unit": "3.3", "message": "RIPv2 auto-summary is enabled — may cause routing issues with discontiguous networks", "suggestion": "Under router rip: no auto-summary", "points": 3 },
+    { "id": "R017", "category": "C3", "severity": "info",    "pattern": "ip routing",                 "pattern_type": "switch_context", "clo": "CLO2", "unit": "3.3", "message": "ip routing not enabled on Layer 3 switch — inter-VLAN routing will not work", "suggestion": "In global config: ip routing", "points": 3 },
+    { "id": "R018", "category": "C4", "severity": "info",    "pattern": "ip dhcp pool",               "pattern_type": "may_contain", "clo": "CLO2", "unit": "3.4", "message": "No DHCP pool configured on this device", "suggestion": "Create DHCP pool: ip dhcp pool [name] → network [network] [mask] → default-router [ip]", "points": 4 },
+    { "id": "R019", "category": "C4", "severity": "error",   "pattern": "default-router",             "pattern_type": "dhcp_context", "clo": "CLO2", "unit": "3.4", "message": "DHCP pool missing default-router statement — clients will not receive gateway", "suggestion": "Under ip dhcp pool: default-router [gateway IP]", "points": 4 },
+    { "id": "R020", "category": "C4", "severity": "warning", "pattern": "ip dhcp excluded-address",   "pattern_type": "must_contain_if_dhcp", "clo": "CLO2", "unit": "3.4", "message": "No DHCP excluded addresses — static IPs may conflict", "suggestion": "Exclude static IPs: ip dhcp excluded-address [start] [end]", "points": 4 },
+    { "id": "R021", "category": "C4", "severity": "warning", "pattern": "dns-server",                 "pattern_type": "dhcp_context", "clo": "CLO2", "unit": "3.4", "message": "DHCP pool missing DNS server — clients may not resolve names", "suggestion": "Under ip dhcp pool: dns-server [DNS IP]", "points": 3 },
+    { "id": "R022", "category": "C5", "severity": "info",    "pattern": "ip name-server",             "pattern_type": "may_contain", "clo": "CLO2", "unit": "3.5", "message": "No DNS server configured on router", "suggestion": "Add: ip name-server [DNS server IP]", "points": 5 },
+    { "id": "R023", "category": "C5", "severity": "info",    "pattern": "ip domain.name",             "pattern_type": "may_contain", "clo": "CLO2", "unit": "3.5", "message": "No IP domain name configured", "suggestion": "Add: ip domain-name [domain]", "points": 3 },
+    { "id": "R024", "category": "C5", "severity": "warning", "pattern": "no ip domain.lookup",        "pattern_type": "may_contain", "clo": "CLO2", "unit": "3.5", "message": "DNS lookup not disabled — typos in commands may cause long delays", "suggestion": "In global config: no ip domain-lookup", "points": 2 },
+    { "id": "R025", "category": "C6", "severity": "error",   "pattern": "transport input ssh",        "pattern_type": "vty_context", "clo": "CLO2", "unit": "3.1", "message": "VTY lines do not restrict to SSH — Telnet may be accepted", "suggestion": "Under line vty 0 4: transport input ssh", "points": 4 },
+    { "id": "R026", "category": "C6", "severity": "error",   "pattern": "crypto key generate rsa",    "pattern_type": "must_contain_if_ssh", "clo": "CLO2", "unit": "3.1", "message": "RSA keys not generated — SSH will not function", "suggestion": "In global config: crypto key generate rsa modulus 1024", "points": 3 },
+    { "id": "R027", "category": "C6", "severity": "warning", "pattern": "ip ssh version 2",           "pattern_type": "may_contain", "clo": "CLO2", "unit": "3.1", "message": "SSH version not explicitly set to version 2", "suggestion": "Add: ip ssh version 2", "points": 3 },
+    { "id": "R028", "category": "C7", "severity": "info",    "pattern": "snmp-server community",      "pattern_type": "may_contain", "clo": "CLO2", "unit": "4.2", "message": "SNMP community not configured — device cannot be monitored via SNMP", "suggestion": "Add: snmp-server community [string] RO", "points": 3 },
+    { "id": "R029", "category": "C7", "severity": "info",    "pattern": "logging",                    "pattern_type": "may_contain", "clo": "CLO2", "unit": "4.2", "message": "Syslog logging not configured", "suggestion": "Add: logging [syslog server IP]", "points": 2 }
+  ],
+  "sample_configs": [
+    {
+      "id": "SC1",
+      "label": "Basic Router Config (Starter)",
+      "description": "A minimal router configuration to test with",
+      "config": "hostname Router1\n!\nenable secret cisco123\nservice password-encryption\n!\nno ip domain-lookup\nip domain-name kkpapar.edu.my\nip name-server 8.8.8.8\n!\nusername admin secret admin123\n!\ninterface GigabitEthernet0/0\n ip address 192.168.1.1 255.255.255.0\n no shutdown\n!\ninterface GigabitEthernet0/1\n ip address 192.168.2.1 255.255.255.0\n no shutdown\n!\nip route 0.0.0.0 0.0.0.0 192.168.1.254\n!\nip dhcp excluded-address 192.168.2.1 192.168.2.10\nip dhcp pool LAN_POOL\n network 192.168.2.0 255.255.255.0\n default-router 192.168.2.1\n dns-server 8.8.8.8\n!\nline con 0\n login local\n!\nline vty 0 4\n login local\n transport input ssh\n!\nbanner motd # Authorised users only - Kolej Komuniti Papar #\n!\ncrypto key generate rsa modulus 1024\nip ssh version 2\n!\nend"
+    },
+    {
+      "id": "SC2",
+      "label": "Switch VLAN Config",
+      "description": "A switch configuration with VLAN and trunk setup",
+      "config": "hostname SW1\n!\nenable secret cisco123\nservice password-encryption\n!\nvlan 10\n name DATA_VLAN\n!\nvlan 20\n name VOICE_VLAN\n!\nvlan 99\n name MANAGEMENT\n!\ninterface vlan 99\n ip address 192.168.99.2 255.255.255.0\n no shutdown\n!\ninterface FastEthernet0/1\n switchport mode trunk\n switchport trunk allowed vlan 10,20,99\n!\ninterface range FastEthernet0/2-10\n switchport mode access\n switchport access vlan 10\n!\ninterface range FastEthernet0/11-20\n switchport mode access\n switchport access vlan 20\n!\nip default-gateway 192.168.99.1\n!\nline con 0\n login local\n!\nline vty 0 4\n login local\n transport input ssh\n!\nend"
+    },
+    {
+      "id": "SC3",
+      "label": "RIPv2 Router Config",
+      "description": "A router configuration with RIPv2 routing protocol",
+      "config": "hostname R1\n!\nenable secret cisco123\n!\ninterface GigabitEthernet0/0\n ip address 10.0.12.1 255.255.255.0\n no shutdown\n!\ninterface GigabitEthernet0/1\n ip address 192.168.1.1 255.255.255.0\n no shutdown\n!\nrouter rip\n version 2\n network 10.0.0.0\n network 192.168.1.0\n no auto-summary\n!\nend"
+    }
+  ]
+}

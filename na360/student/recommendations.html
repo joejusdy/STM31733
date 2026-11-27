@@ -1,0 +1,203 @@
+<div id="view-content">
+
+<div class="page-header">
+  <div class="flex items-center justify-between">
+    <div>
+      <h1 class="page-title">Personalised Recommendations</h1>
+      <p class="page-subtitle">AI-powered study plan based on your competency profile</p>
+    </div>
+    <div style="display:flex;gap:.5rem;">
+      <select id="filter-priority" class="btn btn-ghost btn-sm" style="cursor:pointer;">
+        <option value="">All Priorities</option>
+        <option value="High">High</option>
+        <option value="Medium">Medium</option>
+        <option value="Low">Low</option>
+      </select>
+      <select id="filter-domain" class="btn btn-ghost btn-sm" style="cursor:pointer;">
+        <option value="">All Domains</option>
+        <option value="domain1">D1 — Admin Fundamentals</option>
+        <option value="domain2">D2 — Device Infrastructure</option>
+        <option value="domain3">D3 — Configuration</option>
+        <option value="domain4">D4 — Troubleshooting</option>
+        <option value="domain5">D5 — Monitoring & Security</option>
+        <option value="domain6">D6 — Professional Practice</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<!-- Done counter banner -->
+<div id="done-banner" style="display:none;background:var(--accent-green-light);border:1px solid var(--accent-green);border-radius:var(--radius-md);padding:.6rem 1rem;margin-bottom:1rem;font-size:var(--font-size-sm);color:var(--accent-green);font-weight:600;">
+  ✅ <span id="done-count">0</span> recommendation(s) marked as done
+</div>
+
+<!-- Recommendation Cards -->
+<div id="rec-container" style="display:flex;flex-direction:column;gap:.75rem;margin-bottom:1.5rem;">
+  <div style="text-align:center;padding:3rem;color:var(--text-muted);">
+    <div style="font-size:2rem;margin-bottom:.5rem;">🔄</div>
+    Loading recommendations…
+  </div>
+</div>
+
+<!-- Empty state -->
+<div id="all-done-state" style="display:none;text-align:center;padding:3rem;background:var(--bg-surface);border-radius:var(--radius-xl);border:1px solid var(--border);margin-bottom:1.5rem;">
+  <div style="font-size:3rem;margin-bottom:.75rem;">🎉</div>
+  <div style="font-size:var(--font-size-lg);font-weight:600;color:var(--text-primary);margin-bottom:.25rem;">Great work! All recommendations completed.</div>
+  <div style="font-size:var(--font-size-sm);color:var(--text-muted);">Keep revising and attempting missions to maintain your competency.</div>
+</div>
+
+<!-- Study Plan Section -->
+<div class="card mb-4">
+  <div class="card-header">
+    <div class="card-title">📅 Generate Study Plan</div>
+    <button class="btn btn-primary btn-sm" id="btn-gen-plan">Generate Weekly Plan</button>
+  </div>
+  <div class="card-body">
+    <div id="study-plan-output" style="font-size:var(--font-size-sm);color:var(--text-secondary);font-family:var(--font-mono);white-space:pre-line;line-height:1.9;min-height:48px;">
+      Click "Generate Weekly Plan" to create an ordered weekly study schedule based on your weakest domains.
+    </div>
+  </div>
+</div>
+
+<!-- Footnote -->
+<div style="font-size:var(--font-size-xs);color:var(--text-muted);text-align:center;padding:1rem 0;border-top:1px solid var(--border);">
+  Phase 2: Powered by IBM watsonx.ai personalised recommendations coming soon.
+</div>
+
+<script type="module">
+import DataModel        from '../core/data-model.js';
+import CompetencyEngine from '../core/competency-engine.js';
+import EventBus         from '../core/event-bus.js';
+
+const PRIORITY_COLOR = { High: 'var(--accent-red)', Medium: 'var(--accent-amber)', Low: 'var(--accent-green)' };
+const PRIORITY_BG    = { High: 'var(--mastery-1-bg)', Medium: 'var(--mastery-2-bg)', Low: 'var(--accent-green-light)' };
+const TYPE_ICON      = { revise: '📚', mission: '⚡' };
+const DOMAIN_LABELS  = {
+  domain1: 'Network Admin Fundamentals',
+  domain2: 'Network Device Infrastructure',
+  domain3: 'Network Configuration',
+  domain4: 'Network Troubleshooting',
+  domain5: 'Network Monitoring & Security',
+  domain6: 'Professional Practice & Communication',
+};
+
+let allRecs = [];
+let doneSet = new Set();
+
+function init() {
+  // Fetch up to 15 recommendations
+  allRecs = CompetencyEngine.generateRecommendations(15);
+  renderRecs();
+}
+
+function renderRecs() {
+  const priorityFilter = document.getElementById('filter-priority').value;
+  const domainFilter   = document.getElementById('filter-domain').value;
+
+  const visible = allRecs.filter(r => {
+    if (doneSet.has(r.action)) return false;
+    if (priorityFilter && r.priority !== priorityFilter) return false;
+    if (domainFilter   && r.domain  !== domainFilter)   return false;
+    return true;
+  });
+
+  const container = document.getElementById('rec-container');
+  const allDone   = document.getElementById('all-done-state');
+  const doneBanner = document.getElementById('done-banner');
+  const doneCountEl = document.getElementById('done-count');
+
+  doneCountEl.textContent = doneSet.size;
+  if (doneSet.size > 0) doneBanner.style.display = 'block';
+
+  if (visible.length === 0 && doneSet.size >= allRecs.length) {
+    container.style.display = 'none';
+    allDone.style.display = 'block';
+    return;
+  }
+  allDone.style.display = 'none';
+  container.style.display = 'flex';
+
+  if (visible.length === 0) {
+    container.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--text-muted);font-size:var(--font-size-sm);">No recommendations match the selected filters.</div>`;
+    return;
+  }
+
+  container.innerHTML = visible.map(rec => {
+    const pc = PRIORITY_COLOR[rec.priority] || 'var(--accent-blue)';
+    const pb = PRIORITY_BG[rec.priority]    || 'var(--accent-blue-light)';
+    const icon = TYPE_ICON[rec.type] || '📋';
+    return `
+    <div class="card" style="border-left:3px solid ${pc};">
+      <div class="card-body" style="padding:.85rem 1rem;">
+        <div style="display:flex;align-items:flex-start;gap:.75rem;">
+          <div style="font-size:1.5rem;flex-shrink:0;padding-top:.1rem;">${icon}</div>
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;margin-bottom:.3rem;">
+              <span style="font-size:10px;padding:1px 8px;border-radius:var(--radius-pill);background:${pb};color:${pc};font-weight:700;text-transform:uppercase;">${rec.priority}</span>
+              <span style="font-size:10px;padding:1px 6px;border-radius:var(--radius-pill);background:var(--accent-blue-light);color:var(--accent-blue);font-weight:600;">${rec.clo}</span>
+              <span style="font-size:10px;color:var(--text-muted);">${DOMAIN_LABELS[rec.domain] || rec.domain}</span>
+            </div>
+            <div style="font-size:var(--font-size-sm);font-weight:600;color:var(--text-primary);margin-bottom:.2rem;">${rec.action}</div>
+            <div style="font-size:var(--font-size-xs);color:var(--text-secondary);margin-bottom:.6rem;">${rec.reason}</div>
+            <div style="display:flex;gap:.5rem;align-items:center;">
+              ${rec.link ? `<a href="${rec.link}" class="btn btn-ghost btn-sm" style="font-size:var(--font-size-xs);">Open Resource →</a>` : ''}
+              <button class="btn btn-ghost btn-sm" style="font-size:var(--font-size-xs);color:var(--accent-green);"
+                onclick="markDone(${JSON.stringify(rec.action).replace(/"/g,'&quot;')})">
+                ✔ Mark as Done
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+window.markDone = function(action) {
+  doneSet.add(action);
+  renderRecs();
+};
+
+// Study Plan generator
+document.getElementById('btn-gen-plan').addEventListener('click', () => {
+  const competency = DataModel.Competency.get();
+  const weakest = Object.entries(competency)
+    .sort((a, b) => a[1].score - b[1].score)
+    .slice(0, 4);
+
+  const domainWeeks = {
+    domain1: [1, 2],       domain2: [3, 4],
+    domain3: [5, 6, 7, 8, 9, 10], domain4: [11],
+    domain5: [12, 13],     domain6: [14],
+  };
+
+  const lines = ['📅 PERSONALISED WEEKLY STUDY PLAN\n', '─'.repeat(44)];
+  let weekCursor = 1;
+  weakest.forEach(([dId, data]) => {
+    const weeks = domainWeeks[dId] || [];
+    const label = DOMAIN_LABELS[dId] || dId;
+    lines.push(`\nWeek ${weekCursor}–${weekCursor + weeks.length - 1} ▸ ${label}`);
+    lines.push(`  Current score: ${data.score}% | Focus: strengthen to 60%+`);
+    weeks.forEach(w => lines.push(`  → Study Week ${w} content, complete quiz`));
+    if (['domain3','domain4','domain5'].includes(dId)) {
+      lines.push(`  → Attempt at least one Troubleshooting Mission`);
+    }
+    weekCursor += weeks.length;
+  });
+  lines.push(`\n─`.repeat(44 / 2).trim() + '\n');
+  lines.push('📌 Tip: Aim to complete all quizzes with ≥60% before attempting the final assessment.');
+
+  document.getElementById('study-plan-output').textContent = lines.join('\n');
+});
+
+// Filters
+document.getElementById('filter-priority').addEventListener('change', renderRecs);
+document.getElementById('filter-domain').addEventListener('change', renderRecs);
+
+// Re-run if competency updates
+EventBus.on('engine:recalculated', init);
+EventBus.on('competency:updated', init);
+
+init();
+</script>
+</div>
